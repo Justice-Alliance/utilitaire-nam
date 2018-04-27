@@ -16,13 +16,6 @@ pipeline {
                 sh "mvn clean install"
                 sh "mvn deploy -Dmaven.install.skip=true"
             }
-            post {
-                success {
-                    archive '**/target/*.jar'
-                    junit '**/target/surefire-reports/TEST-*.xml'
-					junit '**/target/failsafe-reports/TEST-*.xml'
-                }
-            }
         }
         // stage ('Packager image Docker de utilitaire-nam') {
 		//     environment {

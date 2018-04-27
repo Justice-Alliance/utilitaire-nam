@@ -14,7 +14,7 @@ pipeline {
         stage ('Construire utilitaire-nam') {
             steps {
                 sh "mvn clean install"
-                sh "mvn deploy"
+                sh "mvn deploy -Dmaven.install.skip=true"
             }
             post {
                 success {

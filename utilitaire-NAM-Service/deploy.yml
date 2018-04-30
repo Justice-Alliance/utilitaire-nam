@@ -3,7 +3,7 @@
   vars:
     docker_registry: nexus3.inspq.qc.ca:5000
     unamservice_internal_port: 8080
-    faius_docker_image: "{{ docker_registry }}/inspq/unamservice"
+    unamservice_docker_image: "{{ docker_registry }}/inspq/unamservice"
     cert_file_path: /etc/pki/tls/certs
     cert_key_path: /etc/pki/tls/private
 

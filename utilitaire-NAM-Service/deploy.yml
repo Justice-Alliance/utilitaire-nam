@@ -1,0 +1,69 @@
+---
+- hosts: app
+  vars:
+    docker_registry: nexus3.inspq.qc.ca:5000
+    unamservice_internal_port: 8080
+    faius_docker_image: "{{ docker_registry }}/inspq/unamservice"
+    cert_file_path: /etc/pki/tls/certs
+    cert_key_path: /etc/pki/tls/private
+
+  roles:
+  - { role: docker-engine, when: ansible_os_family == 'RedHat' }
+      
+  tasks:
+  
+  - name: Docker repository logon
+    shell: docker login -u {{ docker_registry_username }} -p  {{ docker_registry_password }} -e {{ docker_registry_email }} {{ docker_registry }}
+    when: docker_registry_username is defined and docker_registry_password is defined and docker_registry_email is defined
+
+  - name: Suppression du conteneur pour unamservice 
+    docker_container:
+      name: "{{ unamservice_container_name }}"
+      image: "{{ unamservice_docker_image }}:{{ unamservice_image_version }}"
+      state: absent
+    
+  - name: Mettre a jour l'image Docker
+    docker_image: 
+      name: "{{ unamservice_docker_image }}"
+      tag: "{{ unamservice_image_version }}"
+      pull: true
+      state: present
+      force: yes
+
+  - name: Creation du conteneur pour unamservice 
+    docker_container:
+      name: "{{ unamservice_container_name }}"
+      image: "{{ unamservice_docker_image }}:{{ unamservice_image_version }}"
+      state: started
+      restart_policy: unless-stopped
+      ports:
+      - "{{ unamservice_external_port }}:{{ unamservice_internal_port }}"
+      env:
+        "LOG4J2_GRAYLOG_URL": "{{ unam_graylog_host }}"
+        "LOG4J2_GRAYLOG_PORT_GELF_UDP": "{{ unam_graylog_port_gelf_udp }}"
+        "GRAYLOG_HOST_BASE": "{{ unamservice_container_name }}"
+
+  - name: Copie du certificat
+    copy:
+      src: "certificats/{{ unamservice_cert_file }}"
+      dest: "{{ cert_file_path }}/"
+    when: unamservice_cert_file is defined
+    
+  - name: Copie de la clé du certificat
+    copy:
+      src: "certificats/{{ unamservice_cert_key }}"
+      dest: "{{ cert_key_path }}/"
+    when: unamservice_cert_key is defined
+
+  - name: Creation du hote virtuel dans APACHE
+    template:
+      src: unamservice-gabarit-apache.conf
+      dest: /etc/httpd/conf.d/{{ unamservice_base_url }}.conf
+      force: yes
+    when: unamservice_base_url is defined and ansible_os_family == 'RedHat'
+    notify:
+      - restart httpd  
+    
+  handlers:
+  - name: restart httpd 
+    service: name=httpd state=restarted

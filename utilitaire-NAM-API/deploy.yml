@@ -1,0 +1,68 @@
+---
+- hosts: app
+  vars:
+    docker_registry: nexus3.inspq.qc.ca:5000
+    unamapi_internal_port: 8080
+    faius_docker_image: "{{ docker_registry }}/inspq/unamapi"
+    cert_file_path: /etc/pki/tls/certs
+    cert_key_path: /etc/pki/tls/private
+
+  roles:
+  - { role: docker-engine, when: ansible_os_family == 'RedHat' }
+      
+  tasks:
+  - name: Docker repository logon
+    shell: docker login -u {{ docker_registry_username }} -p  {{ docker_registry_password }} -e {{ docker_registry_email }} {{ docker_registry }}
+    when: docker_registry_username is defined and docker_registry_password is defined and docker_registry_email is defined
+
+  - name: Suppression du conteneur pour unamapi 
+    docker_container:
+      name: "{{ unamapi_container_name }}"
+      image: "{{ unamapi_docker_image }}:{{ unamapi_image_version }}"
+      state: absent
+    
+  - name: Mettre a jour l'image Docker
+    docker_image: 
+      name: "{{ unamapi_docker_image }}"
+      tag: "{{ unamapi_image_version }}"
+      pull: true
+      state: present
+      force: yes
+
+  - name: Creation du conteneur pour unamapi 
+    docker_container:
+      name: "{{ unamapi_container_name }}"
+      image: "{{ unamapi_docker_image }}:{{ unamapi_image_version }}"
+      state: started
+      restart_policy: unless-stopped
+      ports:
+      - "{{ unamapi_external_port }}:{{ unamapi_internal_port }}"
+      env:
+        "LOG4J2_GRAYLOG_URL": "{{ unam_graylog_host }}"
+        "LOG4J2_GRAYLOG_PORT_GELF_UDP": "{{ unam_graylog_port_gelf_udp }}"
+        "GRAYLOG_HOST_BASE": "{{ unamapi_container_name }}"
+
+  - name: Copie du certificat
+    copy:
+      src: "certificats/{{ unamapi_cert_file }}"
+      dest: "{{ cert_file_path }}/"
+    when: unamapi_cert_file is defined
+    
+  - name: Copie de la clé du certificat
+    copy:
+      src: "certificats/{{ unamapi_cert_key }}"
+      dest: "{{ cert_key_path }}/"
+    when: unamapi_cert_key is defined
+
+  - name: Creation du hote virtuel dans APACHE
+    template:
+      src: unamapi-gabarit-apache.conf
+      dest: /etc/httpd/conf.d/{{ unamapi_base_url }}.conf
+      force: yes
+    when: unamapi_base_url is defined and ansible_os_family == 'RedHat'
+    notify:
+      - restart httpd  
+    
+  handlers:
+  - name: restart httpd 
+    service: name=httpd state=restarted

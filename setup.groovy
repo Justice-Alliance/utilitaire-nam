@@ -49,45 +49,45 @@ pipelineJob("${PIPELINE_CONSTRUCTION}") {
 //     }
 // }
 
-// pipelineJob("${PIPELINE_DEPLOIEMENT}") {
-//     description ('Déploiement de SADU Panorama dans un environnement')
-//     parameters {
-//     	gitParam('TAG'){
-//     	    description('Version de SADU à déployer')
-//     	    type('BRANCH_TAG')
-//     	    tagFilter('*')
-//     	    sortMode('DESCENDING_SMART')
-//     	}
-//         stringParam('ENV', '', 'Environnement sur lequel on déploie SADU')
-//     }
-//     definition {
-//         cpsScm {
-//             scm {
-//                 git {
-//                 	remote {
-//                 	    url('https://gitlab.forge.gouv.qc.ca/sipmi/sadu-panorama.git')
-//                 	}
-//                     branch ('${TAG}')
-//                 }
-//             }
+pipelineJob("${PIPELINE_DEPLOIEMENT}") {
+    description ('Déploiement de Utilitaire-NAM dans un environnement')
+    parameters {
+    	gitParam('TAG'){
+    	    description('Version de utilitaire-nam à déployer')
+    	    type('BRANCH_TAG')
+    	    tagFilter('*')
+    	    sortMode('DESCENDING_SMART')
+    	}
+        stringParam('ENV', '', 'Environnement sur lequel on déploie Utilitaire-NAM')
+    }
+    definition {
+        cpsScm {
+            scm {
+                git {
+                	remote {
+                	    url('https://gitlab.forge.gouv.qc.ca/inspq/utilitaire-nam.git')
+                	}
+                    branch ('${TAG}')
+                }
+            }
             
-//             scriptPath('deploy.Jenkinsfile')
-//         }
-//     }
-// }
-// pipelineJob("${PIPELINE_LIVRAISON}") {
-//     description ('Livraison de SADU Panorama')
-//     definition {
-//         cpsScm {
-//             scm {
-//                 git{
-//                 	remote{
-//               			url('https://gitlab.forge.gouv.qc.ca/sipmi/sadu-panorama.git')
-//           			}
-//                 	branch ('origin/master')
-//                 }
-//             }
-//             scriptPath('delivery.Jenkinsfile')
-//         }
-//     }
-// }
+            scriptPath('deploy.Jenkinsfile')
+        }
+    }
+}
+pipelineJob("${PIPELINE_LIVRAISON}") {
+    description ('Livraison de Utilitaire-NAM')
+    definition {
+        cpsScm {
+            scm {
+                git{
+                	remote{
+              			url('https://gitlab.forge.gouv.qc.ca/inspq/utilitaire-nam.git')
+          			}
+                	branch ('origin/master')
+                }
+            }
+            scriptPath('delivery.Jenkinsfile')
+        }
+    }
+}

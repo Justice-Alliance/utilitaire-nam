@@ -11,6 +11,7 @@ pipeline {
         maven 'M3'
     }
     parameters {
+        string (name: 'TAG', description: 'Version de utilitaire-nam à déployer')
         string (name: 'ENV', description: 'Environnement sur lequel on déploie Utilitaire-NAM')
     }
     environment {
@@ -57,18 +58,18 @@ pipeline {
         success {
             script {
                 mail(to: "${equipe}", 
-                    subject: "Déploiement de Fonctions allégées en ${env.ENV} réalisé avec succès: ${env.JOB_NAME} #${env.BUILD_NUMBER}", 
+                    subject: "Déploiement de Utilitaire-NAM (${env.TAG}) en ${env.ENV} réalisé avec succès: ${env.JOB_NAME} #${env.BUILD_NUMBER}", 
                     body: "${env.BUILD_URL}")
             }
         }
         failure {
             mail(to: "${equipe}",
-                subject: "Échec du déploiement de Fonctions allégées en ${env.ENV}: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                subject: "Échec du déploiement de Utilitaire-NAM (${env.TAG}) en ${env.ENV}: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: "${env.BUILD_URL}")
         }
         unstable {
             mail(to: "${equipe}",
-                subject: "Déploiement de Fonctions allégées en ${env.ENV} instable: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                subject: "Déploiement de Utilitaire-NAM (${env.TAG}) en ${env.ENV} instable: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: "${env.BUILD_URL}")
         }
     }

@@ -1,5 +1,5 @@
 ---
-- hosts: app
+- hosts: unam
   vars:
     docker_registry: nexus3.inspq.qc.ca:5000
     unamapi_internal_port: 8080

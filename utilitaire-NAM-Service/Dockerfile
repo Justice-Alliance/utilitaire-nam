@@ -1,9 +1,11 @@
 FROM nexus3.inspq.qc.ca:5000/inspq/keycloaktomcatvalve:latest
 ENV TZ=America/Toronto
 
+ARG APP_VERSION=0.1.1-SNAPSHOT
+ENV APP_VERSION=$APP_VERSION
+
 ARG CATALINA_OPTS="-server -XX:MaxPermSize=256m -Xmx1024m"
 
-ARG APP_VERSION=0.1.1-SNAPSHOT
 RUN rm -rf $CATALINA_HOME/webapps/*
 ADD target/utilitaire-nam-service-${APP_VERSION}.war $CATALINA_HOME/webapps/utilitaire-nam-service.war
 

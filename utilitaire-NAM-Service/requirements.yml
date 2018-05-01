@@ -1,0 +1,8 @@
+- name: docker-engine
+  src: https://gitlab.forge.gouv.qc.ca/ansible-inspq/roles/deploy_vm_linux.git
+  version: v1.0.0
+  scm: git
+- name: deploy_vm_linux
+  src: https://gitlab.forge.gouv.qc.ca/ansible-inspq/roles/deploy_vm_linux.git
+  version: v1.0.0
+  scm: git  

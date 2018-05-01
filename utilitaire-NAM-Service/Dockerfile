@@ -1,22 +1,19 @@
-FROM nexus3.inspq.qc.ca:5000/inspq/oraclejdk:latest
-#FROM nexus3.inspq.qc.ca:5000/tomcat:8.5.20
-
+FROM nexus3.inspq.qc.ca:5000/inspq/keycloaktomcatvalve:latest
 ENV TZ=America/Toronto
 
 ARG APP_VERSION=0.1.1-SNAPSHOT
 ENV APP_VERSION=$APP_VERSION
 
-ENV U_NAME_HOME=/opt/utilitaire-NAM-Service
-#ARG CATALINA_OPTS="-server -XX:MaxPermSize=256m -Xmx1024m"
+ARG CATALINA_OPTS="-server -XX:MaxPermSize=256m -Xmx1024m"
 
-ARG NEXUS3_URL=https://nexus3.inspq.qc.ca:8443
-RUN wget --no-check-certificate $NEXUS3_URL/repository/utilitaires-infrastructure/ojdbc8.jar -O $CATALINA_HOME/lib/ojdbc8.jar
+RUN rm -rf $CATALINA_HOME/webapps/*
+ADD utilitaire-NAM-Service/target/utilitaire-nam-service-${APP_VERSION}.war $CATALINA_HOME/webapps/utilitaire-nam-service.war
 
-RUN mkdir $U_NAME_HOME
-ADD utilitaire-NAM-Service/target/utilitaire-nam-service-${APP_VERSION}.jar $U_NAME_HOME/utilitaire-nam-service.jar
-ADD utilitaire-NAM-Service/docker-entrypoint.sh $U_NAME_HOME/docker-entrypoint.sh
-RUN chmod a+x $U_NAME_HOME/docker-entrypoint.sh
+RUN mkdir $CATALINA_HOME/webapps/ROOT \
+    && cd $CATALINA_HOME/webapps/ROOT \
+    && jar -xvf ../utilitaire-nam-service.war \
+	&& rm ../utilitaire-nam-service.war
 
-EXPOSE 8080 8009 28081
+#EXPOSE 8080 8009
 
-ENTRYPOINT "$U_NAME_HOME/docker-entrypoint.sh"
+#CMD ["catalina.sh", "run"]

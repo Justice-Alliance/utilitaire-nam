@@ -11,7 +11,6 @@ pipeline {
         maven 'M3'
     }
     parameters {
-        string (name: 'TAG', description: 'Version de utilitaire-nam à déployer')
         string (name: 'ENV', description: 'Environnement sur lequel on déploie Utilitaire-NAM')
     }
     environment {

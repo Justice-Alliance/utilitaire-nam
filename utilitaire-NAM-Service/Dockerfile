@@ -7,7 +7,7 @@ ENV APP_VERSION=$APP_VERSION
 ARG CATALINA_OPTS="-server -XX:MaxPermSize=256m -Xmx1024m"
 
 RUN rm -rf $CATALINA_HOME/webapps/*
-ADD target/utilitaire-nam-service-${APP_VERSION}.war $CATALINA_HOME/webapps/utilitaire-nam-service.war
+ADD utilitaire-NAM-Service/target/utilitaire-nam-service-${APP_VERSION}.war $CATALINA_HOME/webapps/utilitaire-nam-service.war
 
 RUN mkdir $CATALINA_HOME/webapps/ROOT \
     && cd $CATALINA_HOME/webapps/ROOT \

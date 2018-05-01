@@ -19,8 +19,9 @@ pipeline {
         }
         stage ('Packager image Docker de utilitaire-nam') {
 		    environment {
-			    IMAGE = readMavenPom().getArtifactId()
-		    	VERSION = readMavenPom().getVersion()
+                unPom = readMavenPom file: 'utilitaire-NAM-Service/pom.xml'
+			    IMAGE = unPom.getArtifactId()
+		    	VERSION = unPom.getVersion()
 			}
             steps {	
 				sh "docker build --build-arg APP_VERSION=${VERSION} --tag nexus3.inspq.qc.ca:5000/inspq/${IMAGE}:${VERSION} --file utilitaire-NAM-Service/Dockerfile ."

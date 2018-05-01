@@ -12,7 +12,7 @@ pipeline {
     parameters {
         string (name: 'VERSION_TAG', description: 'Numéro de version à assigner au tag de Utilitaire-NAM')
         string (name: 'VERSION_NEXT', description: 'Numéro à assigner à la prochaine version de Utilitaire-NAM (sans SNAPSHOT)')
-        string (name: 'MESSAGE', defaultValue: 'Nouveau tag ${VERSION_TAG} par Jenkins', description: 'Numéro à assigner à la prochaine version de Utilitaire-NAM (sans SNAPSHOT)')
+        string (name: 'MESSAGE', defaultValue: 'Nouveau tag ${VERSION_TAG} par Jenkins', description: 'Message à mettre dans le commit sur Git')
     }
     
     stages {

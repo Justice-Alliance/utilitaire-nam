@@ -24,7 +24,7 @@ pipeline {
             steps {
                 sh "if [ ! -d ansible ]; then git clone https://github.com/Inspq/ansible.git && cd ansible; else cd ansible && git pull; fi; git checkout inspq-2.4.2.0-1"
 	            sh "rm -rf roles && mkdir -p roles"
-	            sh "source ansible/hacking/env-setup && ansible-galaxy install -r requirements.yml"        	    
+	            sh "source ansible/hacking/env-setup && ansible-galaxy install -r requirements.yml --force"        	    
             }
         }
         stage ('Déployer Utilitaire-NAM-Service') {

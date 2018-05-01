@@ -17,23 +17,18 @@ pipeline {
                 sh "mvn deploy -Dmaven.install.skip=true"
             }
         }
-        // stage ('Packager image Docker de utilitaire-nam') {
-		//     environment {
-		// 	    IMAGE = readMavenPom().getArtifactId()
-		//     	VERSION = readMavenPom().getVersion()
-		// 	}
-        //     steps {	
-		// 		sh "docker build --build-arg APP_VERSION=${VERSION} --tag nexus3.inspq.qc.ca:5000/inspq/${IMAGE}:${VERSION} --file docker/Dockerfile ."
-        //         sh "docker push nexus3.inspq.qc.ca:5000/inspq/${IMAGE}:${VERSION}"
-		// 		sh "docker build --build-arg APP_VERSION=${VERSION} --tag nexus3.inspq.qc.ca:5000/inspq/${IMAGE}:SNAPSHOT --file docker/Dockerfile ."
-        //         sh "docker push nexus3.inspq.qc.ca:5000/inspq/${IMAGE}:SNAPSHOT"
-        //     }
-		// 	post {
-        //         success {
-        //             junit '**/TEST-*.xml'
-        //         }
-        //     }
-        // }
+        stage ('Packager image Docker de utilitaire-nam') {
+		    environment {
+			    IMAGE = readMavenPom().getArtifactId()
+		    	VERSION = readMavenPom().getVersion()
+			}
+            steps {	
+				sh "docker build --build-arg APP_VERSION=${VERSION} --tag nexus3.inspq.qc.ca:5000/inspq/${IMAGE}:${VERSION} --file utilitaire-NAM-Service/Dockerfile ."
+                sh "docker push nexus3.inspq.qc.ca:5000/inspq/${IMAGE}:${VERSION}"
+				sh "docker build --build-arg APP_VERSION=${VERSION} --tag nexus3.inspq.qc.ca:5000/inspq/${IMAGE}:SNAPSHOT --file utilitaire-NAM-Service/Dockerfile ."
+                sh "docker push nexus3.inspq.qc.ca:5000/inspq/${IMAGE}:SNAPSHOT"
+            }
+        }
     }
     post {
         always {

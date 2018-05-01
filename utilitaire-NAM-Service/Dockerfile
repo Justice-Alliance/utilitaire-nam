@@ -19,4 +19,4 @@ RUN chmod a+x $U_NAME_HOME/docker-entrypoint.sh
 
 EXPOSE 8080 8009 28081
 
-ENTRYPOINT "$U_NAME_API_HOME/docker-entrypoint.sh"
+ENTRYPOINT "$U_NAME_HOME/docker-entrypoint.sh"

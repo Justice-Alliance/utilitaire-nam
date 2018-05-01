@@ -10,7 +10,7 @@
   </parent>
 
   <artifactId>utilitaire-nam-service</artifactId>
-  <packaging>war</packaging>
+  <packaging>jar</packaging>
 
   <build>
     <plugins>
@@ -58,7 +58,7 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
-  
+
   <properties>
   	<java.version>1.8</java.version>
   </properties>

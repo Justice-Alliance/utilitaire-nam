@@ -10,7 +10,7 @@
   </parent>
 
   <artifactId>utilitaire-nam-service</artifactId>
-  <packaging>jar</packaging>
+  <packaging>war</packaging>
 
   <build>
     <plugins>

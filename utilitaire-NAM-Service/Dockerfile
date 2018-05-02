@@ -1,4 +1,5 @@
-FROM nexus3.inspq.qc.ca:5000/inspq/keycloaktomcatvalve:latest
+#FROM nexus3.inspq.qc.ca:5000/inspq/keycloaktomcatvalve:latest
+FROM nexus3.inspq.qc.ca:5000/tomcat:8.5.24
 ENV TZ=America/Toronto
 
 ARG APP_VERSION=0.1.1-SNAPSHOT

@@ -35,7 +35,7 @@ pipeline {
 			}
             steps {
                 echo "Construction de l'image Docker ${IMAGE} version ${VERSION}"
-                sh "cd FonctionsAllegeesServices && docker build --build-arg APP_VERSION=${VERSION} -t nexus3.inspq.qc.ca:5000/inspq/${IMAGE}:${VERSION} ."
+                sh "docker build --build-arg APP_VERSION=${VERSION} -t nexus3.inspq.qc.ca:5000/inspq/${IMAGE}:${VERSION} --file utilitaire-NAM-Service/Dockerfile ."
                 sh "docker push nexus3.inspq.qc.ca:5000/inspq/${IMAGE}:${VERSION}"
                 sh "docker tag nexus3.inspq.qc.ca:5000/inspq/${IMAGE}:${VERSION} nexus3.inspq.qc.ca:5000/inspq/${IMAGE}:latest"
                 sh "docker push nexus3.inspq.qc.ca:5000/inspq/${IMAGE}:latest"

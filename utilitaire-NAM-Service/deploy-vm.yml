@@ -1,0 +1,6 @@
+---
+- hosts: unam
+  gather_facts: false
+  roles:
+  - { role: deploy_vm_linux,  when: vm_datacenter is defined and vm_template is defined }
+  

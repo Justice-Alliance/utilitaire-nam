@@ -22,9 +22,8 @@ pipeline {
     stages {
         stage ('Configurer Ansible') {
             steps {
-                sh "if [ ! -d ansible ]; then git clone https://github.com/Inspq/ansible.git && cd ansible; else cd ansible && git pull; fi; git checkout inspq-2.4.2.0-1"
 	            sh "rm -rf roles && mkdir -p roles"
-	            sh "source ansible/hacking/env-setup && ansible-galaxy install -f -r requirements.yml"        	    
+	            sh "ansible-galaxy install -f -r requirements.yml"        	    
             }
         }
         stage ('Déployer Utilitaire-NAM-Service') {
@@ -44,7 +43,8 @@ pipeline {
                                     local: 'certificats',
                                     remote: "http://svn.inspq.qc.ca/svn/inspq/infrastructure/Certificats/RTSS/SANTEPUBLIQUE"]],
                         workspaceUpdater: [$class: 'UpdateUpdater']])
-                sh "source ansible/hacking/env-setup && ansible-playbook -i /INSPQ/utilitaire-nam/properties/${env.ENV}/${env.ENV}.hosts -e unamservice_artifact_id=${UN_SERVICE_IMAGE} -e unamservice_image_version=${VERSION} utilitaire-NAM-Service/deploy.yml"
+                sh "ansible-playbook -i /INSPQ/utilitaire-nam/properties/${env.ENV}/${env.ENV}.hosts utilitaire-NAM-Service/deploy-vm.yml"
+                sh "ansible-playbook -i /INSPQ/utilitaire-nam/properties/${env.ENV}/${env.ENV}.hosts -e unamservice_artifact_id=${UN_SERVICE_IMAGE} -e unamservice_image_version=${VERSION} utilitaire-NAM-Service/deploy.yml"
             }
         }
     }

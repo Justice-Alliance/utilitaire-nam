@@ -40,7 +40,7 @@ pipeline {
                         locations: [[credentialsId: '30020735-8a8a-4209-bcb1-35b991e3b7ba',
                                     depthOption: 'infinity',
                                     ignoreExternalsOption: true,
-                                    local: 'certificats',
+                                    local: 'utilitaire-NAM-Service/certificats',
                                     remote: "http://svn.inspq.qc.ca/svn/inspq/infrastructure/Certificats/RTSS/INSPQ"]],
                         workspaceUpdater: [$class: 'UpdateUpdater']])
                 sh "ansible-playbook -i /INSPQ/utilitaire-nam/properties/${env.ENV}/${env.ENV}.hosts utilitaire-NAM-Service/deploy-vm.yml"

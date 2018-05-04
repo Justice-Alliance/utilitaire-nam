@@ -10,10 +10,6 @@
       
   tasks:
   
-  - name: Docker repository logon
-    shell: docker login -u {{ docker_registry_username }} -p  {{ docker_registry_password }} -e {{ docker_registry_email }} {{ docker_registry }}
-    when: docker_registry_username is defined and docker_registry_password is defined and docker_registry_email is defined
-
   - name: Suppression du conteneur pour unamservice 
     docker_container:
       name: "{{ unamservice_container_name }}"

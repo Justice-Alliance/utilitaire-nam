@@ -13,7 +13,6 @@
   - name: Suppression du conteneur pour unamservice 
     docker_container:
       name: "{{ unamservice_container_name }}"
-      image: "{{ unamservice_docker_image }}:{{ unamservice_image_version }}"
       state: absent
     
   - name: Mettre a jour l'image Docker

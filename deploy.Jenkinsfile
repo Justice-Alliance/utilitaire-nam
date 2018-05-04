@@ -41,7 +41,7 @@ pipeline {
                                     depthOption: 'infinity',
                                     ignoreExternalsOption: true,
                                     local: 'certificats',
-                                    remote: "http://svn.inspq.qc.ca/svn/inspq/infrastructure/Certificats/RTSS/SANTEPUBLIQUE"]],
+                                    remote: "http://svn.inspq.qc.ca/svn/inspq/infrastructure/Certificats/RTSS/INSPQ"]],
                         workspaceUpdater: [$class: 'UpdateUpdater']])
                 sh "ansible-playbook -i /INSPQ/utilitaire-nam/properties/${env.ENV}/${env.ENV}.hosts utilitaire-NAM-Service/deploy-vm.yml"
                 sh "ansible-playbook -i /INSPQ/utilitaire-nam/properties/${env.ENV}/${env.ENV}.hosts -e unamservice_artifact_id=${UN_SERVICE_IMAGE} -e unamservice_image_version=${VERSION} utilitaire-NAM-Service/deploy.yml"

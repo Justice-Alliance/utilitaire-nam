@@ -69,6 +69,10 @@ pipeline {
             mail(to: "${equipe}",
                 subject: "Échec de l'étiquetage de Utilitaire-NAM : ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: "${env.BUILD_URL}")
+            script{
+                sh "git reset --hard HEAD"
+                sh "git clean -f"
+            }
         }
         unstable {
             mail(to : "${equipe}",

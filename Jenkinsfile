@@ -7,7 +7,7 @@ pipeline {
     }
     triggers { pollSCM('*/30 * * * *') }
     tools {
-        //jdk 'JDK1.8.0_65'
+        jdk 'JDK1.8.0_65'
         maven 'M3'
     }
     stages {

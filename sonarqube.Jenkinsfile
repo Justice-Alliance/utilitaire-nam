@@ -5,9 +5,6 @@ pipeline {
     jdk 'JDK1.8.0_65'
     maven 'M3'
     }
-    parameters {
-        string( name: 'branche', description: 'Branche sur la quelle on effectue le test SonarQube')
-    }
         stages { 
     	     stage('Checkout') { 
 	         steps

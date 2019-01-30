@@ -6,14 +6,6 @@ pipeline {
     maven 'M3'
     }
         stages { 
-    	     stage('Checkout') { 
-	         steps
-	         {
-	            git branch: "${branche}",
-                credentialsId: '1bc4f949-d629-4c86-98d9-758b1d536f40',
-                url: 'https://gitlab.forge.gouv.qc.ca/inspq/utilitaire-nam.git';
-	         }
-	       }
              stage ('Construire utilitaire-nam') {
                  environment {
                       unPom = readMavenPom file: 'utilitaire-NAM-Service/pom.xml'

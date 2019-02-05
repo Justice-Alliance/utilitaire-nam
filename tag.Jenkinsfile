@@ -23,7 +23,6 @@ pipeline {
                 sh "mvn clean install"
                 sh "mvn deploy -Dmaven.install.skip=true"
                 sh "git add -- pom.xml **/pom.xml"
-                sh "git reset --hard HEAD"
                 sh "git pull && git commit -m '${MESSAGE}' -- pom.xml **/pom.xml && git push"
                 sh "git pull && git tag -a ${VERSION_TAG} -m '${MESSAGE}' && git push origin ${VERSION_TAG}"
             }

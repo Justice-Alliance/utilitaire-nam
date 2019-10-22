@@ -15,9 +15,9 @@ import org.junit.Assert;
 
 import ca.qc.inspq.nam.modele.Sexe;
 import ca.qc.inspq.nam.utilitaire.UtilitairesNAM;
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 /**
  * @author diamam01
@@ -115,9 +115,9 @@ public class UtilitaireDefinitions {
 		this.listeNam = utilitairesNAM.obtenirCombinaisonsValidesDeNAM(this.prenom, this.nom, this.dateNaissance, this.sexe);
 	}
 
-	@Then("^Je dois afficher une liste (.*) valide pour cet usager$")
-	public void je_dois_afficher_une_liste_TREM_TREM_TREM_TREM_TREM_TREM_TREM_TREM_TREM_valide_pour_cet_usager(List<String> nams) throws Exception {
-		Assert.assertEquals(nams.size(), this.listeNam.size());
+	@Then("^Je dois afficher une liste ([^\"]*) valide pour cet usager$")
+	public void je_dois_afficher_une_liste_TREM_TREM_TREM_TREM_TREM_TREM_TREM_TREM_TREM_valide_pour_cet_usager(String nams) throws Exception {
+		Assert.assertEquals(nams.split(",").length, this.listeNam.size());
 	}
 	
 	@Given("^La champ \"([^\"]*)\" est vide and le champ \"([^\"]*)\" est vide$")

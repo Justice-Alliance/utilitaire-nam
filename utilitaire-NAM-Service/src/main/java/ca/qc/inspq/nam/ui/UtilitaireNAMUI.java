@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Viewport;
 import com.vaadin.navigator.Navigator;
+import com.vaadin.navigator.PushStateNavigation;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringUI;
@@ -29,6 +30,7 @@ import com.vaadin.ui.themes.ValoTheme;
 @SpringUI(path="/ui")
 @Viewport("user-scalable=no,initial-scale=1.0")
 @Theme("inspq")
+@PushStateNavigation
 public class UtilitaireNAMUI extends UI {
     public static final String APP_TITLE = "Utilitaire NAM";
     public static final String LANG_SESSION_KEY = "client.lang";

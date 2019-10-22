@@ -5,7 +5,8 @@ import ca.qc.inspq.nam.service.ServiceNAM;
 
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -31,7 +32,7 @@ public class Generer extends TabAbstrait {
         TextField txtPrenom = new TextField("Prénom");
         TextField txtNom = new TextField("Nom");
         DateField dfDateNaissance = new DateField("Date de naissance");
-        ComboBox cbbSexe = new ComboBox("Sexe");
+        ComboBox<Sexe> cbbSexe = new ComboBox<Sexe>("Sexe");
 
         super.conteneurFormulaire.addComponent(txtPrenom);
         super.conteneurFormulaire.addComponent(txtNom);
@@ -39,7 +40,8 @@ public class Generer extends TabAbstrait {
         super.conteneurFormulaire.addComponent(cbbSexe);
 
         dfDateNaissance.setDateFormat("yyyy-MM-dd");
-        cbbSexe.addItems((Object[]) Sexe.values());
+        cbbSexe.setItemCaptionGenerator(Sexe::getCode);
+        cbbSexe.setItems(Sexe.values());
 
         super.boutonAction.setCaption("Générer");
         super.boutonAction.addClickListener(new ClickListener() {
@@ -49,11 +51,11 @@ public class Generer extends TabAbstrait {
                 try {
                     String prenom = txtPrenom.getValue();
                     String nom = txtNom.getValue();
-                    Date dateNaissance = dfDateNaissance.getValue();
+                    LocalDate dateNaissance = dfDateNaissance.getValue();
                     Sexe sexe = (Sexe) cbbSexe.getValue();
 
                     StringBuilder sb = new StringBuilder();
-                    serviceNAM.generer(prenom, nom, ServiceNAM.FORMAT.format(dateNaissance), sexe.code)
+                    serviceNAM.generer(prenom, nom, dateNaissance.format(DateTimeFormatter.ISO_LOCAL_DATE), sexe.code)
                         .stream().forEach(nam -> {
                             sb.append(nam).append("\n");
                         });

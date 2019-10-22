@@ -2,14 +2,12 @@ package ca.qc.inspq.nam.ui.vue;
 
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
-import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
 import ca.qc.inspq.nam.service.ServiceNAM;
 
-import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -55,12 +53,11 @@ public class Valider extends TabAbstrait {
         // Layout
         super.init();
         TextField txtNam = new TextField("NAM");
-        ComboBox cbbProvince = new ComboBox("Province");
-        BeanItemContainer<Provinces> datasource = new BeanItemContainer<Provinces>(Provinces.class, Arrays.asList(Provinces.values()));
-        cbbProvince.setContainerDataSource(datasource);
-        cbbProvince.setItemCaptionPropertyId("libelle");
+        ComboBox<Provinces> cbbProvince = new ComboBox<Provinces>("Province");
+        cbbProvince.setItems(Provinces.values());
+        cbbProvince.setItemCaptionGenerator(Provinces::getLibelle);
         cbbProvince.setValue(Provinces.QC);
-        cbbProvince.setPageLength(datasource.size() + 1);
+        cbbProvince.setPageLength(Provinces.values().length + 1);
 
         super.conteneurFormulaire.addComponent(txtNam);
         super.conteneurFormulaire.addComponent(cbbProvince);

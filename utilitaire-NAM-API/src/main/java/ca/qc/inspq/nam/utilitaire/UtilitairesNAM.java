@@ -16,7 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import ca.qc.inspq.nam.modele.Sexe;
 
-public abstract class UtilitairesNAM {
+public class UtilitairesNAM {
 
     public enum TypeRegex {
         REGEX_NAM_ALBERTA("^[1-9]{1}[0-9]{8}$"),
@@ -46,46 +46,46 @@ public abstract class UtilitairesNAM {
 
     private static final String ENCODAGE_EBCDIC = "Cp1047";
 
-    public static boolean validerNAM(String nam, String province)
+    public boolean validerNAM(String nam, String province)
             throws UnsupportedEncodingException, ParseException {
         if (province.equals("QC")) {
-            return UtilitairesNAM.validerNumeroCarteSanteQuebec(nam);
+            return validerNumeroCarteSanteQuebec(nam);
         }
         switch (province) {
             case "AB":
-                return UtilitairesNAM.validerStringRegex(nam, UtilitairesNAM.TypeRegex.REGEX_NAM_ALBERTA);
+                return validerStringRegex(nam, UtilitairesNAM.TypeRegex.REGEX_NAM_ALBERTA);
             case "BC":
-                return UtilitairesNAM.validerStringRegex(nam, UtilitairesNAM.TypeRegex.REGEX_NAM_COLOMBIE_BRITANNIQUE)
+                return validerStringRegex(nam, UtilitairesNAM.TypeRegex.REGEX_NAM_COLOMBIE_BRITANNIQUE)
                         &&
-                        UtilitairesNAM.validerNumeroCarteSanteColombieBritannique(nam);
+                        validerNumeroCarteSanteColombieBritannique(nam);
             case "MB":
-                return UtilitairesNAM.validerStringRegex(nam, UtilitairesNAM.TypeRegex.REGEX_NAM_MANITOBA);
+                return validerStringRegex(nam, UtilitairesNAM.TypeRegex.REGEX_NAM_MANITOBA);
             case "NT":
-                return UtilitairesNAM.validerStringRegex(nam, UtilitairesNAM.TypeRegex.REGEX_NAM_TERRITOIRES_NO);
+                return validerStringRegex(nam, UtilitairesNAM.TypeRegex.REGEX_NAM_TERRITOIRES_NO);
             case "NS":
-                return UtilitairesNAM.validerStringRegex(nam, UtilitairesNAM.TypeRegex.REGEX_NAM_NOUVELLE_ECOSSE);
+                return validerStringRegex(nam, UtilitairesNAM.TypeRegex.REGEX_NAM_NOUVELLE_ECOSSE);
             case "NB":
-                return UtilitairesNAM.validerStringRegex(nam, UtilitairesNAM.TypeRegex.REGEX_NAM_NOUVEAU_BRUNSWICK);
+                return validerStringRegex(nam, UtilitairesNAM.TypeRegex.REGEX_NAM_NOUVEAU_BRUNSWICK);
             case "NL":
-                return UtilitairesNAM.validerStringRegex(nam, UtilitairesNAM.TypeRegex.REGEX_NAM_TERRE_NEUVE_LABRADOR);
+                return validerStringRegex(nam, UtilitairesNAM.TypeRegex.REGEX_NAM_TERRE_NEUVE_LABRADOR);
             case "NU":
-                return UtilitairesNAM.validerStringRegex(nam, UtilitairesNAM.TypeRegex.REGEX_NAM_NUNAVUT);
+                return validerStringRegex(nam, UtilitairesNAM.TypeRegex.REGEX_NAM_NUNAVUT);
             case "ON":
-                return UtilitairesNAM.validerStringRegex(nam, UtilitairesNAM.TypeRegex.REGEX_NAM_ONTARIO)
+                return validerStringRegex(nam, UtilitairesNAM.TypeRegex.REGEX_NAM_ONTARIO)
                         &&
-                        UtilitairesNAM.validerNumeroCarteSanteOntario(nam);
+                        validerNumeroCarteSanteOntario(nam);
             case "PE":
-                return UtilitairesNAM.validerStringRegex(nam, UtilitairesNAM.TypeRegex.REGEX_NAM_ILE_PRINCE_EDOUARD);
+                return validerStringRegex(nam, UtilitairesNAM.TypeRegex.REGEX_NAM_ILE_PRINCE_EDOUARD);
             case "SK":
-                return UtilitairesNAM.validerStringRegex(nam, UtilitairesNAM.TypeRegex.REGEX_NAM_SASKATCHEWAN);
+                return validerStringRegex(nam, UtilitairesNAM.TypeRegex.REGEX_NAM_SASKATCHEWAN);
             case "YT":
-                return UtilitairesNAM.validerStringRegex(nam, UtilitairesNAM.TypeRegex.REGEX_NAM_YUKON);
+                return validerStringRegex(nam, UtilitairesNAM.TypeRegex.REGEX_NAM_YUKON);
             default:
                 throw new IllegalArgumentException("La province de la carte santé n'est pas valide.");
         }
     }
 
-    public static boolean validerNumeroCarteSanteQuebec(String nam)
+    public boolean validerNumeroCarteSanteQuebec(String nam)
             throws UnsupportedEncodingException, ParseException {
         // S'assurer que nous avons 12 caractères pour le NAM et que le format est bon
         nam = nam.toUpperCase();
@@ -151,7 +151,7 @@ public abstract class UtilitairesNAM {
         return valide;
     }
 
-    public static boolean validerStringRegex(String chaineTexte, TypeRegex regEx) {
+    public boolean validerStringRegex(String chaineTexte, TypeRegex regEx) {
         if (chaineTexte != null) {
             Pattern pattern = Pattern.compile(regEx.getValue());
             Matcher matcher = pattern.matcher(chaineTexte);
@@ -161,7 +161,7 @@ public abstract class UtilitairesNAM {
         return false;
     }
 
-    public static boolean validerNumeroCarteSanteOntario(String numeroCarteSante) {
+    public boolean validerNumeroCarteSanteOntario(String numeroCarteSante) {
         if (numeroCarteSante.length() != 10) {
             throw new IllegalArgumentException("Le numero de carte santé spécifié n'a pas la bonne taille");
         }
@@ -193,7 +193,7 @@ public abstract class UtilitairesNAM {
         return (10 - unite) == checkDigit;
     }
 
-    public static boolean validerNumeroCarteSanteColombieBritannique(String numeroCarteSante) {
+    public boolean validerNumeroCarteSanteColombieBritannique(String numeroCarteSante) {
         if (numeroCarteSante.length() != 10) {
             throw new IllegalArgumentException("Le numero de carte santé spécifié n'a pas la bonne taille");
         }
@@ -216,7 +216,7 @@ public abstract class UtilitairesNAM {
         return 11 - (somme % 11) == checkDigit;
     }
 
-    public static List<String> obtenirCombinaisonsValidesDeNAM(String prenom,
+    public List<String> obtenirCombinaisonsValidesDeNAM(String prenom,
             String nom,
             Date dateNaissance,
             String sexe) throws UnsupportedEncodingException {
@@ -288,7 +288,7 @@ public abstract class UtilitairesNAM {
         return nams;
     }
 
-    public static Sexe obtenirSexe(String nam)
+    public Sexe obtenirSexe(String nam)
             throws NumberFormatException, UnsupportedEncodingException, ParseException {
         nam = nam.toUpperCase();
         if (validerNAM(nam, "QC")) {
@@ -298,7 +298,7 @@ public abstract class UtilitairesNAM {
         throw new InvalidParameterException("Le NAM est invalide");
     }
 
-    public static Date trouverDateNaissance(String nam) throws UnsupportedEncodingException, ParseException {
+    public Date trouverDateNaissance(String nam) throws UnsupportedEncodingException, ParseException {
         // S'assurer que nous avons 12 caractères pour le NAM et que le format est bon
         nam = nam.toUpperCase();
         boolean valide = validerNAM(nam, "QC");
@@ -356,7 +356,7 @@ public abstract class UtilitairesNAM {
         throw new InvalidParameterException("Le NAM est invalide");
     }
 
-    private static int calculerCaractereValidateur(byte[] namConvertiEnDecimal, boolean blnDateValide) {
+    private int calculerCaractereValidateur(byte[] namConvertiEnDecimal, boolean blnDateValide) {
         // Tableau pour multiplication :
         //
         // N O M I  --  A A A A  --  Sx  M M  --  J J S
@@ -408,7 +408,7 @@ public abstract class UtilitairesNAM {
         return somme % 10;
     }
 
-    public static String normaliserRAMQ(String text) {
+    public String normaliserRAMQ(String text) {
         if (text == null) {
             return null;
         }
@@ -424,7 +424,7 @@ public abstract class UtilitairesNAM {
         return sb.toString().toUpperCase().replace("SAINTE", "ST").replace("SAINT", "ST");
     }
 
-    private static StringBuffer replaceAll(StringBuffer sb, String patron, String remplacant) {
+    private StringBuffer replaceAll(StringBuffer sb, String patron, String remplacant) {
 
         Pattern p = Pattern.compile(patron);
         Matcher m = p.matcher(sb);

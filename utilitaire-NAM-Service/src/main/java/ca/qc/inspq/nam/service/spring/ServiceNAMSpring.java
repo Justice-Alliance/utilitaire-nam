@@ -21,12 +21,14 @@ import com.vaadin.spring.annotation.SpringComponent;
 @SpringComponent
 public class ServiceNAMSpring implements ServiceNAM {
     public static final DateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+    
+    private UtilitairesNAM utilitairesNAM = new UtilitairesNAM();
 
     @Override
     @RequestMapping("/valider")
     public Boolean valider(@RequestParam(value="nam") String nam, @RequestParam(value="province", defaultValue="QC") String province) 
     		throws UnsupportedEncodingException, ParseException {
-    	return UtilitairesNAM.validerNAM(nam, province);
+    	return utilitairesNAM.validerNAM(nam, province);
     }
 
     @Override
@@ -35,12 +37,12 @@ public class ServiceNAMSpring implements ServiceNAM {
             @RequestParam(value="nom") String nom,
             @RequestParam(value="datenaissance") String dateNaissance,
             @RequestParam(value="sexe") String sexe) throws UnsupportedEncodingException, ParseException {
-        return UtilitairesNAM.obtenirCombinaisonsValidesDeNAM(prenom, nom, FORMAT.parse(dateNaissance), sexe);
+        return utilitairesNAM.obtenirCombinaisonsValidesDeNAM(prenom, nom, FORMAT.parse(dateNaissance), sexe);
     }
 
     @Override
     @RequestMapping("/info")
     public NAMInfo obtenirInfo(@RequestParam(value="nam") String nam) throws UnsupportedEncodingException, ParseException {
-        return new NAMInfo(FORMAT.format(UtilitairesNAM.trouverDateNaissance(nam)), UtilitairesNAM.obtenirSexe(nam));
+        return new NAMInfo(FORMAT.format(utilitairesNAM.trouverDateNaissance(nam)), utilitairesNAM.obtenirSexe(nam));
     }
 }

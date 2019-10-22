@@ -4,7 +4,6 @@
 package stepdefs;
 
 import static org.junit.Assert.assertEquals;
-import static org.hamcrest.CoreMatchers.*;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -16,7 +15,6 @@ import org.junit.Assert;
 
 import ca.qc.inspq.nam.modele.Sexe;
 import ca.qc.inspq.nam.utilitaire.UtilitairesNAM;
-import cucumber.api.PendingException;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -40,6 +38,8 @@ public class UtilitaireDefinitions {
 	private Date dateNaissanceUsager;
 	private List<String> listeNam = new ArrayList<>();
 	
+	private UtilitairesNAM utilitairesNAM = new UtilitairesNAM();
+	
 	@Given("^Etant donne une \"([^\"]*)\"$")
 	public void etant_donne_une(String province) throws Exception {
 	   this.province = province;
@@ -52,7 +52,7 @@ public class UtilitaireDefinitions {
 
 	@When("^Quand je clique sur le bouton valider$")
 	public void quand_je_clique_sur_le_bouton_valider() throws Exception {
-		boolean resultat = UtilitairesNAM.validerNAM(this.nam, this.province);
+		boolean resultat = utilitairesNAM.validerNAM(this.nam, this.province);
 		if(resultat) {
 			this.reponseAttendu = "Le NAM est valide!";
 		}
@@ -82,7 +82,8 @@ public class UtilitaireDefinitions {
 	@When("^Quand je clique sur valider NAM$")
 	public void quand_je_clique_sur_valider_NAM() throws Exception {
 		try {
-			boolean resultat = UtilitairesNAM.validerNAM(null, null);
+			@SuppressWarnings("unused")
+			boolean resultat = utilitairesNAM.validerNAM(null, null);
 		} catch(Exception exception) {
 			this.exceptionMessage = exception;
 		}
@@ -111,7 +112,7 @@ public class UtilitaireDefinitions {
 	@When("^quand je clique sur Generer$")
 	public void quand_je_clique_sur_Generer() throws Exception {
 	  
-		this.listeNam = UtilitairesNAM.obtenirCombinaisonsValidesDeNAM(this.prenom, this.nom, this.dateNaissance, this.sexe);
+		this.listeNam = utilitairesNAM.obtenirCombinaisonsValidesDeNAM(this.prenom, this.nom, this.dateNaissance, this.sexe);
 	}
 
 	@Then("^Je dois afficher une liste (.*) valide pour cet usager$")
@@ -134,7 +135,7 @@ public class UtilitaireDefinitions {
 	@When("^Quand je clique sur Generer NAM$")
 	public void quand_je_clique_sur_Generer_NAM() throws Exception {
 		try {
-			this.listeNam = UtilitairesNAM.obtenirCombinaisonsValidesDeNAM(null, null, null, null);
+			this.listeNam = utilitairesNAM.obtenirCombinaisonsValidesDeNAM(null, null, null, null);
 		} catch(Exception exception) {
 			this.exceptionMessage = exception;
 		}
@@ -154,8 +155,8 @@ public class UtilitaireDefinitions {
 
 	@When("^Quand je clique sur le bouton Obtenir l'information$")
 	public void quand_je_clique_sur_le_bouton_Obtenir_l_information() throws Exception {
-		this.dateNaissanceUsager = UtilitairesNAM.trouverDateNaissance(this.numeroNAM);
-	    this.sexeUsager = UtilitairesNAM.obtenirSexe(this.numeroNAM);
+		this.dateNaissanceUsager = utilitairesNAM.trouverDateNaissance(this.numeroNAM);
+	    this.sexeUsager = utilitairesNAM.obtenirSexe(this.numeroNAM);
 	}
 
 	@Then("^Je dois afficher la \"([^\"]*)\" and \"([^\"]*)\" de l'usager$")
@@ -173,8 +174,8 @@ public class UtilitaireDefinitions {
 	public void quand_je_clique_sur_obtenir_information_sur_le_NAM() throws Exception {
 	    
 		try {
-			this.dateNaissanceUsager = UtilitairesNAM.trouverDateNaissance(null);
-		    this.sexeUsager = UtilitairesNAM.obtenirSexe(null);
+			this.dateNaissanceUsager = utilitairesNAM.trouverDateNaissance(null);
+		    this.sexeUsager = utilitairesNAM.obtenirSexe(null);
 		} catch(Exception exception) {
 			this.exceptionMessage = exception;
 		}

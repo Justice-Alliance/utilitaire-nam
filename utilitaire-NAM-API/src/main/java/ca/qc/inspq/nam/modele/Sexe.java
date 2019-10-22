@@ -9,4 +9,8 @@ public enum Sexe {
     Sexe(String code) {
         this.code = code;
     }
+    
+    public String getCode() {
+    	return this.code;
+    }
 }

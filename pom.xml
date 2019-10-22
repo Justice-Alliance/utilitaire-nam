@@ -68,4 +68,71 @@
 		    <scope>test</scope>
 		</dependency>
     </dependencies>
+    
+    <profiles>
+		<profile>
+			<id>security</id>
+			<!-- Only to be run within the CI environment, as these plugins are really
+				slow. -->
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<properties>
+				<build.profile.id>security</build.profile.id>
+			</properties>
+			<build>
+				<plugins>
+					<!-- identifies project dependencies and checks if there are any known,
+						publicly disclosed, vulnerabilities. -->
+					<plugin>
+						<groupId>org.owasp</groupId>
+						<artifactId>dependency-check-maven</artifactId>
+						<version>5.0.0-M1</version>
+						<configuration>
+<!-- 							<failBuildOnCVSS>8</failBuildOnCVSS> -->
+<!-- 							<format>XML</format> -->
+							<suppressionFile>dependency-check-suppressions.xml</suppressionFile>
+						</configuration>
+						<executions>
+							<execution>
+								<goals>
+									<goal>aggregate</goal>
+								</goals>
+								<phase>validate</phase>
+							</execution>
+						</executions>
+					</plugin>
+					<!-- Looks for bugs in Java programs. It is based on the concept of
+						bug patterns. A bug pattern is a code idiom that is often an error. -->
+					<plugin>
+						<groupId>com.github.spotbugs</groupId>
+						<artifactId>spotbugs-maven-plugin</artifactId>
+						<configuration>
+							<effort>Max</effort>
+							<threshold>High</threshold>
+							<failOnError>true</failOnError>
+<!-- 							<excludeFilterFile>findbugs-exclude.xml</excludeFilterFile> -->
+							<plugins>
+								<!-- Can detect 80 different vulnerability types with over 200 unique
+									signatures. -->
+								<plugin>
+									<groupId>com.h3xstream.findsecbugs</groupId>
+									<artifactId>findsecbugs-plugin</artifactId>
+									<version>LATEST</version>
+								</plugin>
+							</plugins>
+						</configuration>
+						<executions>
+							<execution>
+								<goals>
+									<goal>check</goal>
+								</goals>
+ 								<phase>validate</phase>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>

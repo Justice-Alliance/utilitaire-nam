@@ -1,4 +1,4 @@
-package ca.qc.inspq.nam.test;
+package ca.qc.inspq.nam.api.utilitaire;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.doThrow;

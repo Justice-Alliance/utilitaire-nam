@@ -1,7 +1,7 @@
 /**
  * 
  */
-package stepdefs;
+package ca.qc.inspq.nam.etapes;
 
 import static org.junit.Assert.assertEquals;
 

@@ -1,4 +1,4 @@
-package ca.qc.inspq.nam.utilitaire;
+package ca.qc.inspq.nam.api.utilitaire;
 
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidParameterException;
@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
-import ca.qc.inspq.nam.modele.Sexe;
+import ca.qc.inspq.nam.api.modele.Sexe;
 
 public class UtilitairesNAM {
 

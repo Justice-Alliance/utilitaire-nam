@@ -1,8 +1,5 @@
 package ca.qc.inspq.nam.ui.vue;
 
-import ca.qc.inspq.nam.modele.NAMInfo;
-import ca.qc.inspq.nam.service.ServiceNAM;
-
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidParameterException;
 import java.text.ParseException;
@@ -13,6 +10,10 @@ import org.springframework.util.StringUtils;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+
+import ca.qc.inspq.nam.api.modele.NAMInfo;
+import ca.qc.inspq.nam.api.service.ServiceNAM;
+
 import com.vaadin.ui.TextField;
 
 @SpringView(name = ObtenirInfo.NOM_VUE)

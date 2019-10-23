@@ -1,4 +1,4 @@
-package ca.qc.inspq.nam.service;
+package ca.qc.inspq.nam.api.service;
 
 import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
@@ -12,7 +12,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import ca.qc.inspq.nam.modele.NAMInfo;
+import ca.qc.inspq.nam.api.modele.NAMInfo;
 
 @Path("/nam")
 @Produces({ MediaType.APPLICATION_JSON })

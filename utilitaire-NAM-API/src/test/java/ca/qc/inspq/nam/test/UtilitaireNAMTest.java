@@ -21,8 +21,8 @@ import org.junit.runner.RunWith;
 
 import org.springframework.test.context.junit4.SpringRunner;
 
-import ca.qc.inspq.nam.modele.Sexe;
-import ca.qc.inspq.nam.utilitaire.UtilitairesNAM;
+import ca.qc.inspq.nam.api.modele.Sexe;
+import ca.qc.inspq.nam.api.utilitaire.UtilitairesNAM;
 
 @RunWith(SpringRunner.class)
 public class UtilitaireNAMTest {

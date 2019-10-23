@@ -13,8 +13,8 @@ import java.util.List;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.junit.Assert;
 
-import ca.qc.inspq.nam.modele.Sexe;
-import ca.qc.inspq.nam.utilitaire.UtilitairesNAM;
+import ca.qc.inspq.nam.api.modele.Sexe;
+import ca.qc.inspq.nam.api.utilitaire.UtilitairesNAM;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;

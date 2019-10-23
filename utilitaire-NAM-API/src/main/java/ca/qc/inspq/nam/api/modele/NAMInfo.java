@@ -1,4 +1,4 @@
-package ca.qc.inspq.nam.modele;
+package ca.qc.inspq.nam.api.modele;
 
 
 public class NAMInfo {

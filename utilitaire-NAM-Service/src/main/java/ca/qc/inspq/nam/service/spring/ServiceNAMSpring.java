@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import ca.qc.inspq.nam.modele.NAMInfo;
-import ca.qc.inspq.nam.service.ServiceNAM;
-import ca.qc.inspq.nam.utilitaire.UtilitairesNAM;
-
 import com.vaadin.spring.annotation.SpringComponent;
+
+import ca.qc.inspq.nam.api.modele.NAMInfo;
+import ca.qc.inspq.nam.api.service.ServiceNAM;
+import ca.qc.inspq.nam.api.utilitaire.UtilitairesNAM;
 
 @RequestMapping("/nam")
 @RestController

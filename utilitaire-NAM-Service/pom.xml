@@ -18,7 +18,32 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
-		</plugins>
+			<plugin>
+				<groupId>com.vaadin</groupId>
+				<artifactId>vaadin-maven-plugin</artifactId>
+				<version>${vaadin.plugin.version}</version>
+
+				<!--configuration>
+					<extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
+					<webappDirectory>${basedir}/src/main/resources/VAADIN</webappDirectory>
+					<draftCompile>false</draftCompile>
+					<compileReport>false</compileReport>
+					<style>OBF</style>
+					<strict>true</strict>
+				</configuration-->
+
+				<executions>
+					<execution>
+						<goals>
+							<goal>update-theme</goal>
+							<goal>update-widgetset</goal>
+							<goal>compile</goal>
+							<goal>compile-theme</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+   		</plugins>
 	</build>
 
 	<dependencies>

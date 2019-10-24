@@ -1,20 +1,20 @@
 ---
 # defaults file for Utilitaire NAM
 # Configuration Graylog
-unam_graylog_host: "{{ ansible_hostname }}"
-unam_graylog_port_gelf_udp: 12431
+unam_graylog_host: "{{ ansible_fqdn }}"
+unam_graylog_port_gelf_udp: 12231
 
 # Nom du conteneur Utilitaire NAM
-unamservice_container_name: unamservice
+unamservice_container_name: "unamservice{{ env | lower }}"
 # Image du conteneur unamservice a deployer
-unamservice_artifact_id: unamservice
+unamservice_artifact_id: utilitaire-nam-service
 unamservice_docker_image: "{{ docker_registry }}/inspq/{{ unamservice_artifact_id }}"
 # Version de l'image du conteneur a installer
 unamservice_image_version: latest
 # Port TCP sur lequel publier l'application
 unamservice_external_port: 14001
 # URL de base pour publier le service
-unamservice_base_url: "{{ ansible_hostname }}.inspq.qc.ca"
+unamservice_base_url: "{{ ansible_fqdn }}"
 # Protocol (http ou https) des services web
 unamservice_protocol: http
 #unamservice_protocol: https

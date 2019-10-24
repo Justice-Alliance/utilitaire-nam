@@ -20,7 +20,7 @@ import ca.qc.inspq.nam.api.utilitaire.ServiceUtilitairesNAM;
 @RestController
 @SpringComponent
 public class ServiceNAMSpring implements ServiceNAM {
-    public static final DateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+    private DateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd");
     
     private ServiceUtilitairesNAM utilitairesNAM = new ServiceUtilitairesNAM();
 

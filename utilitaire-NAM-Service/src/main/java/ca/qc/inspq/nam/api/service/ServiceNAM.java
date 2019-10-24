@@ -17,8 +17,6 @@ import ca.qc.inspq.nam.api.modele.NAMInfo;
 @Path("/nam")
 @Produces({ MediaType.APPLICATION_JSON })
 public interface ServiceNAM {
-    public static final DateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd");
-
     @Path("/valider")
     @GET
     public Boolean valider(@QueryParam("nam") String nam, @QueryParam("province") String province) 

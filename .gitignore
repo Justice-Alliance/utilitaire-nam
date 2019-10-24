@@ -109,3 +109,4 @@ buildNumber.properties
 
 
 # End of https://www.gitignore.io/api/svn,java,maven,eclipse,ansible
+**/.attach_pid*

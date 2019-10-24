@@ -23,13 +23,13 @@ pipeline {
                 }
             }
         }
-        stage ("Publier le résultats des tests et la documentation Cucumber") {
+        stage ("Publier le résultats des tests et la documentation Cucumber API") {
         	steps {
 	            publishHTML target: [
 	            	allowMissing: false,
 	            	alwaysLinkToLastBuild: false,
 	            	keepAll: true,
-	            	reportDir: 'target/cukedoctor',
+	            	reportDir: 'utilitaire-NAM-API/target/cukedoctor',
 	            reportFiles: 'documentation.html',
 	            reportName: 'Documentation et résultats des tests BDD'
 	          	]        	    

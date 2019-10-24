@@ -1,83 +1,93 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-    <groupId>ca.qc.inspq</groupId>
-    <artifactId>utilitaire-nam</artifactId>
-    <version>0.2.0-SNAPSHOT</version>
+	<groupId>ca.qc.inspq</groupId>
+	<artifactId>utilitaire-nam</artifactId>
+	<version>0.2.0-SNAPSHOT</version>
 
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.2.0.RELEASE</version>
-    </parent>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.2.0.RELEASE</version>
+	</parent>
 
-    <packaging>pom</packaging>
+	<packaging>pom</packaging>
 
-    <repositories>
-        <repository>
-            <id>spring-releases</id>
-            <url>https://repo.spring.io/libs-release</url>
-        </repository>
-        <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/releases</url>
-        </repository>
-    </repositories>
+	<repositories>
+		<repository>
+			<id>spring-releases</id>
+			<url>https://repo.spring.io/libs-release</url>
+		</repository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/releases</url>
+		</repository>
+		<repository>
+			<id>vaadin-addons</id>
+			<url>http://maven.vaadin.com/vaadin-addons</url>
+		</repository>
+	</repositories>
 
-    <distributionManagement>
-     	<repository>
-     		<id>nexus</id>
-     		<url>https://nexus3.inspq.qc.ca:8443/repository/INSPQ</url>
-     	</repository>
-    	<snapshotRepository>
-    		<id>nexus-snapshot</id>
-    		<url>https://nexus3.inspq.qc.ca:8443/repository/INSPQ-Snapshots/</url>
-    	</snapshotRepository>
-    </distributionManagement>
+	<distributionManagement>
+		<repository>
+			<id>nexus</id>
+			<url>https://nexus3.inspq.qc.ca:8443/repository/INSPQ</url>
+		</repository>
+		<snapshotRepository>
+			<id>nexus-snapshot</id>
+			<url>https://nexus3.inspq.qc.ca:8443/repository/INSPQ-Snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
 
-    <pluginRepositories>
-        <pluginRepository>
-            <id>spring-releases</id>
-            <url>https://repo.spring.io/libs-release</url>
-        </pluginRepository>
-    </pluginRepositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>spring-releases</id>
+			<url>https://repo.spring.io/libs-release</url>
+		</pluginRepository>
+		<pluginRepository>
+			<id>vaadin-addons</id>
+			<url>http://maven.vaadin.com/vaadin-addons</url>
+		</pluginRepository>
+	</pluginRepositories>
 
-    <properties>
-        <commons-lang3.version>3.4</commons-lang3.version>
-        <cucumber.version>4.8.0</cucumber.version>
-        <java.version>11</java.version>
-        <javax.ws.rs.version>2.0</javax.ws.rs.version>
-        <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
-        <resteasy.version>3.0.13.Final</resteasy.version>
-        <resteasy-spring-boot-starter.version>2.0.0-RELEASE</resteasy-spring-boot-starter.version>
-        <vaadin.version>8.8.0</vaadin.version>
-        <vaadin-spring-boot-starter.version>3.2.1</vaadin-spring-boot-starter.version>
-    </properties>
+	<properties>
+		<commons-lang3.version>3.9</commons-lang3.version>
+		<cucumber.version>4.8.0</cucumber.version>
+		<java.version>11</java.version>
+		<javax.ws.rs.version>2.1.1</javax.ws.rs.version>
+		<maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
+		<resteasy.version>3.9.0.Final</resteasy.version>
+		<resteasy-spring-boot-starter.version>2.0.0-RELEASE</resteasy-spring-boot-starter.version>
+		<vaadin.version>8.8.0</vaadin.version>
+		<vaadin-spring-boot-starter.version>3.2.1</vaadin-spring-boot-starter.version>
+		<vaadin.plugin.version>8.8.0</vaadin.plugin.version>
+	</properties>
 
-    <modules>
-        <module>utilitaire-NAM-API</module>
-        <module>utilitaire-NAM-Service</module>
-    </modules>
-    
-    <dependencies>
-    	<dependency>
-		    <groupId>org.springframework.boot</groupId>
-		    <artifactId>spring-boot-starter-test</artifactId>
-		    <scope>test</scope>
+	<modules>
+		<module>utilitaire-NAM-API</module>
+		<module>utilitaire-NAM-Service</module>
+	</modules>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
-		  <groupId>org.assertj</groupId>
-		  <artifactId>assertj-core</artifactId>
-		  <version>3.13.2</version>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+			<version>3.13.2</version>
 		</dependency>
-    </dependencies>
-    
-    <profiles>
+	</dependencies>
+
+	<profiles>
 		<profile>
 			<id>security</id>
-			<!-- Only to be run within the CI environment, as these plugins are really
+			<!-- Only to be run within the CI environment, as these plugins are really 
 				slow. -->
 			<activation>
 				<activeByDefault>false</activeByDefault>
@@ -87,15 +97,15 @@
 			</properties>
 			<build>
 				<plugins>
-					<!-- identifies project dependencies and checks if there are any known,
+					<!-- identifies project dependencies and checks if there are any known, 
 						publicly disclosed, vulnerabilities. -->
 					<plugin>
 						<groupId>org.owasp</groupId>
 						<artifactId>dependency-check-maven</artifactId>
 						<version>5.2.2</version>
 						<configuration>
-<!-- 							<failBuildOnCVSS>8</failBuildOnCVSS> -->
-<!-- 							<format>XML</format> -->
+							<!-- <failBuildOnCVSS>8</failBuildOnCVSS> -->
+							<!-- <format>XML</format> -->
 							<suppressionFile>dependency-check-suppressions.xml</suppressionFile>
 						</configuration>
 						<executions>
@@ -107,7 +117,7 @@
 							</execution>
 						</executions>
 					</plugin>
-					<!-- Looks for bugs in Java programs. It is based on the concept of
+					<!-- Looks for bugs in Java programs. It is based on the concept of 
 						bug patterns. A bug pattern is a code idiom that is often an error. -->
 					<plugin>
 						<groupId>com.github.spotbugs</groupId>
@@ -117,9 +127,9 @@
 							<effort>Max</effort>
 							<threshold>High</threshold>
 							<failOnError>true</failOnError>
-<!-- 							<excludeFilterFile>findbugs-exclude.xml</excludeFilterFile> -->
+							<excludeFilterFile>findbugs-exclude.xml</excludeFilterFile>
 							<plugins>
-								<!-- Can detect 80 different vulnerability types with over 200 unique
+								<!-- Can detect 80 different vulnerability types with over 200 unique 
 									signatures. -->
 								<plugin>
 									<groupId>com.h3xstream.findsecbugs</groupId>
@@ -133,7 +143,7 @@
 								<goals>
 									<goal>check</goal>
 								</goals>
- 								<phase>validate</phase>
+								<phase>validate</phase>
 							</execution>
 						</executions>
 					</plugin>

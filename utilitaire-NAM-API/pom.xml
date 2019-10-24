@@ -3,11 +3,11 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>ca.qc.inspq</groupId>
-        <artifactId>utilitaire-nam</artifactId>
-        <version>0.2.0-SNAPSHOT</version>
-    </parent>
+	<parent>
+		<groupId>ca.qc.inspq</groupId>
+		<artifactId>utilitaire-nam</artifactId>
+		<version>0.2.0-SNAPSHOT</version>
+	</parent>
 	<artifactId>utilitaire-nam-api</artifactId>
 
 	<build>
@@ -30,6 +30,82 @@
 						<goals>
 							<goal>jar</goal>
 						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<configuration>
+					<sources>
+						<source>src/behavior/java</source>
+					</sources>
+					<resources>
+						<resource>
+							<directory>src/behavior/resources</directory>
+						</resource>
+					</resources>
+				</configuration>
+				<executions>
+					<execution>
+						<id>add-behavior-test-source</id>
+						<phase>generate-test-sources</phase>
+						<goals>
+							<goal>add-test-source</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>add-behavior-test-resource</id>
+						<phase>generate-test-resources</phase>
+						<goals>
+							<goal>add-test-resource</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>domain-acceptance-tests</id>
+						<goals>
+							<goal>test</goal>
+						</goals>
+						<configuration>
+							<includes>
+								<include>**/RunCucumberTest.java</include>
+							</includes>
+							<argLine>-Dacceptance-test-depth=behavior-domaine
+								-Dfile.encoding=UTF8</argLine>
+						</configuration>
+					</execution>
+					<execution>
+						<id>services-acceptance-tests</id>
+						<goals>
+							<goal>test</goal>
+						</goals>
+						<configuration>
+							<includes>
+								<include>**/RunCucumberTest.java</include>
+							</includes>
+							<argLine>-Dcucumber.options="--tags ~@IgnorePourServices --tags
+								~@Ignore" -Dacceptance-test-depth=behavior-services
+								-Dfile.encoding=UTF8</argLine>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>com.github.cukedoctor</groupId>
+				<artifactId>cukedoctor-maven-plugin</artifactId>
+				<version>1.2.1</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>execute</goal>
+						</goals>
+						<phase>install</phase>
 					</execution>
 				</executions>
 			</plugin>
@@ -57,14 +133,14 @@
 			<version>${cucumber.version}</version>
 		</dependency>
 		<dependency>
-		    <groupId>io.cucumber</groupId>
-		    <artifactId>cucumber-core</artifactId>
-		    <version>${cucumber.version}</version>
+			<groupId>io.cucumber</groupId>
+			<artifactId>cucumber-core</artifactId>
+			<version>${cucumber.version}</version>
 		</dependency>
 		<dependency>
-		    <groupId>io.cucumber</groupId>
-		    <artifactId>cucumber-spring</artifactId>
-		    <version>${cucumber.version}</version>
+			<groupId>io.cucumber</groupId>
+			<artifactId>cucumber-spring</artifactId>
+			<version>${cucumber.version}</version>
 		</dependency>
 	</dependencies>
 </project>

@@ -6,5 +6,5 @@ if [ "$DEBUG_PORT"  ];then
 	fi
 fi
 
-exec $JAVA_HOME/bin/java $DEBUG -jar $UNAM_HOME/utilitaire-nam-service.jar
+exec $JAVA_HOME/bin/java $DEBUG -Dvaadin.productionMode=true -jar $UNAM_HOME/utilitaire-nam-service.jar
 exit $?

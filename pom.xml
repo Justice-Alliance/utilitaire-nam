@@ -54,12 +54,12 @@
 	</pluginRepositories>
 
 	<properties>
-		<commons-lang3.version>3.4</commons-lang3.version>
+		<commons-lang3.version>3.9</commons-lang3.version>
 		<cucumber.version>4.8.0</cucumber.version>
 		<java.version>11</java.version>
-		<javax.ws.rs.version>2.0</javax.ws.rs.version>
+		<javax.ws.rs.version>2.1.1</javax.ws.rs.version>
 		<maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
-		<resteasy.version>3.0.13.Final</resteasy.version>
+		<resteasy.version>3.9.0.Final</resteasy.version>
 		<resteasy-spring-boot-starter.version>2.0.0-RELEASE</resteasy-spring-boot-starter.version>
 		<vaadin.version>8.8.0</vaadin.version>
 		<vaadin-spring-boot-starter.version>3.2.1</vaadin-spring-boot-starter.version>
@@ -127,7 +127,7 @@
 							<effort>Max</effort>
 							<threshold>High</threshold>
 							<failOnError>true</failOnError>
-							<!-- <excludeFilterFile>findbugs-exclude.xml</excludeFilterFile> -->
+							<excludeFilterFile>findbugs-exclude.xml</excludeFilterFile>
 							<plugins>
 								<!-- Can detect 80 different vulnerability types with over 200 unique 
 									signatures. -->

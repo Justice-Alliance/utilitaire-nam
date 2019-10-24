@@ -26,6 +26,36 @@ import ca.qc.inspq.nam.api.utilitaire.UtilitairesNAM;
 
 @RunWith(SpringRunner.class)
 public class UtilitaireNAMTest {
+	
+	// TODO valider tous les cas pour toutes les provinces
+	/*
+	  | province | nam             | reponse              |
+      | QC       | TREM04121925    | Le NAM est valide!   |
+      | QC       | TREM04121935    | Le NAM est invalide! |
+      | AB       |       940114192 | Le NAM est valide!   |
+      | AB       |         9401141 | Le NAM est invalide! |
+      | BC       |      9759528158 | Le NAM est valide!   |
+      | BC       |      9759528153 | Le NAM est invalide! |
+      | PE       |       940114195 | Le NAM est valide!   |
+      | PE       |         9401141 | Le NAM est invalide! |
+      | MB       |       940114192 | Le NAM est valide!   |
+      | MB       |         9401141 | Le NAM est invalide! |
+      | NB       |       940114192 | Le NAM est valide!   |
+      | NB       |         9401141 | Le NAM est invalide! |
+      | NS       |      9401141923 | Le NAM est valide!   |
+      | NS       |   9401141926545 | Le NAM est invalide! |
+      | NU       |        94011419 | Le NAM est invalide! |
+      | ON       |      9401141925 | Le NAM est valide!   |
+      | ON       |   9401141925565 | Le NAM est invalide! |
+      | SK       |       940114195 | Le NAM est valide!   |
+      | SK       |   9401141958545 | Le NAM est invalide! |
+      | NL       |    940114192698 | Le NAM est valide!   |
+      | NL       | 940114192698012 | Le NAM est invalide! |
+      | NT       |         9401141 | Le NAM est valide!   |
+      | NT       |   9401141023365 | Le NAM est invalide! |
+      | YT       |       940114195 | Le NAM est valide!   |
+      | YT       |  94011419503256 | Le NAM est invalide! |
+	 */
 
 	private UtilitairesNAM utilitairesNAM;
 	

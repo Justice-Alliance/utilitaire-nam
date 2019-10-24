@@ -25,11 +25,11 @@
 			<id>ossrh</id>
 			<url>https://oss.sonatype.org/content/repositories/releases</url>
 		</repository>
-        <repository>
-            <id>vaadin-addons</id>
-            <url>http://maven.vaadin.com/vaadin-addons</url>
-        </repository>
-  	</repositories>
+		<repository>
+			<id>vaadin-addons</id>
+			<url>http://maven.vaadin.com/vaadin-addons</url>
+		</repository>
+	</repositories>
 
 	<distributionManagement>
 		<repository>
@@ -47,10 +47,10 @@
 			<id>spring-releases</id>
 			<url>https://repo.spring.io/libs-release</url>
 		</pluginRepository>
-        <pluginRepository>
-            <id>vaadin-addons</id>
-            <url>http://maven.vaadin.com/vaadin-addons</url>
-        </pluginRepository>
+		<pluginRepository>
+			<id>vaadin-addons</id>
+			<url>http://maven.vaadin.com/vaadin-addons</url>
+		</pluginRepository>
 	</pluginRepositories>
 
 	<properties>
@@ -78,13 +78,13 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-		  <groupId>org.assertj</groupId>
-		  <artifactId>assertj-core</artifactId>
-		  <version>3.13.2</version>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+			<version>3.13.2</version>
 		</dependency>
-    </dependencies>
-    
-    <profiles>
+	</dependencies>
+
+	<profiles>
 		<profile>
 			<id>security</id>
 			<!-- Only to be run within the CI environment, as these plugins are really 

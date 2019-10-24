@@ -2,38 +2,37 @@
 - hosts: unam
   vars:
     unamservice_internal_port: 8080
+    unamservice_internal_actuator_port: 28081
     cert_file_path: /etc/pki/tls/certs
     cert_key_path: /etc/pki/tls/private
+    docker_registry: nexus3.inspq.qc.ca:5000
+    unamservice_container_name: "unamservice{{ env | lower }}"
+    unamservice_artifact_id: utilitaire-nam-service
+    unamservice_docker_image: "{{ docker_registry }}/inspq/{{ unamservice_artifact_id }}"
+    unamservice_log_driver: gelf
+    unamservice_log_options:
+      gelf-address: "udp://{{ unam_graylog_host }}:{{ unam_graylog_port_gelf_udp }}"
 
   roles:
   - { role: docker-engine, when: ansible_os_family == 'RedHat' }
       
   tasks:
   
-  - name: Suppression du conteneur pour unamservice 
-    docker_container:
-      name: "{{ unamservice_container_name }}"
-      state: absent
-    
-  - name: Mettre a jour l'image Docker
-    docker_image: 
-      name: "{{ unamservice_docker_image }}"
-      tag: "{{ unamservice_image_version }}"
-      pull: true
-      state: present
-      force: yes
-
   - name: Creation du conteneur pour unamservice 
     docker_container:
       name: "{{ unamservice_container_name }}"
       image: "{{ unamservice_docker_image }}:{{ unamservice_image_version }}"
       state: started
+      pull: "{{ unamservice_image_pull | default(True) }}"
       restart_policy: unless-stopped
+      log_driver: "{{ unamservice_log_driver }}"
+      log_options: "{{ unamservice_log_options }}"
       ports:
       - "{{ unamservice_external_port }}:{{ unamservice_internal_port }}"
+      - "{{ unamservice_external_actuator_port }}:{{ unamservice_internal_actuator_port }}"
       env:
         "LOG4J2_GRAYLOG_URL": "{{ unam_graylog_host }}"
-        "LOG4J2_GRAYLOG_PORT_GELF_UDP": "{{ unam_graylog_port_gelf_udp }}"
+        "LOG4J2_GRAYLOG_PORT_GELF_UDP": "{{ unam_graylog_port_gelf_udp | string }}"
         "GRAYLOG_HOST_BASE": "{{ unamservice_container_name }}"
 
   - name: Copie du certificat

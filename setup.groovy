@@ -13,6 +13,14 @@ folder("${REPERTOIRE_RACINE}") {
 
 pipelineJob("${PIPELINE_CONSTRUCTION}") {
     description ('Construction de utilitaire-nam')
+    parameters {
+    	gitParam('BRANCH'){
+    	    description('Branche de utilitaire-nam à construire')
+    	    type('BRANCH')
+    	    tagFilter('*')
+    	    sortMode('DESCENDING_SMART')
+        }
+    }
     definition {
         cpsScm {
             scm {
@@ -20,7 +28,7 @@ pipelineJob("${PIPELINE_CONSTRUCTION}") {
                 	remote{
               			url('https://gitlab.forge.gouv.qc.ca/inspq/utilitaire-nam.git')
           			}
-                	branch ('origin/master')
+                	branch ('{$TAG}')
                 }
             }
             scriptPath('Jenkinsfile')
@@ -33,6 +41,12 @@ pipelineJob("${PIPELINE_TAG}") {
         stringParam('VERSION_TAG', '', 'Numéro de version à assigner au tag de Utilitaire-NAM')
         stringParam('VERSION_NEXT','', 'Numéro à assigner à la prochaine version de Utilitaire-NAM (sans SNAPSHOT)')
         stringParam ('MESSAGE', 'Nouveau tag ${VERSION_TAG} par Jenkins', 'Numéro à assigner à la prochaine version de Utilitaire-NAM (sans SNAPSHOT)')
+    	gitParam('BRANCH'){
+    	    description('Branche de utilitaire-nam à construire')
+    	    type('BRANCH')
+    	    tagFilter('*')
+    	    sortMode('DESCENDING_SMART')
+        }
     }
     definition {
         cpsScm {
@@ -44,7 +58,7 @@ pipelineJob("${PIPELINE_TAG}") {
                 	branch ('origin/master')
                 }
             }
-            scriptPath('tag.Jenkinsfile')
+            scriptPath('{$BRANCH}')
         }
     }
 }

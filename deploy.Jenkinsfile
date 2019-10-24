@@ -7,11 +7,8 @@ pipeline {
         disableConcurrentBuilds()
     }
     tools {
-        jdk 'JDK1.8.0_161'
+        jdk 'openjdk-11'
         maven 'M3'
-    }
-    parameters {
-        string (name: 'ENV', description: 'Environnement sur lequel on déploie Utilitaire-NAM')
     }
     environment {
         unServicePom = readMavenPom file: 'utilitaire-NAM-Service/pom.xml'
@@ -28,31 +25,15 @@ pipeline {
         }
         stage ('Déployer Utilitaire-NAM-Service') {
             steps {
-                checkout([$class: 'SubversionSCM',
-                        additionalCredentials: [],
-                        excludedCommitMessages: '',
-                        excludedRegions: '',
-                        excludedRevprop: '',
-                        excludedUsers: '',
-                        filterChangelog: false,
-                        ignoreDirPropChanges: false,
-                        includedRegions: '',
-                        locations: [[credentialsId: '30020735-8a8a-4209-bcb1-35b991e3b7ba',
-                                    depthOption: 'infinity',
-                                    ignoreExternalsOption: true,
-                                    local: 'utilitaire-NAM-Service/certificats',
-                                    remote: "http://svn.inspq.qc.ca/svn/inspq/infrastructure/Certificats/RTSS/INSPQ"]],
-                        workspaceUpdater: [$class: 'UpdateUpdater']])
-                sh "ansible-playbook -i /INSPQ/utilitaire-nam/properties/${env.ENV}/${env.ENV}.hosts utilitaire-NAM-Service/deploy-vm.yml"
-                sh "ansible-playbook -i /INSPQ/utilitaire-nam/properties/${env.ENV}/${env.ENV}.hosts -e unamservice_artifact_id=${UN_SERVICE_IMAGE} -e unamservice_image_version=${VERSION} utilitaire-NAM-Service/deploy.yml"
+                sh "ansible-playbook -i ${env.ENV}/${env.ENV}.hosts utilitaire-NAM-Service/deploy-vm.yml"
+                sh "ansible-playbook -i ${env.ENV}/${env.ENV}.hosts -e unamservice_artifact_id=${UN_SERVICE_IMAGE} -e unamservice_image_version=${VERSION} utilitaire-NAM-Service/deploy.yml"
             }
         }
     }
     post {
         always {
             script {
-                // equipe = 'mathieu.couture@inspq.qc.ca,etienne.sadio@inspq.qc.ca,soleman.merchan@inspq.qc.ca,philippe.gauthier@inspq.qc.ca,pierre-olivier.chiasson@inspq.qc.ca,eric.parent@inspq.qc.ca'
-		equipe = 'bilel.hamdi@inspq.qc.ca'  // Ajout de mon adresse pour test
+                equipe = 'mathieu.couture@inspq.qc.ca,etienne.sadio@inspq.qc.ca,soleman.merchan@inspq.qc.ca,philippe.gauthier@inspq.qc.ca,pierre-olivier.chiasson@inspq.qc.ca,eric.parent@inspq.qc.ca'
             }
         }
         success {

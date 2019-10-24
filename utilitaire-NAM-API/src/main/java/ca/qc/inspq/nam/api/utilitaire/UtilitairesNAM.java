@@ -348,10 +348,7 @@ public class UtilitairesNAM {
                 caractereValidateur = calculerCaractereValidateur(namConvertiEnDecimal, true);
                 valide = v == caractereValidateur;
             }
-            if (valide) {
-                return new SimpleDateFormat("yyyy-MM-dd").parse(String.format("%s-%d-%s", annee, mm, jj));
-            }
-            throw new InvalidParameterException("L'année de naissance ne peut être calculée à partir du NAM fourni");
+            return new SimpleDateFormat("yyyy-MM-dd").parse(String.format("%s-%d-%s", annee, mm, jj));
         }
         throw new InvalidParameterException("Le NAM est invalide");
     }

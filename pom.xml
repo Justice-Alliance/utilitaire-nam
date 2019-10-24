@@ -77,8 +77,14 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-	</dependencies>
-	<profiles>
+		<dependency>
+		  <groupId>org.assertj</groupId>
+		  <artifactId>assertj-core</artifactId>
+		  <version>3.13.2</version>
+		</dependency>
+    </dependencies>
+    
+    <profiles>
 		<profile>
 			<id>security</id>
 			<!-- Only to be run within the CI environment, as these plugins are really 

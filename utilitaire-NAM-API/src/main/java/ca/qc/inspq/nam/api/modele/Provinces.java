@@ -11,7 +11,7 @@ public enum Provinces {
 	ON("Ontario"),
 	QC("Québec"),
 	SK("Saskatchewan"),
-	NL("Terre-Neuve"),
+	NL("Terre-Neuve-et-Labrador"),
 	NT("Territoires du Nord-Ouest"),
 	YT("Yukon");
 	
@@ -23,5 +23,14 @@ public enum Provinces {
 	
 	public String getLibelle() {
 		return libelle;
+	}
+	
+	public static Provinces fromString(String libelle) {
+		for (Provinces province : Provinces.values()) {
+			if (province.libelle.equalsIgnoreCase(libelle)) {
+				return province;
+			}
+		}
+		return null;
 	}
 }

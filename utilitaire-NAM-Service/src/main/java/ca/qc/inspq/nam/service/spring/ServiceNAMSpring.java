@@ -14,7 +14,7 @@ import com.vaadin.spring.annotation.SpringComponent;
 
 import ca.qc.inspq.nam.api.modele.NAMInfo;
 import ca.qc.inspq.nam.api.service.ServiceNAM;
-import ca.qc.inspq.nam.api.utilitaire.UtilitairesNAM;
+import ca.qc.inspq.nam.api.utilitaire.ServiceUtilitairesNAM;
 
 @RequestMapping("/nam")
 @RestController
@@ -22,7 +22,7 @@ import ca.qc.inspq.nam.api.utilitaire.UtilitairesNAM;
 public class ServiceNAMSpring implements ServiceNAM {
     private DateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd");
     
-    private UtilitairesNAM utilitairesNAM = new UtilitairesNAM();
+    private ServiceUtilitairesNAM utilitairesNAM = new ServiceUtilitairesNAM();
 
     @Override
     @RequestMapping("/valider")

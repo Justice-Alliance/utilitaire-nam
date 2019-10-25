@@ -6,7 +6,7 @@ pipeline {
 		disableConcurrentBuilds()
     }
     stages {
-		stage ('Construction de utilitaire-nam') {
+		stage ('Construction de nuit de utilitaire-nam') {
         	// Ne construire que si la branche courante n'est pas un TAG
              when {
             	expression{
@@ -16,7 +16,7 @@ pipeline {
             }
 			steps {
 				milestone(ordinal: 1)
-				build job: "utilitaire-nam-construction", parameters:[string(name: 'BRANCH', value: "${env.BRANCH_OR_TAG}")]
+				build job: "utilitaire-nam-construction-nuit", parameters:[string(name: 'BRANCH', value: "${env.BRANCH_OR_TAG}")]
 				milestone(ordinal: 2)
 			}
 		}
@@ -54,6 +54,27 @@ pipeline {
 				milestone(ordinal: 7)
 	        	build job: "utilitaire-nam-deploiement", parameters:[string(name: 'ENV', value: 'DEV'), string(name: 'TAG', value: "${env.BRANCH_OR_TAG}")]
 				milestone(ordinal: 8)
+			}
+        }
+        stage ('Étiqueter utilitaire-nam si des numéros de version ont été fournis') {
+        	// Lancer l'étiquetage si les paramètres sont spécifiés
+            when {
+            	not {
+            	    anyOf {
+		                environment name: 'VERSION_TAG', value: ''
+		                environment name: 'VERSION_NEXT', value: ''            	        
+            	    }
+            	}
+            }
+            steps {
+				milestone(ordinal: 9)
+	        	build job: "utilitaire-nam-etiqueter", 
+	        		parameters:[string(name: 'VERSION_TAG', value: "${env.VERSION_TAG}"), 
+	        			string(name: 'VERSION_TAG', value: "${env.VERSION_TAG}"), 
+	        			string(name: 'VERSION_NEXT', value: "${env.VERSION_NEXT}"), 
+	        			string(name: 'MESSAGE', value: "${env.MESSAGE}"),
+	        			string(name: 'BRANCH', value: "${env.BRANCH_OR_TAG}")]
+				milestone(ordinal: 10)
 			}
         }
     }

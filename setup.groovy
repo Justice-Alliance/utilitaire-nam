@@ -19,21 +19,23 @@ pipelineJob("${PIPELINE_CONSTRUCTION}") {
     	    type('BRANCH')
     	    tagFilter('*')
     	    sortMode('DESCENDING_SMART')
-        }
+    	    defaultValue('origin/master')
+    	}
     }
     definition {
         cpsScm {
             scm {
-                git{
-                	remote{
+                git {
+                	remote {
               			url('https://gitlab.forge.gouv.qc.ca/inspq/utilitaire-nam.git')
-          			}
-                	branch ('{$BRANCH}')
+                	}
+                    branch ('${BRANCH}')
                 }
             }
             scriptPath('Jenkinsfile')
         }
     }
+
 }
 pipelineJob("${PIPELINE_TAG}") {
     description ('Étiquetage (tag) de Utilitaire-NAM')

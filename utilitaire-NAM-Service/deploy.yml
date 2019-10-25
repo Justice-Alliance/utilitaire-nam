@@ -36,7 +36,7 @@
       - "{{ unamservice_external_actuator_port }}:{{ unamservice_internal_actuator_port }}"
       env:
         "LOG4J2_GRAYLOG_URL": "{{ unam_graylog_host | default(omit) }}"
-        "LOG4J2_GRAYLOG_PORT_GELF_UDP": "{{ unam_graylog_port_gelf_udp | string | default(omit) }}"
+        "LOG4J2_GRAYLOG_PORT_GELF_UDP": "{{ unam_graylog_port_gelf_udp | default(omit) | string }}"
         "GRAYLOG_HOST_BASE": "{{ unamservice_container_name }}"
 
   - name: Copie du certificat
@@ -56,7 +56,7 @@
       src: unamservice-gabarit-apache.conf
       dest: /etc/httpd/conf.d/{{ unamservice_base_url }}.conf
       force: yes
-    when: unamservice_base_url is defined and ansible_os_family == 'RedHat'
+    when: unamservice_base_url is defined and unamservice_vhost_protocol is defined and unamservice_protocol is defined and ansible_os_family == 'RedHat'
     notify:
       - restart httpd  
     

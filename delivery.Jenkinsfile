@@ -71,7 +71,8 @@ pipeline {
 	        	build job: "utilitaire-nam-etiqueter", 
 	        		parameters:[string(name: 'VERSION_TAG', value: "${env.VERSION_TAG}"), 
 	        			string(name: 'VERSION_TAG', value: "${env.VERSION_TAG}"), 
-	        			string(name: 'VERSION_NEXT', value: "${env.VERSION_TAG}"), 
+	        			string(name: 'VERSION_NEXT', value: "${env.VERSION_NEXT}"), 
+	        			string(name: 'MESSAGE', value: "${env.MESSAGE}"),
 	        			string(name: 'BRANCH', value: "${env.BRANCH_OR_TAG}")]
 				milestone(ordinal: 10)
 			}

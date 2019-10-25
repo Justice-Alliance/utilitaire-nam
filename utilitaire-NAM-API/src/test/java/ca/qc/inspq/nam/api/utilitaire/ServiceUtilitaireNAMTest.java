@@ -32,6 +32,32 @@ public class ServiceUtilitaireNAMTest {
 	
 	private static final String NAM_QUEBEC_VALIDE = "TREM04121925";
 	private static final String NAM_QUEBEC_NON_VALIDE = "TREM04121935";
+	private static final String NAM_ALBERTA_VALIDE = "940114192";
+	private static final String NAM_ALBERTA_NON_VALIDE = "9401141";
+	private static final String NAM_COLOMBIE_BRITANNIQUE_VALIDE = "9759528158";
+	private static final String NAM_COLOMBIE_BRITANNIQUE_MAUVAISE_LONGUEUR = "975952815";
+	private static final String NAM_COLOMBIE_BRITANNIQUE_NON_VALIDE = "9759528153";
+	private static final String NAM_MANITOBA_VALIDE = "940114192";
+	private static final String NAM_MANITOBA_NON_VALIDE = "9401141";
+	private static final String NAM_TERRITOIRES_DU_NORD_OUEST_VALIDE = "9401141";
+	private static final String NAM_TERRITOIRES_DU_NORD_OUEST_NON_VALIDE = "9401141023365";
+	private static final String NAM_NOUVELLE_ECOSSE_VALIDE = "9401141923";
+	private static final String NAM_NOUVELLE_ECOSSE_NON_VALIDE = "9401141926545";
+	private static final String NAM_NOUVEAU_BRUNSWICK_VALIDE = "940114192";
+	private static final String NAM_NOUVEAU_BRUNSWICK_NON_VALIDE = "9401141";
+	private static final String NAM_TERRE_NEUVE_ET_LABRADOR_VALIDE = "940114192698";
+	private static final String NAM_TERRE_NEUVE_ET_LABRADOR_NON_VALIDE = "940114192698012";
+	private static final String NAM_NUNAVUT_VALIDE = "112345672";
+	private static final String NAM_NUNAVUT_NON_VALIDE = "94011419";
+	private static final String NAM_ONTARIO_VALIDE = "9401141925";
+	private static final String NAM_ONTARIO_MAUVAISE_LONGUEUR = "9401141925565";
+	private static final String NAM_ONTARIO_NON_VALIDE = "9401141926";
+	private static final String NAM_ILE_DU_PRINCE_EDOUARD_VALIDE = "940114195";
+	private static final String NAM_ILE_DU_PRINCE_EDOUARD_NON_VALIDE = "9401141";
+	private static final String NAM_SASKATCHEWAN_VALIDE = "940114195";
+	private static final String NAM_SASKATCHEWAN_NON_VALIDE = "9401141958545";
+	private static final String NAM_YUKON_VALIDE = "940114195";
+	private static final String NAM_YUKON_NON_VALIDE = "94011419503256"; 
 	
 	// TODO valider tous les cas pour toutes les provinces
 	/*
@@ -87,161 +113,158 @@ public class ServiceUtilitaireNAMTest {
 	// Alberta valide
 	@Test
 	public void quandJeValideUnNamPourLAlberta_siLeNamEstValide_alorsJeRetourneVrai() throws UnsupportedEncodingException, ParseException {
-		String nomProvince = "AB";
-		String nam = "940114192";
-		boolean resultatAttendu = true;
-		boolean validerNam = serviceUtilitaireNAM.validerNAM(nam, nomProvince);
-		assertEquals(validerNam, resultatAttendu);
+		assertThat(serviceUtilitaireNAM.validerNAM(NAM_ALBERTA_VALIDE, Provinces.AB.toString())).isTrue();
 	}
 	
 	// Alberta non valide
+	@Test
+	public void quandJeValideUnNamPourLAlberta_siLeNamNEstPasValide_alorsJeRetourneFaux() throws UnsupportedEncodingException, ParseException {
+		assertThat(serviceUtilitaireNAM.validerNAM(NAM_ALBERTA_NON_VALIDE, Provinces.AB.toString())).isFalse();
+	}
 	
 	// Colombie-Britannique valide
 	@Test
 	public void quandJeValideUnNamPourLaColombieBritannique_siLeNamEstValide_alorsJeRetourneVrai() throws UnsupportedEncodingException, ParseException {
-		String nomProvince = "BC";
-		String nam = "9759528158";
-		boolean resultatAttendu = true;
-		boolean validerNam = serviceUtilitaireNAM.validerNAM(nam, nomProvince);
-		assertEquals(validerNam, resultatAttendu);
+		assertThat(serviceUtilitaireNAM.validerNAM(NAM_COLOMBIE_BRITANNIQUE_VALIDE, Provinces.BC.toString())).isTrue();
 	}
 	
 	// Colombie-Britannique non valide
 	// Pas la bonne taille
 	@Test(expected = IllegalArgumentException.class)
-	public void quandJeValideUnNamDeLaColombieBritannique_siLeNamNaPasDixCaracteres_alorsJeLanceIllegalArgumentException()
-			throws UnsupportedEncodingException, ParseException {
-		IllegalArgumentException exception = new IllegalArgumentException(
-				"Le numero de carte santé spécifié n'a pas la bonne taille");
-		String nomProvince = "BC";
-		String nam = "9401141925";
+	public void quandJeValideUnNamDeLaColombieBritannique_siLeNamNaPasDixCaracteres_alorsJeLanceIllegalArgumentException() throws UnsupportedEncodingException, ParseException {
+		IllegalArgumentException exception = new IllegalArgumentException("Le numero de carte santé spécifié n'a pas la bonne taille");
 		doThrow(exception).when(serviceUtilitaireNAM).validerNAM(anyString(), anyString());
-		serviceUtilitaireNAM.validerNAM(nam, nomProvince);
+		serviceUtilitaireNAM.validerNAM(NAM_COLOMBIE_BRITANNIQUE_MAUVAISE_LONGUEUR, Provinces.BC.toString());
 		assertEquals("Le numero de carte santé spécifié n'a pas la bonne taille", exception.getMessage());
 	}
 	
 	// Ne respecte pas le format
-	
+	@Test
+	public void quandJeValideUnNamDeLaColombieBritannique_siLeNamNEstPasValide_alorsJeRetourneFaux() throws UnsupportedEncodingException, ParseException {
+		assertThat(serviceUtilitaireNAM.validerNAM(NAM_COLOMBIE_BRITANNIQUE_NON_VALIDE, Provinces.BC.toString())).isFalse();
+	}
 	
 	// Manitoba valide
 	@Test
 	public void quandJeValideUnNamPourLeManitoba_siLeNamEstValide_alorsJeRetourneVrai() throws UnsupportedEncodingException, ParseException {
-		String nomProvince = "MB";
-		String nam = "940114192";
-		boolean resultatAttendu = true;
-		boolean validerNam = serviceUtilitaireNAM.validerNAM(nam, nomProvince);
-		assertEquals(validerNam, resultatAttendu);
+		assertThat(serviceUtilitaireNAM.validerNAM(NAM_MANITOBA_VALIDE, Provinces.MB.toString())).isTrue();
 	}
 	
 	// Manitoba non valide
+	@Test
+	public void quandJeValideUnNamPourLeManitoba_siLeNamNEstPasValide_alorsJeRetourneFaux() throws UnsupportedEncodingException, ParseException {
+		assertThat(serviceUtilitaireNAM.validerNAM(NAM_MANITOBA_NON_VALIDE, Provinces.MB.toString())).isFalse();
+	}
 	
 	// Territoires du Nord-Ouest valide
 	@Test
 	public void quandJeValideUnNamPourLesTerritoiresDuNordOuest_siLeNamEstValide_alorsJeRetourneVrai() throws UnsupportedEncodingException, ParseException {
-		String nomProvince = "NT";
-		String nam = "9401141";
-		boolean resultatAttendu = true;
-		boolean validerNam = serviceUtilitaireNAM.validerNAM(nam, nomProvince);
-		assertEquals(validerNam, resultatAttendu);
+		assertThat(serviceUtilitaireNAM.validerNAM(NAM_TERRITOIRES_DU_NORD_OUEST_VALIDE, Provinces.NT.toString())).isTrue();
 	}
 	
 	// Territoires du Nord-Ouest non valide
+	@Test
+	public void quandJeValideUnNamPourLesTerritoiresDuNordOuest_siLeNamNEstPasValide_alorsJeRetourneFaux() throws UnsupportedEncodingException, ParseException {
+		assertThat(serviceUtilitaireNAM.validerNAM(NAM_TERRITOIRES_DU_NORD_OUEST_NON_VALIDE, Provinces.NT.toString())).isFalse();
+	}
 	
 	// Nouvelle-Écosse valide
 	@Test
 	public void quandJeValideUnNamPourLaNouvelleEcosse_siLeNamEstValide_alorsJeRetourneVrai() throws UnsupportedEncodingException, ParseException {
-		String nomProvince = "NS";
-		String nam = "9401141923";
-		boolean resultatAttendu = true;
-		boolean validerNam = serviceUtilitaireNAM.validerNAM(nam, nomProvince);
-		assertEquals(validerNam, resultatAttendu);
+		assertThat(serviceUtilitaireNAM.validerNAM(NAM_NOUVELLE_ECOSSE_VALIDE, Provinces.NS.toString())).isTrue();
 	}
 	
 	// Nouvelle-Écosse non valide
+	@Test
+	public void quandJeValideUnNamPourLaNouvelleEcosse_siLeNamNEstPasValide_alorsJeRetourneFaux() throws UnsupportedEncodingException, ParseException{
+		assertThat(serviceUtilitaireNAM.validerNAM(NAM_NOUVELLE_ECOSSE_NON_VALIDE, Provinces.NS.toString())).isFalse();
+	}
 	
 	// Nouveau-Brunswick valide
 	@Test
 	public void quandJeValideUnNamPourLeNouveauBrunswick_siLeNamEstValide_alorsJeRetourneVrai() throws UnsupportedEncodingException, ParseException {
-		String nomProvince = "NB";
-		String nam = "940114192";
-		boolean resultatAttendu = true;
-		boolean validerNam = serviceUtilitaireNAM.validerNAM(nam, nomProvince);
-		assertEquals(validerNam, resultatAttendu);
+		assertThat(serviceUtilitaireNAM.validerNAM(NAM_NOUVEAU_BRUNSWICK_VALIDE, Provinces.NB.toString())).isTrue();
 	}
 	
 	// Nouveau-Brunswick non valide
+	@Test
+	public void quandJeValideUnNamPourLeNouveauBrunswick_siLeNamNEstPasValide_alorsJeRetourneFaux() throws UnsupportedEncodingException, ParseException {
+		assertThat(serviceUtilitaireNAM.validerNAM(NAM_NOUVEAU_BRUNSWICK_NON_VALIDE, Provinces.NB.toString())).isFalse();
+	}
 	
 	// Terre-Neuve-et-Labrador valide
 	@Test
 	public void quandJeValideUnNamPourTerreNeuveEtLabrador_siLeNamEstValide_alorsJeRetourneVrai() throws UnsupportedEncodingException, ParseException {
-		String nomProvince = "NL";
-		String nam = "940114192698";
-		boolean resultatAttendu = true;
-		boolean validerNam = serviceUtilitaireNAM.validerNAM(nam, nomProvince);
-		assertEquals(validerNam, resultatAttendu);
+		assertThat(serviceUtilitaireNAM.validerNAM(NAM_TERRE_NEUVE_ET_LABRADOR_VALIDE, Provinces.NL.toString())).isTrue();
 	}
 	
 	// Terre-Neuve et Labrador non valide
+	@Test
+	public void quandJeValideUnNamPourTerreNeuveEtLabrador_siLeNamNEstPasValide_alorsJeRetourneFaux() throws UnsupportedEncodingException, ParseException {
+		assertThat(serviceUtilitaireNAM.validerNAM(NAM_TERRE_NEUVE_ET_LABRADOR_NON_VALIDE, Provinces.NL.toString())).isFalse();
+	}
 	
 	// Nunavut valide
 	@Test
 	public void quandJeValideUnNamPourLeNunavut_siLeNamEstValide_alorsJeRetourneVrai() throws UnsupportedEncodingException, ParseException {
-		String nomProvince = "NU";
-		String nam = "112345672";
-		boolean resultatAttendu = true;
-		boolean validerNam = serviceUtilitaireNAM.validerNAM(nam, nomProvince);
-		assertEquals(validerNam, resultatAttendu);
+		assertThat(serviceUtilitaireNAM.validerNAM(NAM_NUNAVUT_VALIDE, Provinces.NU.toString())).isTrue();
 	}
 	
 	// Nunavut non valide
+	@Test
+	public void quandJeValideUnNamPourLeNunavut_siLeNamNEstPasValide_alorsJeRetourneFaux() throws UnsupportedEncodingException, ParseException {
+		assertThat(serviceUtilitaireNAM.validerNAM(NAM_NUNAVUT_NON_VALIDE, Provinces.NU.toString())).isFalse();
+	}
 	
 	// Ontario valide
 	@Test
 	public void quandJeValideUnNamPourLOntario_siLeNamEstValide_alorsJeRetourneVrai() throws UnsupportedEncodingException, ParseException {
-		String nomProvince = "ON";
-		String nam = "9401141925";
-		boolean resultatAttendu = true;
-		boolean validerNam = serviceUtilitaireNAM.validerNAM(nam, nomProvince);
-		assertEquals(validerNam, resultatAttendu);
+		assertThat(serviceUtilitaireNAM.validerNAM(NAM_ONTARIO_VALIDE, Provinces.ON.toString())).isTrue();
 	}
 	
+	// Ontario avec mauvaise longueur
+	
 	// Ontario non valide
+	@Test
+	public void quandJeValideUnNamPourLOntario_siLeNamNEstPasValide_alorsJeRetourneFaux() throws UnsupportedEncodingException, ParseException{
+		assertThat(serviceUtilitaireNAM.validerNAM(NAM_ONTARIO_NON_VALIDE, Provinces.ON.toString())).isFalse();
+	}
 	
 	// Ile du Prince Edouard valide
 	@Test
 	public void quandJeValideUnNamPourLIleDuPrinceEdouard_siLeNamEstValide_alorsJeRetourneVrai() throws UnsupportedEncodingException, ParseException {
-		String nomProvince = "PE";
-		String nam = "940114195";
-		boolean resultatAttendu = true;
-		boolean validerNam = serviceUtilitaireNAM.validerNAM(nam, nomProvince);
-		assertEquals(validerNam, resultatAttendu);
+		assertThat(serviceUtilitaireNAM.validerNAM(NAM_ILE_DU_PRINCE_EDOUARD_VALIDE, Provinces.PE.toString())).isTrue();
 	}
 	
 	// Ile du Prince Edouard non valide
+	@Test
+	public void quandJeValideUnNamPourLIleDuPrinceEdouard_siLeNamNEstPasValide_alorsJeRetourneFaux() throws UnsupportedEncodingException, ParseException {
+		assertThat(serviceUtilitaireNAM.validerNAM(NAM_ILE_DU_PRINCE_EDOUARD_NON_VALIDE, Provinces.PE.toString())).isFalse();
+	}
 	
 	// Saskatchewan valide
 	@Test
 	public void quandJeValideUnNamPourLaSaskatchewan_siLeNamEstValide_alorsJeRetourneVrai() throws UnsupportedEncodingException, ParseException {
-		String nomProvince = "SK";
-		String nam = "940114195";
-		boolean resultatAttendu = true;
-		boolean validerNam = serviceUtilitaireNAM.validerNAM(nam, nomProvince);
-		assertEquals(validerNam, resultatAttendu);
+		assertThat(serviceUtilitaireNAM.validerNAM(NAM_SASKATCHEWAN_VALIDE, Provinces.SK.toString())).isTrue();
 	}
 	
 	// Saskatchewan non valide
+	@Test
+	public void quandJeValideUnNamPourLaSaskatchewan_siLeNamNEstPasValide_alorsJeRetourneFaux() throws UnsupportedEncodingException, ParseException {
+		assertThat(serviceUtilitaireNAM.validerNAM(NAM_SASKATCHEWAN_NON_VALIDE, Provinces.SK.toString()));
+	}
 	
 	// Yukon valide
 	@Test
 	public void quandJeValideUnNamPourLeYukon_siLeNamEstValide_alorsJeRetourneVrai() throws UnsupportedEncodingException, ParseException {
-		String nomProvince = "YT";
-		String nam = "940114195";
-		boolean resultatAttendu = true;
-		boolean validerNam = serviceUtilitaireNAM.validerNAM(nam, nomProvince);
-		assertEquals(validerNam, resultatAttendu);
+		assertThat(serviceUtilitaireNAM.validerNAM(NAM_YUKON_VALIDE, Provinces.YT.toString())).isTrue();
 	}
 	
 	// Yukon non valide
+	@Test
+	public void quandJeValideUnNamPourLeYukon_siLeNamNEstPasValide_alorsJeRetourneFaux() throws UnsupportedEncodingException, ParseException {
+		assertThat(serviceUtilitaireNAM.validerNAM(NAM_ALBERTA_NON_VALIDE, Provinces.YT.toString())).isFalse();
+	}
 	
 	// Province pas bonne?
 	@Test(expected = IllegalArgumentException.class)

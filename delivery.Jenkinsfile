@@ -57,5 +57,25 @@ pipeline {
 				milestone(ordinal: 8)
 			}
         }
+        stage ('Étiqueter utilitaire-nam si des numéros de version ont été fournis') {
+        	// Lancer l'étiquetage si les paramètres sont spécifiés
+            when {
+            	not {
+            	    anyOf {
+		                environment name: 'VERSION_TAG', value: ''
+		                environment name: 'VERSION_NEXT', value: ''            	        
+            	    }
+            	}
+            }
+            steps {
+				milestone(ordinal: 9)
+	        	build job: "utilitaire-nam-etiqueter", 
+	        		parameters:[string(name: 'VERSION_TAG', value: "${env.VERSION_TAG}"), 
+	        			string(name: 'VERSION_TAG', value: "${env.VERSION_TAG}"), 
+	        			string(name: 'VERSION_NEXT', value: "${env.VERSION_TAG}"), 
+	        			string(name: 'BRANCH', value: "${env.BRANCH_OR_TAG}")]
+				milestone(ordinal: 10)
+			}
+        }
     }
 }

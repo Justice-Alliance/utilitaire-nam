@@ -17,7 +17,7 @@ pipeline {
             }
 			steps {
 				milestone(ordinal: 1)
-				build job: "utilitaire-nam-construction", parameters:[string(name: 'BRANCH', value: '${BRANCH_OR_TAG}')]
+				build job: "utilitaire-nam-construction", parameters:[string(name: 'BRANCH', value: "${BRANCH_OR_TAG}")]
 				milestone(ordinal: 2)
 			}
 		}
@@ -28,7 +28,7 @@ pipeline {
             }
             steps {
 				milestone(ordinal: 3)
-	        	build job: "utilitaire-nam-deploiement", parameters:[string(name: 'ENV', value: 'DEV3'), string(name: 'TAG', value: 'origin/master')]
+	        	build job: "utilitaire-nam-deploiement", parameters:[string(name: 'ENV', value: 'DEV3'), string(name: 'TAG', value: "${BRANCH_OR_TAG}")]
 				milestone(ordinal: 4)
 			}
         }
@@ -39,7 +39,7 @@ pipeline {
             }
             steps {
 				milestone(ordinal: 5)
-	        	build job: "utilitaire-nam-deploiement", parameters:[string(name: 'ENV', value: 'DEV2'), string(name: 'TAG', value: 'origin/master')]
+	        	build job: "utilitaire-nam-deploiement", parameters:[string(name: 'ENV', value: 'DEV2'), string(name: 'TAG', value: "${BRANCH_OR_TAG}")]
 				milestone(ordinal: 6)
 			}
         }
@@ -53,7 +53,7 @@ pipeline {
             }
             steps {
 				milestone(ordinal: 7)
-	        	build job: "utilitaire-nam-deploiement", parameters:[string(name: 'ENV', value: 'DEV'), string(name: 'TAG', value: '${BRANCH_OR_TAG}')]
+	        	build job: "utilitaire-nam-deploiement", parameters:[string(name: 'ENV', value: 'DEV'), string(name: 'TAG', value: "${BRANCH_OR_TAG}")]
 				milestone(ordinal: 8)
 			}
         }

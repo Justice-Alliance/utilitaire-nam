@@ -14,13 +14,17 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.time.DateFormatUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
 
+import ca.qc.inspq.nam.api.UtilitaireNamApiApplication;
 import ca.qc.inspq.nam.api.modele.Provinces;
 import ca.qc.inspq.nam.api.modele.Sexe;
 import ca.qc.inspq.nam.api.utilitaire.ServiceUtilitairesNAM;
 import io.cucumber.java.fr.Alors;
 import io.cucumber.java.fr.Quand;
 
+@ContextConfiguration(classes = { UtilitaireNamApiApplication.class })
 public class UtilitaireDefinitions {
 
 	private boolean resultat;
@@ -33,7 +37,8 @@ public class UtilitaireDefinitions {
 	
 	private List<String> listeNamsGeneres;
 
-	private ServiceUtilitairesNAM utilitairesNAM = new ServiceUtilitairesNAM();
+	@Autowired
+	private ServiceUtilitairesNAM utilitairesNAM;
 
 	@Quand("je valide le numéro d'assurance maladie {string} émis par la province {string}")
 	public void je_valide_le_numéro_d_assurance_maladie_émis_par_la_province(String nam, String province)

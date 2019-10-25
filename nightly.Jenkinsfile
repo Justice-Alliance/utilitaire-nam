@@ -61,20 +61,45 @@ pipeline {
 	          	]        	    
         	}
         }        
+        stage ('Exécuter les tests de sécurité') {
+            steps {
+                sh "mvn validate -Psecurity"
+            }
+        }
+        stage ("Publier le résultats des tests de sécurité") {
+        	steps {
+	            publishHTML target: [
+	            	allowMissing: false,
+	            	alwaysLinkToLastBuild: false,
+	            	keepAll: true,
+	            	reportDir: 'target',
+	            reportFiles: 'dependency-check-report.html',
+	            reportName: 'résultats des sécurités des librairies'
+	          	]        	    
+        	}
+        }
+        stage ('Tests SonarQube') {
+        	steps {
+            	script { 
+                	withSonarQubeEnv('SonarQube') { 
+                   		sh "mvn sonar:sonar"
+                	}
+                }
+            }
+        } 
         stage ('Packager image Docker de utilitaire-nam') {
 		    environment {
                 unPom = readMavenPom file: 'utilitaire-NAM-Service/pom.xml'
 			    IMAGE = unPom.getArtifactId()
-			    APP_VERSION = unPom.getVersion()
 			}
-            steps {
+            steps {	
                 script {
 	                VERSION = sh(
 	                	script: 'if [ "$(git describe --exact-match HEAD 2>>/dev/null || git rev-parse --abbrev-ref HEAD)" == "master" ]; then mvn -q -Dexec.executable="echo" -Dexec.args=\'${project.version}\' --non-recursive exec:exec 2>/dev/null; else git describe --exact-match HEAD 2>>/dev/null || git rev-parse --abbrev-ref HEAD; fi',
 	                	returnStdout: true
 	                	).trim()
                 }                        	
-                sh "docker build --build-arg APP_VERSION=${APP_VERSION} --tag ${REPOSITORY}/inspq/${IMAGE}:${VERSION} --file utilitaire-NAM-Service/Dockerfile ."
+                sh "docker build --build-arg APP_VERSION=${VERSION} --tag ${REPOSITORY}/inspq/${IMAGE}:${VERSION} --file utilitaire-NAM-Service/Dockerfile ."
                 sh "docker push ${REPOSITORY}/inspq/${IMAGE}:${VERSION}"
             }
         }

@@ -44,9 +44,14 @@ pipeline {
 		    environment {
                 unPom = readMavenPom file: 'utilitaire-NAM-Service/pom.xml'
 			    IMAGE = unPom.getArtifactId()
-		    	VERSION = readMavenPom().getVersion()
 			}
-            steps {	
+            steps {
+                script {
+	                VERSION = sh(
+	                	script: 'if [ "$(git describe --exact-match HEAD 2>>/dev/null || git rev-parse --abbrev-ref HEAD)" == "master" ]; then mvn -q -Dexec.executable="echo" -Dexec.args=\'${project.version}\' --non-recursive exec:exec 2>/dev/null; else git describe --exact-match HEAD 2>>/dev/null || git rev-parse --abbrev-ref HEAD; fi',
+	                	returnStdout: true
+	                	).trim()
+                }                        	
                 sh "docker build --build-arg APP_VERSION=${VERSION} --tag ${REPOSITORY}/inspq/${IMAGE}:${VERSION} --file utilitaire-NAM-Service/Dockerfile ."
                 sh "docker push ${REPOSITORY}/inspq/${IMAGE}:${VERSION}"
             }

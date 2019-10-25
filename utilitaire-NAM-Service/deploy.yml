@@ -35,8 +35,8 @@
       - "{{ unamservice_external_port }}:{{ unamservice_internal_port }}"
       - "{{ unamservice_external_actuator_port }}:{{ unamservice_internal_actuator_port }}"
       env:
-        "LOG4J2_GRAYLOG_URL": "{{ unam_graylog_host }}"
-        "LOG4J2_GRAYLOG_PORT_GELF_UDP": "{{ unam_graylog_port_gelf_udp | string }}"
+        "LOG4J2_GRAYLOG_URL": "{{ unam_graylog_host | default(omit) }}"
+        "LOG4J2_GRAYLOG_PORT_GELF_UDP": "{{ unam_graylog_port_gelf_udp | string | default(omit) }}"
         "GRAYLOG_HOST_BASE": "{{ unamservice_container_name }}"
 
   - name: Copie du certificat

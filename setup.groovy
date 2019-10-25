@@ -144,7 +144,7 @@ pipelineJob("${PIPELINE_LIVRAISON}") {
     }
 }
 pipelineJob("${PIPELINE_LIVRAISON_NUIT}") {
-    description ('Livraison de nuit de Utilitaire-NAM')
+    description ('Livraison de nuit ou étiquetage de Utilitaire-NAM')
     triggers { cron('00 8 * * *') }
     parameters {
         stringParam('VERSION_TAG', '', 'Numéro de version à assigner au tag de Utilitaire-NAM')

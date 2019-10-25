@@ -9,15 +9,19 @@
     unamservice_container_name: "unamservice{{ env | lower }}"
     unamservice_artifact_id: utilitaire-nam-service
     unamservice_docker_image: "{{ docker_registry }}/inspq/{{ unamservice_artifact_id }}"
-    unamservice_log_driver: gelf
-    unamservice_log_options:
-      gelf-address: "udp://{{ unam_graylog_host }}:{{ unam_graylog_port_gelf_udp }}"
 
   roles:
   - { role: docker-engine, when: ansible_os_family == 'RedHat' }
       
   tasks:
-  
+
+  - name: Configuration de la journalisation
+    set_fact:  
+      unamservice_log_driver: gelf
+      unamservice_log_options:
+        gelf-address: "udp://{{ unam_graylog_host }}:{{ unam_graylog_port_gelf_udp }}"
+    when: unam_graylog_host is defined and unam_graylog_port_gelf_udp is defined
+
   - name: Creation du conteneur pour unamservice 
     docker_container:
       name: "{{ unamservice_container_name }}"
@@ -25,8 +29,8 @@
       state: started
       pull: "{{ unamservice_image_pull | default(True) }}"
       restart_policy: unless-stopped
-      log_driver: "{{ unamservice_log_driver }}"
-      log_options: "{{ unamservice_log_options }}"
+      log_driver: "{{ unamservice_log_driver | default(omit) }}"
+      log_options: "{{ unamservice_log_options | default(omit) }}"
       ports:
       - "{{ unamservice_external_port }}:{{ unamservice_internal_port }}"
       - "{{ unamservice_external_actuator_port }}:{{ unamservice_internal_actuator_port }}"

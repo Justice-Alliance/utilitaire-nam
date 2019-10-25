@@ -38,9 +38,11 @@ pipeline {
         }
         success {
             script {
-                mail(to: "${equipe}", 
+                if (currentBuild.getPreviousBuild() == null || (currentBuild.getPreviousBuild() != null && currentBuild.getPreviousBuild().getResult().toString() != "SUCCESS")) {
+                    mail(to: "${equipe}", 
                     subject: "Déploiement de Utilitaire-NAM (${env.TAG}) en ${env.ENV} réalisé avec succès: ${env.JOB_NAME} #${env.BUILD_NUMBER}", 
-                    body: "${env.BUILD_URL}")
+                        body: "${env.BUILD_URL}")
+                }
             }
         }
         failure {

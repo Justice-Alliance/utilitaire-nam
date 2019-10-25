@@ -119,7 +119,7 @@ pipelineJob("${PIPELINE_DEPLOIEMENT}") {
 }
 pipelineJob("${PIPELINE_LIVRAISON}") {
     description ('Livraison de Utilitaire-NAM')
-    triggers { pollSCM('*/30 * * * *') }
+    triggers { scm('*/30 * * * *') }
     parameters {
         stringParam('VERSION_TAG', '', 'Numéro de version à assigner au tag de Utilitaire-NAM')
         stringParam('VERSION_NEXT','', 'Numéro à assigner à la prochaine version de Utilitaire-NAM (sans SNAPSHOT)')

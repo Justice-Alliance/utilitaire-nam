@@ -10,11 +10,16 @@ pipeline {
         jdk 'openjdk-11'
         maven 'M3'
     }
+	environment {
+        MVN_REPOSITORY = "${env.MVN_REPOSITORY_INSPQ}"
+    	REPOSITORY = "${env.REPOSITORY_INSPQ}"
+    	NOTIFICATION_TEAM = "${env.NOTIFICATION_SX5_TEAM}"
+    }
     stages {
         stage ('Construire utilitaire-nam') {
             steps {
-                sh "mvn clean install"
-                sh "mvn deploy -Dmaven.install.skip=true"
+                sh "mvn clean install -Dprivate-repository=${MVN_REPOSITORY}"
+                sh "mvn deploy -Dmaven.install.skip=true -DskipTests -Dprivate-repository=${MVN_REPOSITORY}"
             }
             post {
                 success {
@@ -59,8 +64,8 @@ pipeline {
 		    	VERSION = readMavenPom().getVersion()
 			}
             steps {	
-				sh "docker build --build-arg APP_VERSION=${VERSION} --tag nexus3.inspq.qc.ca:5000/inspq/${IMAGE}:${VERSION} --file utilitaire-NAM-Service/Dockerfile ."
-                sh "docker push nexus3.inspq.qc.ca:5000/inspq/${IMAGE}:${VERSION}"
+                sh "docker build --build-arg APP_VERSION=${VERSION} --tag ${REPOSITORY}/inspq/${IMAGE}:${VERSION} --file utilitaire-NAM-Service/Dockerfile ."
+                sh "docker push ${REPOSITORY}/inspq/${IMAGE}:${VERSION}"
             }
         }
     }

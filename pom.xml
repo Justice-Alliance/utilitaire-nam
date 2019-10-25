@@ -16,6 +16,20 @@
 
 	<packaging>pom</packaging>
 
+	<properties>
+		<commons-lang3.version>3.9</commons-lang3.version>
+		<cucumber.version>4.8.0</cucumber.version>
+		<java.version>11</java.version>
+		<javax.ws.rs.version>2.1.1</javax.ws.rs.version>
+		<maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
+		<resteasy.version>3.9.0.Final</resteasy.version>
+		<resteasy-spring-boot-starter.version>2.0.0-RELEASE</resteasy-spring-boot-starter.version>
+		<vaadin.version>8.8.0</vaadin.version>
+		<vaadin-spring-boot-starter.version>3.2.1</vaadin-spring-boot-starter.version>
+		<vaadin.plugin.version>8.8.0</vaadin.plugin.version>
+		<private-repository>https://nexus3.inspq.qc.ca:8443</private-repository>
+	</properties>
+
 	<repositories>
 		<repository>
 			<id>spring-releases</id>
@@ -29,16 +43,24 @@
 			<id>vaadin-addons</id>
 			<url>http://maven.vaadin.com/vaadin-addons</url>
 		</repository>
+		<repository>
+			<id>Inspq-Local</id>
+			<url>${private-repository}/repository/INSPQ</url>
+		</repository>
+		<repository>
+			<id>Inspq-Public</id>
+			<url>${private-repository}/repository</url>
+		</repository>
 	</repositories>
 
 	<distributionManagement>
 		<repository>
 			<id>nexus</id>
-			<url>https://nexus3.inspq.qc.ca:8443/repository/INSPQ</url>
+			<url>${private-repository}/repository/INSPQ</url>
 		</repository>
 		<snapshotRepository>
 			<id>nexus-snapshot</id>
-			<url>https://nexus3.inspq.qc.ca:8443/repository/INSPQ-Snapshots/</url>
+			<url>${private-repository}/repository/INSPQ-Snapshots/</url>
 		</snapshotRepository>
 	</distributionManagement>
 
@@ -52,19 +74,6 @@
 			<url>http://maven.vaadin.com/vaadin-addons</url>
 		</pluginRepository>
 	</pluginRepositories>
-
-	<properties>
-		<commons-lang3.version>3.9</commons-lang3.version>
-		<cucumber.version>4.8.0</cucumber.version>
-		<java.version>11</java.version>
-		<javax.ws.rs.version>2.1.1</javax.ws.rs.version>
-		<maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
-		<resteasy.version>3.9.0.Final</resteasy.version>
-		<resteasy-spring-boot-starter.version>2.0.0-RELEASE</resteasy-spring-boot-starter.version>
-		<vaadin.version>8.8.0</vaadin.version>
-		<vaadin-spring-boot-starter.version>3.2.1</vaadin-spring-boot-starter.version>
-		<vaadin.plugin.version>8.8.0</vaadin.plugin.version>
-	</properties>
 
 	<modules>
 		<module>utilitaire-NAM-API</module>

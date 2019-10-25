@@ -68,7 +68,7 @@ pipeline {
             }
             steps {
 				milestone(ordinal: 9)
-	        	build job: "utilitaire-nam-etiqueter", 
+	        	build job: "utilitaire-nam-etiquetage", 
 	        		parameters:[string(name: 'VERSION_TAG', value: "${env.VERSION_TAG}"), 
 	        			string(name: 'VERSION_TAG', value: "${env.VERSION_TAG}"), 
 	        			string(name: 'VERSION_NEXT', value: "${env.VERSION_NEXT}"), 

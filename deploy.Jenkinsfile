@@ -15,6 +15,27 @@ pipeline {
         UN_SERVICE_IMAGE = unServicePom.getArtifactId()
 	}
     stages {
+        stage ('Préparer les variables') {
+   			steps {
+                script {
+                	sh "echo ${BRANCH} > BRANCH"
+	                BRANCH_ORIGIN = sh(
+	                	script: "cut -d / -f 1 BRANCH",
+	                	returnStdout: true
+	                	).trim()   
+	                BRANCH_NAME = sh(
+	                	script: "cut -d / -f 2 BRANCH",
+	                	returnStdout: true
+	                	).trim()  
+                	sh "rm BRANCH"
+                }
+            }
+        }
+        stage ('Faire le checkout de la branche utilitaire nam') {
+            steps {
+				sh "git checkout ${BRANCH_NAME} && git pull"
+            }
+        } 
         stage ('Configurer Ansible') {
             steps {
 	            sh "rm -rf roles && mkdir -p roles"

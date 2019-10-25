@@ -56,7 +56,7 @@
       src: unamservice-gabarit-apache.conf
       dest: /etc/httpd/conf.d/{{ unamservice_base_url }}.conf
       force: yes
-    when: unamservice_base_url is defined and unamservice_vhost_protocol is defined and unamservice_protocol is defined and ansible_os_family == 'RedHat'
+    when: unamservice_base_url is defined and unamservice_virtualhost_protocol is defined and unamservice_protocol is defined and ansible_os_family == 'RedHat'
     notify:
       - restart httpd  
     

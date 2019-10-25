@@ -75,6 +75,7 @@ pipelineJob("${PIPELINE_TAG}") {
     	    type('BRANCH')
     	    tagFilter('*')
     	    sortMode('DESCENDING_SMART')
+    	    defaultValue('origin/master')
         }
     }
     definition {

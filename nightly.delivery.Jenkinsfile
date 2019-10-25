@@ -56,7 +56,7 @@ pipeline {
 				milestone(ordinal: 8)
 			}
         }
-        stage ('Étiqueter utilitaire-nam si des numéros de version ont été fournis') {
+        stage ('Étiqueter utilitaire-nam si des numéros de versions ont été fournis') {
         	// Lancer l'étiquetage si les paramètres sont spécifiés
             when {
             	not {

@@ -40,6 +40,32 @@ pipeline {
 	          	]        	    
         	}
         }        
+        stage ('Exécuter les tests de sécurité') {
+            steps {
+                sh "mvn validate -Psecurity"
+            }
+        }
+        stage ("Publier le résultats des tests de sécurité") {
+        	steps {
+	            publishHTML target: [
+	            	allowMissing: false,
+	            	alwaysLinkToLastBuild: false,
+	            	keepAll: true,
+	            	reportDir: 'target',
+	            reportFiles: 'dependency-check-report.html',
+	            reportName: 'résultats des sécurités des librairies'
+	          	]        	    
+        	}
+        }
+        stage ('Tests SonarQube') {
+        	steps {
+            	script { 
+                	withSonarQubeEnv('SonarQube') { 
+                   		sh "mvn sonar:sonar"
+                	}
+                }
+            }
+        } 
         stage ('Packager image Docker de utilitaire-nam') {
 		    environment {
                 unPom = readMavenPom file: 'utilitaire-NAM-Service/pom.xml'

@@ -18,7 +18,7 @@ pipeline {
         stage ('Préparer les variables') {
    			steps {
                 script {
-                	sh "echo ${BRANCH} > BRANCH"
+                	sh "echo ${TAG} > BRANCH"
 	                BRANCH_ORIGIN = sh(
 	                	script: "cut -d / -f 1 BRANCH",
 	                	returnStdout: true

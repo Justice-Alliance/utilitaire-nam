@@ -3,7 +3,6 @@ package ca.qc.inspq.nam.api.utilitaire;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidParameterException;
 import java.text.ParseException;
-import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -13,22 +12,33 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import ca.qc.inspq.nam.api.modele.Sexe;
 import ca.qc.inspq.nam.api.modele.TypeRegex;
+import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieAlbertaValideSpecification;
+import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieQuebecValideSpecification;
 
+@Service
 public class ServiceUtilitairesNAM {
+	
+	@Autowired
+	private NumeroAssuranceMaladieQuebecValideSpecification numeroAssuranceMaladieQuebecValideSpecification;
+	
+	@Autowired
+	private NumeroAssuranceMaladieAlbertaValideSpecification numeroAssuranceMaladieAlbertaValideSpecification;
 
     private static final String ENCODAGE_EBCDIC = "Cp1047";
 
     public boolean validerNAM(String nam, String province)
             throws UnsupportedEncodingException, ParseException {
         if (province.equals("QC")) {
-            return validerNumeroCarteSanteQuebec(nam);
+        	return numeroAssuranceMaladieQuebecValideSpecification.estSatisfaitePar(nam);
         }
         switch (province) {
             case "AB":
-                return validerStringRegex(nam, TypeRegex.REGEX_NAM_ALBERTA);
+            	return numeroAssuranceMaladieAlbertaValideSpecification.estSatisfaitePar(nam);
             case "BC":
                 return validerStringRegex(nam, TypeRegex.REGEX_NAM_COLOMBIE_BRITANNIQUE)
                         &&
@@ -211,73 +221,7 @@ public class ServiceUtilitairesNAM {
         sb = replaceAll(sb, "[ñ]", "n");
         sb = replaceAll(sb, "[^0-9a-z%]", "");
         return sb.toString().toUpperCase().replace("SAINTE", "ST").replace("SAINT", "ST");
-    }
-
-    private boolean validerNumeroCarteSanteQuebec(String nam)
-            throws UnsupportedEncodingException, ParseException {
-        // S'assurer que nous avons 12 caractères pour le NAM et que le format est bon
-        nam = nam.toUpperCase();
-        boolean valide = validerStringRegex(nam, TypeRegex.REGEX_NAM_QUEBEC);
-
-        if (valide) {
-            // A) Décomposer le NAM
-            String nomi = nam.substring(0, 4);
-            String aaS = nam.substring(4, 6);
-            int partieMois = Integer.parseInt(nam.substring(6, 8));
-            int mm = partieMois % 50;
-            String sx = partieMois > 50 ? Sexe.FEMININ.code : Sexe.MASCULIN.code;
-            String jj = nam.substring(8, 10);
-            String s = nam.substring(10, 11);
-            int v = Integer.parseInt(nam.substring(11, 12));
-            boolean blnDateValide = true;
-
-            // Convertir AA en AAAA : Année de naissance de la personne assurée précédé du siècle.
-            // Si le siècle de naissance de la personne assurée est inconnu, il est supposé qu'il
-            // a moins de 100 ans
-            // Valider que l'année de naissance correspond à l'année de naissance du NAM
-            SimpleDateFormat formatEntree = new SimpleDateFormat("yy");
-            SimpleDateFormat formatSortie = new SimpleDateFormat("yyyy");
-            Calendar courant = Calendar.getInstance();
-            courant.add(Calendar.YEAR, -100);
-            formatEntree.set2DigitYearStart(courant.getTime());
-            String annee = formatSortie.format(formatEntree.parse(aaS));
-
-            // B) Trouver la valeur décimale de chaque caractère du numéro d'assurance maladie
-            //    décomposé, obtenu à l'étape A.
-            String namRecompose = String.format("%s%s%s%s%02d%s%s", nomi, annee.substring(0, 2), aaS, sx, mm, jj, s);
-            byte[] namConvertiEnDecimal = namRecompose.getBytes(ENCODAGE_EBCDIC);
-
-            //Validation sur la date de naissance
-            SimpleDateFormat formatDateNaissance = new SimpleDateFormat("yyyyMMdd");
-            formatDateNaissance.setLenient(false);
-            blnDateValide = formatDateNaissance.parse(
-                    annee + ((mm > 9) ? String.valueOf(mm) : "0" + String.valueOf(mm)) + nam.substring(8, 10),
-                    new ParsePosition(0)) != null;
-
-            // C) Multiplier la valeur décimale de chaque caractère du matricule décomposé par
-            //    les multiplicateurs respectifs
-            // D) Additionner les produits de ces multiplications
-            // E) Le caractère validateur est le chiffre dans la position des unités de la somme des produits.
-            int caractereValidateur = calculerCaractereValidateur(namConvertiEnDecimal, blnDateValide);
-
-            // F) Si le code est égal, le NAM est valide.
-            valide = (v == caractereValidateur) && blnDateValide;
-            if (!valide) {
-                // On réessaie avec un usager ayant plus de 100 ans
-                courant.add(Calendar.YEAR, -100);
-                formatEntree.set2DigitYearStart(courant.getTime());
-                annee = formatSortie.format(formatEntree.parse(aaS));
-                namRecompose = String.format("%s%s%s%s%02d%s%s", nomi, annee.substring(0, 2), aaS, sx, mm, jj, s);
-                namConvertiEnDecimal = namRecompose.getBytes(ENCODAGE_EBCDIC);
-                caractereValidateur = calculerCaractereValidateur(namConvertiEnDecimal, blnDateValide);
-                blnDateValide = formatDateNaissance.parse(
-                        annee + ((mm > 9) ? String.valueOf(mm) : "0" + String.valueOf(mm)) + nam.substring(8, 10),
-                        new ParsePosition(0)) != null;
-                valide = (v == caractereValidateur) && blnDateValide;
-            }
-        }
-        return valide;
-    }
+    }    
 
     private boolean validerStringRegex(String chaineTexte, TypeRegex regEx) {
         if (chaineTexte != null) {

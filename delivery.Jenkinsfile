@@ -8,6 +8,13 @@ pipeline {
     }
     stages {
 		stage ('Construction de utilitaire-nam') {
+        	// Ne construire que si la branche courante n'est pas un TAG
+             when {
+            	expression{
+                	IS_BRANCH_OR_TAG = sh(returnStdout: true, script: 'git describe --exact-match HEAD >/dev/null 2>/dev/null && echo tag || echo branch').trim()
+                    return IS_BRANCH_OR_TAG == 'branch'
+                }
+            }
 			steps {
 				milestone(ordinal: 1)
 				build job: "utilitaire-nam-construction", parameters:[string(name: 'BRANCH', value: '${BRANCH_OR_TAG}')]

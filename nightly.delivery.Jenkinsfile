@@ -54,9 +54,9 @@ pipeline {
                 		id: tag_choice,
                 		message: 'Les tests sont conclants, voulez vous dans ce cas taguer cette version ?',
                 		parameters [ 
-                			$class: 'ChoiceParameterDefinition', 
+                			[$class: 'ChoiceParameterDefinition', 
                 			choices: [ 'oui','non' ].join('\n'), 
-                			name: 'tag' 
+                			name: 'tag'] 
                 		]
                 	)
                 	if ( "${TAG_CHOICE}" == "oui" ) {
@@ -64,9 +64,18 @@ pipeline {
 	                		id: version,
 	                		message: 'Numéros de version à assigner à Utilitaire-NAM',
 	                		parameters: [
-	                			string(name: 'VERSION_TAG', defaultvalue: '', message: 'Numéro de version à assigner au tag de Utilitaire-NAM'),
-	                			string(name: 'VERSION_NEXT', defaultvalue: '', message: 'Numéro à assigner à la prochaine version de Utilitaire-NAM'),
-	                			string(name: 'MESSAGE', defaultvalue: "Nouveau tag ${VERSION_TAG} par Jenkins",message: 'Message à mettre dans le commit sur Git'),
+	                			string(
+	                				name: 'VERSION_TAG', 
+	                				defaultvalue: '', 
+	                				description: 'Numéro de version à assigner au tag de Utilitaire-NAM'),
+	                			string(
+	                				name: 'VERSION_NEXT', 
+	                				defaultvalue: '', 
+	                				description: 'Numéro à assigner à la prochaine version de Utilitaire-NAM'),
+	                			string(
+	                				name: 'MESSAGE', 
+	                				defaultvalue: "Nouveau tag ${VERSION_TAG} par Jenkins",
+	                				description: 'Message à mettre dans le commit sur Git'),
 	                		]
 	                	)
 	                	VERSION_TAG = VERSION.VERSION_TAG?:''

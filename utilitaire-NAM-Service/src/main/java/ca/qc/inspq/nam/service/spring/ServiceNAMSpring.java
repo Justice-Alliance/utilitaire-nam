@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,7 +23,8 @@ import ca.qc.inspq.nam.api.utilitaire.ServiceUtilitairesNAM;
 public class ServiceNAMSpring implements ServiceNAM {
     private DateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd");
     
-    private ServiceUtilitairesNAM utilitairesNAM = new ServiceUtilitairesNAM();
+    @Autowired
+    private ServiceUtilitairesNAM utilitairesNAM;
 
     @Override
     @RequestMapping("/valider")

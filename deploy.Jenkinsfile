@@ -33,7 +33,13 @@ pipeline {
         }
         stage ('Faire le checkout de la branche utilitaire nam') {
             steps {
-				sh "git checkout ${BRANCH_NAME} && git pull ${BRANCH_ORIGIN} ${BRANCH_NAME}"
+            	script {
+            		REMOTE = sh(
+            			script: 'git remote',
+	                	returnStdout: true
+	                	).trim()
+					sh "git checkout ${BRANCH_NAME} && git pull ${REMOTE} ${BRANCH_NAME}"
+            	}
             }
         } 
         stage ('Configurer Ansible') {

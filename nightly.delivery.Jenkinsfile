@@ -51,8 +51,9 @@ pipeline {
                 	def VERSION_NEXT
                 	def VERSION_MESSAGE
                 	def TAG_CHOICE = input(
+                		id: 'tag_choice',
                 		message: 'Les tests sont conclants, voulez vous dans ce cas taguer cette version ?',
-                		parameters [ 
+                		parameters: [ 
                 			[$class: 'ChoiceParameterDefinition', 
                 			choices: [ 'oui','non' ].join('\n'), 
                 			name: 'tag'] 
@@ -60,6 +61,7 @@ pipeline {
                 	)
                 	if ( "${TAG_CHOICE}" == "oui" ) {
 	                	VERSION = input(
+	                		id: 'version',
 	                		message: 'Numéros de version à assigner à Utilitaire-NAM',
 	                		parameters: [
 	                			string(

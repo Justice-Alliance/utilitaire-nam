@@ -66,28 +66,27 @@ pipeline {
 	                		parameters: [
 	                			string(
 	                				name: 'VERSION_TAG', 
-	                				defaultvalue: '', 
 	                				description: 'Numéro de version à assigner au tag de Utilitaire-NAM'),
 	                			string(
 	                				name: 'VERSION_NEXT', 
-	                				defaultvalue: '', 
 	                				description: 'Numéro à assigner à la prochaine version de Utilitaire-NAM'),
 	                			string(
 	                				name: 'MESSAGE', 
-	                				defaultvalue: "Nouveau tag ${VERSION_TAG} par Jenkins",
 	                				description: 'Message à mettre dans le commit sur Git'),
 	                		]
 	                	)
 	                	VERSION_TAG = VERSION.VERSION_TAG?:''
 	                	VERSION_NEXT = VERSION.VERSION_NEXT?:''
-	                	VERSION_MESSAGE = VERSION.VERSION_MESSAGE?:''
-			        	build job: "utilitaire-nam-etiquetage", 
-			        		parameters:[ 
-		    	    			string(name: 'VERSION_TAG', value: "${VERSION_TAG}"), 
-		        				string(name: 'VERSION_NEXT', value: "${VERSION_NEXT}"), 
-		        				string(name: 'MESSAGE', value: "${VERSION_MESSAGE}"),
-		        				string(name: 'BRANCH', value: "${env.BRANCH_OR_TAG}")
-		        			]
+	                	VERSION_MESSAGE = VERSION.VERSION_MESSAGE?:'Nouveau tag ${VERSION_TAG} par Jenkins'
+	                	if ( "${VERSION_TAG}" != '' && "${VERSION_NEXT}" != '' ) {
+				        	build job: "utilitaire-nam-etiquetage", 
+				        		parameters:[ 
+			    	    			string(name: 'VERSION_TAG', value: "${VERSION_TAG}"), 
+			        				string(name: 'VERSION_NEXT', value: "${VERSION_NEXT}"), 
+			        				string(name: 'MESSAGE', value: "${VERSION_MESSAGE}"),
+			        				string(name: 'BRANCH', value: "${env.BRANCH_OR_TAG}")
+			        			]
+			        	}
 		        	}
 	        	}
 				milestone(ordinal: 8)

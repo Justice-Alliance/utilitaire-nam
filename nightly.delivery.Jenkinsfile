@@ -46,23 +46,37 @@ pipeline {
             steps {
 				milestone(ordinal: 7)
                 script {
-                	def TAG_CHOICE = input message: 'Les tests sont conclants, voulez vous dans ce cas taguer cette version ?',
-                		parameters [ $class: 'ChoiceParameterDefinition', choices: [ 'oui','non' ].join('\n'), name: 'tag' ]
-                	if ( "$TAG_CHOICE" == "oui" ) {
-	                	def VERSION = input(
+                	def VERSION
+                	def VERSION_TAG
+                	def VERSION_NEXT
+                	def VERSION_MESSAGE
+                	def TAG_CHOICE = input(
+                		id: tag_choice,
+                		message: 'Les tests sont conclants, voulez vous dans ce cas taguer cette version ?',
+                		parameters [ 
+                			$class: 'ChoiceParameterDefinition', 
+                			choices: [ 'oui','non' ].join('\n'), 
+                			name: 'tag' 
+                		]
+                	)
+                	if ( "${TAG_CHOICE}" == "oui" ) {
+	                	VERSION = input(
 	                		id: version,
 	                		message: 'Numéros de version à assigner à Utilitaire-NAM',
 	                		parameters: [
 	                			string(name: 'VERSION_TAG', defaultvalue: '', message: 'Numéro de version à assigner au tag de Utilitaire-NAM'),
 	                			string(name: 'VERSION_NEXT', defaultvalue: '', message: 'Numéro à assigner à la prochaine version de Utilitaire-NAM'),
-	                			string(name: 'MESSAGE', defaultvalue: "Nouveau tag ${VERSION_TAG} par Jenkins",message: 'Message à mettre dans le commit sur Git')
+	                			string(name: 'MESSAGE', defaultvalue: "Nouveau tag ${VERSION_TAG} par Jenkins",message: 'Message à mettre dans le commit sur Git'),
 	                		]
 	                	)
+	                	VERSION_TAG = VERSION.VERSION_TAG?:''
+	                	VERSION_NEXT = VERSION.VERSION_NEXT?:''
+	                	VERSION_MESSAGE = VERSION.VERSION_MESSAGE?:''
 			        	build job: "utilitaire-nam-etiquetage", 
 			        		parameters:[ 
-		    	    			string(name: 'VERSION_TAG', value: "${VERSION.VERSION_TAG}"), 
-		        				string(name: 'VERSION_NEXT', value: "${VERSION.VERSION_NEXT}"), 
-		        				string(name: 'MESSAGE', value: "${VERSION.MESSAGE}"),
+		    	    			string(name: 'VERSION_TAG', value: "${VERSION_TAG}"), 
+		        				string(name: 'VERSION_NEXT', value: "${VERSION_NEXT}"), 
+		        				string(name: 'MESSAGE', value: "${VERSION_MESSAGE}"),
 		        				string(name: 'BRANCH', value: "${env.BRANCH_OR_TAG}")
 		        			]
 		        	}

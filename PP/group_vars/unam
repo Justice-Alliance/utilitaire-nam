@@ -1,0 +1,11 @@
+---
+# Port TCP sur lequel publier l'application
+unamservice_external_port: 15001
+# URL de base pour publier le service
+unamservice_base_url: "unam-pp.santepublique.rtss.qc.ca"
+# Protocol (http ou https) des services web
+unamservice_protocol: https
+unamservice_virtualhost_protocol: http
+unamservice_url: "{{ unamservice_protocol }}://{{ unamservice_base_url }}"
+  
+unamservice_external_actuator_port: 27083

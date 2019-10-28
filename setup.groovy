@@ -149,9 +149,6 @@ pipelineJob("${PIPELINE_LIVRAISON_NUIT}") {
     description ('Livraison de nuit ou étiquetage de Utilitaire-NAM')
     triggers { cron('00 8 * * *') }
     parameters {
-        stringParam('VERSION_TAG', '', 'Numéro de version à assigner au tag de Utilitaire-NAM')
-        stringParam('VERSION_NEXT','', 'Numéro à assigner à la prochaine version de Utilitaire-NAM (sans SNAPSHOT)')
-        stringParam ('MESSAGE', 'Nouveau tag ${VERSION_TAG} par Jenkins', 'Numéro à assigner à la prochaine version de Utilitaire-NAM (sans SNAPSHOT)')
     	gitParam('BRANCH_OR_TAG'){
     	    description('Branche ou étiquette de utilitaire-nam à livrer')
     	    type('BRANCH_TAG')

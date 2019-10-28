@@ -42,24 +42,25 @@ pipeline {
 				milestone(ordinal: 6)
 			}
         }
-        stage ('Étiqueter utilitaire-nam si des numéros de versions ont été fournis') {
-        	// Lancer l'étiquetage si les paramètres sont spécifiés
-            when {
-            	not {
-            	    anyOf {
-		                environment name: 'VERSION_TAG', value: ''
-		                environment name: 'VERSION_NEXT', value: ''            	        
-            	    }
-            	}
-            }
+        stage ('Étiqueter utilitaire-nam') {
             steps {
 				milestone(ordinal: 7)
-	        	build job: "utilitaire-nam-etiquetage", 
-	        		parameters:[string(name: 'VERSION_TAG', value: "${env.VERSION_TAG}"), 
-	        			string(name: 'VERSION_TAG', value: "${env.VERSION_TAG}"), 
-	        			string(name: 'VERSION_NEXT', value: "${env.VERSION_NEXT}"), 
-	        			string(name: 'MESSAGE', value: "${env.MESSAGE}"),
-	        			string(name: 'BRANCH', value: "${env.BRANCH_OR_TAG}")]
+                script {
+                	input 'Les tests sont conclants, voulez vous dans ce cas taguer cette version ?'
+                	VERSION_TAG = input message: 'Numéro de version à assigner au tag de Utilitaire-NAM',
+                	parameters: [string(name: 'VERSION_TAG', defaultvalue: '')]
+                	VERSION_NEXT = input message: 'Numéro à assigner à la prochaine version de Utilitaire-NAM',
+                	parameters: [string(name: 'VERSION_NEXT', defaultvalue: '')]  
+                	MESSAGE = input message: 'Message à mettre dans le commit sur Git',
+                	parameters: [string(name: 'MESSAGE', defaultvalue: "Nouveau tag ${VERSION_TAG} par Jenkins")]
+				
+		        	build job: "utilitaire-nam-etiquetage", 
+		        		parameters:[string(name: 'VERSION_TAG', value: "${VERSION_TAG}"), 
+	    	    			string(name: 'VERSION_TAG', value: "${VERSION_TAG}"), 
+	        				string(name: 'VERSION_NEXT', value: "${VERSION_NEXT}"), 
+	        				string(name: 'MESSAGE', value: "${MESSAGE}"),
+	        				string(name: 'BRANCH', value: "${env.BRANCH_OR_TAG}")]
+	        	}
 				milestone(ordinal: 8)
 			}
         }

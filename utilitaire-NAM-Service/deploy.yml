@@ -9,7 +9,15 @@
     unamservice_container_name: "unamservice{{ env | lower }}"
     unamservice_artifact_id: utilitaire-nam-service
     unamservice_docker_image: "{{ docker_registry }}/inspq/{{ unamservice_artifact_id }}"
-
+    unamservice_port_mappers:
+      - "{{ unamservice_external_port }}:{{ unamservice_internal_port }}"
+      - "{{ unamservice_external_actuator_port }}:{{ unamservice_internal_actuator_port }}"
+    unamservice_container_env:
+      "LOG4J2_GRAYLOG_URL": "{{ unam_graylog_host | default(omit) }}"
+      "LOG4J2_GRAYLOG_PORT_GELF_UDP": "{{ unam_graylog_port_gelf_udp | default(omit) | string }}"
+      "GRAYLOG_HOST_BASE": "{{ unamservice_container_name }}"
+      "DEBUG_PORT": "{{ unamservice_debug_port | default('0') }}"
+          
   roles:
   - { role: docker-engine, when: ansible_os_family == 'RedHat' }
       
@@ -31,14 +39,8 @@
       restart_policy: unless-stopped
       log_driver: "{{ unamservice_log_driver | default(omit) }}"
       log_options: "{{ unamservice_log_options | default(omit) }}"
-      ports:
-      - "{{ unamservice_external_port }}:{{ unamservice_internal_port }}"
-      - "{{ unamservice_external_actuator_port }}:{{ unamservice_internal_actuator_port }}"
-      env:
-        "LOG4J2_GRAYLOG_URL": "{{ unam_graylog_host | default(omit) }}"
-        "LOG4J2_GRAYLOG_PORT_GELF_UDP": "{{ unam_graylog_port_gelf_udp | default(omit) | string }}"
-        "GRAYLOG_HOST_BASE": "{{ unamservice_container_name }}"
-        "DEBUG_PORT": "{{ unamservice_debug_port | default('0') }}"
+      ports: "{{ unamservice_port_mappers }}"
+      env: "{{ unamservice_container_env }}"
 
   - name: Copie du certificat
     copy:

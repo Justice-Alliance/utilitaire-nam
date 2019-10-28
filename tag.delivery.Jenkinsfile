@@ -16,7 +16,7 @@ pipeline {
             }
             steps {
 				milestone(ordinal: 1)
-				TAG = sh(returnStdout: true, script: 'git describe --exact-match HEAD').trim()
+				TAG = sh(returnStdout: true, script: 'git describe --abbrev=0').trim()
 	        	build job: "utilitaire-nam-deploiement", parameters:[string(name: 'ENV', value: 'DEV'), string(name: 'TAG', value: "${TAG}")]
 				milestone(ordinal: 2)
 			}

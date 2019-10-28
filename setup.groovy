@@ -85,7 +85,7 @@ pipelineJob("${PIPELINE_TAG}") {
                 	remote{
               			url('https://gitlab.forge.gouv.qc.ca/inspq/utilitaire-nam.git')
           			}
-                	branch ('{$BRANCH}')
+                	branch ('${BRANCH}')
                 }
             }
             scriptPath('tag.Jenkinsfile')

@@ -8,6 +8,7 @@ import groovy.transform.Field
 @Field final String PIPELINE_LIVRAISON = "${REPERTOIRE_RACINE}/utilitaire-nam-livraison"
 @Field final String PIPELINE_LIVRAISON_NUIT = "${REPERTOIRE_RACINE}/utilitaire-nam-livraison-nuit"
 @Field final String PIPELINE_TAG = "${REPERTOIRE_RACINE}/utilitaire-nam-etiquetage"
+@Field final String PIPELINE_LIVRAISON_TAG = "${REPERTOIRE_RACINE}/utilitaire-nam-livraison-tag"
 
 folder("${REPERTOIRE_RACINE}") {
     description ("Utilitaire NAM")
@@ -170,6 +171,25 @@ pipelineJob("${PIPELINE_LIVRAISON_NUIT}") {
                 }
             }
             scriptPath('nightly.delivery.Jenkinsfile')
+        }
+    }
+}
+
+pipelineJob("${PIPELINE_LIVRAISON_TAG}") {
+    description ("Livraison d'un tag de Utilitaire-NAM")
+    triggers { scm('*/30 * * * *') }
+    definition {
+        cpsScm {
+            scm {
+                git{
+                	remote{
+              			url('https://gitlab.forge.gouv.qc.ca/inspq/utilitaire-nam.git')
+          			}
+                	branch ('**')
+                	refspec ('+refs/tags/*:refs/remotes/origin/tags/*')
+                }
+            }
+            scriptPath('tag.delivery.Jenkinsfile')
         }
     }
 }

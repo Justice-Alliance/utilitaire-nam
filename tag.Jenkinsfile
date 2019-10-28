@@ -37,23 +37,6 @@ pipeline {
                 sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${VERSION_TAG}"
             }
         } 
-		stage ("Tests de securité") {
-            steps {
-                sh "mvn validate -Psecurity"
-            }
-        }
-        stage ("Publier le résultats des tests ") {
-        	steps {
-	            publishHTML target: [
-	            	allowMissing: false,
-	            	alwaysLinkToLastBuild: false,
-	            	keepAll: true,
-	            	reportDir: 'target',
-	            reportFiles: 'dependency-check-report.html',
-	            reportName: 'résultats des sécurités des librairies'
-	          	]        	    
-        	}
-        }
         stage ('Preparer le release de Utilitaire-NAM') {
             steps {
                 sh "mvn clean install -Dprivate-repository=${MVN_REPOSITORY}"
@@ -84,6 +67,23 @@ pipeline {
 	          	]        	    
         	}
         } 
+		stage ("Tests de securité") {
+            steps {
+                sh "mvn validate -Psecurity"
+            }
+        }
+        stage ("Publier le résultats des tests ") {
+        	steps {
+	            publishHTML target: [
+	            	allowMissing: false,
+	            	alwaysLinkToLastBuild: false,
+	            	keepAll: true,
+	            	reportDir: 'target',
+	            reportFiles: 'dependency-check-report.html',
+	            reportName: 'résultats des sécurités des librairies'
+	          	]        	    
+        	}
+        }
         stage ('Packager les composants de Utilitaire-NAM dans des images Docker') {
 		    environment {
 			    unPom = readMavenPom file: 'utilitaire-NAM-Service/pom.xml'

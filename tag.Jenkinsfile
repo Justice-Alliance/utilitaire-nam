@@ -102,7 +102,7 @@ pipeline {
         stage ('Pousser les mises à jour des fichiers pom.xml pour le nouveau SNAPSHOT'){
             steps {
             	sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${VERSION_NEXT}-SNAPSHOT"
-        	   	sh "git add -- pom.xml"
+        	   	sh "git add -- pom.xml **/pom.xml"
     	    	sh "git commit -m 'Nouvelle version des fichiers pom.xml par Jenkins'"
     	    	sh "git push"
 	    	}  

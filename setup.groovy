@@ -174,7 +174,7 @@ pipelineJob("${PIPELINE_LIVRAISON_NUIT}") {
 
 pipelineJob("${PIPELINE_LIVRAISON_TAG}") {
     description ("Livraison d'un tag de Utilitaire-NAM")
-    triggers { scm('*/30 * * * *') }
+    triggers { scm('*/10 * * * *') }
     definition {
         cpsScm {
             scm {
@@ -183,7 +183,7 @@ pipelineJob("${PIPELINE_LIVRAISON_TAG}") {
               			url('https://gitlab.forge.gouv.qc.ca/inspq/utilitaire-nam.git')
 	                	refspec ('+refs/tags/*:refs/remotes/origin/tags/*')
           			}
-                	branch ('origin/master')
+                	branch ('*tags*')
                 }
             }
             scriptPath('tag.delivery.Jenkinsfile')

@@ -12,7 +12,7 @@ pipeline {
 				script {
 					sh "git fetch --all && git pull origin master"
 					TAG = sh(returnStdout: true, script: 'git describe --abbrev=0').trim()
-		        	build job: "utilitaire-nam-deploiement", parameters:[string(name: 'ENV', value: 'DEV'), string(name: 'TAG', value: "${TAG}")]
+		        	build job: "utilitaire-nam-deploiement", parameters:[string(name: 'ENV', value: 'DEV'), string(name: 'TAG', value: "origin/${TAG}")]
 		        }
 				milestone(ordinal: 2)
 			}

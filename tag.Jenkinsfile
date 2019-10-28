@@ -37,23 +37,6 @@ pipeline {
                 sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${VERSION_TAG}"
             }
         } 
-		stage ("Tests de securité") {
-            steps {
-                sh "mvn validate -Psecurity"
-            }
-        }
-        stage ("Publier le résultats des tests ") {
-        	steps {
-	            publishHTML target: [
-	            	allowMissing: false,
-	            	alwaysLinkToLastBuild: false,
-	            	keepAll: true,
-	            	reportDir: 'target',
-	            reportFiles: 'dependency-check-report.html',
-	            reportName: 'résultats des sécurités des librairies'
-	          	]        	    
-        	}
-        }
         stage ('Preparer le release de Utilitaire-NAM') {
             steps {
                 sh "mvn clean install -Dprivate-repository=${MVN_REPOSITORY}"
@@ -78,12 +61,29 @@ pipeline {
 	            	allowMissing: false,
 	            	alwaysLinkToLastBuild: false,
 	            	keepAll: true,
-	            	reportDir: 'target/cukedoctor',
+	            	reportDir: 'utilitaire-NAM-API/target/cukedoctor',
 	            reportFiles: 'documentation.html',
 	            reportName: 'Documentation et résultats des tests BDD'
 	          	]        	    
         	}
         } 
+		stage ("Tests de securité") {
+            steps {
+                sh "mvn validate -Psecurity"
+            }
+        }
+        stage ("Publier le résultats des tests ") {
+        	steps {
+	            publishHTML target: [
+	            	allowMissing: false,
+	            	alwaysLinkToLastBuild: false,
+	            	keepAll: true,
+	            	reportDir: 'target',
+	            reportFiles: 'dependency-check-report.html',
+	            reportName: 'résultats des sécurités des librairies'
+	          	]        	    
+        	}
+        }
         stage ('Packager les composants de Utilitaire-NAM dans des images Docker') {
 		    environment {
 			    unPom = readMavenPom file: 'utilitaire-NAM-Service/pom.xml'
@@ -102,7 +102,7 @@ pipeline {
         stage ('Pousser les mises à jour des fichiers pom.xml pour le nouveau SNAPSHOT'){
             steps {
             	sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${VERSION_NEXT}-SNAPSHOT"
-        	   	sh "git add -- pom.xml"
+        	   	sh "git add -- pom.xml **/pom.xml"
     	    	sh "git commit -m 'Nouvelle version des fichiers pom.xml par Jenkins'"
     	    	sh "git push"
 	    	}  

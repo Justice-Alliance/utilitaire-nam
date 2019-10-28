@@ -89,8 +89,10 @@ pipeline {
         } 
         stage ('Packager image Docker de utilitaire-nam') {
 		    environment {
-                unPom = readMavenPom file: 'utilitaire-NAM-Service/pom.xml'
-			    IMAGE = unPom.getArtifactId()
+                unsvcPom = readMavenPom file: 'utilitaire-NAM-Service/pom.xml'
+			    IMAGE = unsvcPom.getArtifactId()
+                unPom = readMavenPom file: 'pom.xml'
+			    APP_VERSION = unPom.getVersion()
 			}
             steps {	
                 script {

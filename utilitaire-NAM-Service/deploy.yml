@@ -22,6 +22,7 @@
   - name: application_web_docker
     application_docker_image: "{{ unamservice_docker_image }}"
     application_container_name: "{{ unamservice_container_name }}"
+    application_external_port: "{{ unamservice_external_port }}"
     application_port_mappers: "{{ unamservice_port_mappers }}"
     application_image_version: "{{ unamservice_image_version }}"
     application_container_env: "{{ unamservice_container_env }}"

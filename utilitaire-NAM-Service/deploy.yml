@@ -19,50 +19,14 @@
       "DEBUG_PORT": "{{ unamservice_debug_port | default('0') }}"
           
   roles:
-  - { role: docker-engine, when: ansible_os_family == 'RedHat' }
-      
-  tasks:
-
-  - name: Configuration de la journalisation
-    set_fact:  
-      unamservice_log_driver: gelf
-      unamservice_log_options:
-        gelf-address: "udp://{{ unam_graylog_host }}:{{ unam_graylog_port_gelf_udp }}"
-    when: unam_graylog_host is defined and unam_graylog_port_gelf_udp is defined
-
-  - name: Creation du conteneur pour unamservice 
-    docker_container:
-      name: "{{ unamservice_container_name }}"
-      image: "{{ unamservice_docker_image }}:{{ unamservice_image_version }}"
-      state: started
-      pull: "{{ unamservice_image_pull | default(True) }}"
-      restart_policy: unless-stopped
-      log_driver: "{{ unamservice_log_driver | default(omit) }}"
-      log_options: "{{ unamservice_log_options | default(omit) }}"
-      ports: "{{ unamservice_port_mappers }}"
-      env: "{{ unamservice_container_env }}"
-
-  - name: Copie du certificat
-    copy:
-      src: "certificats/{{ unamservice_cert_file }}"
-      dest: "{{ cert_file_path }}/"
-    when: unamservice_cert_file is defined
-    
-  - name: Copie de la clé du certificat
-    copy:
-      src: "certificats/{{ unamservice_cert_key }}"
-      dest: "{{ cert_key_path }}/"
-    when: unamservice_cert_key is defined
-
-  - name: Creation du hote virtuel dans APACHE
-    template:
-      src: unamservice-gabarit-apache.conf
-      dest: /etc/httpd/conf.d/{{ unamservice_base_url }}.conf
-      force: yes
-    when: unamservice_base_url is defined and unamservice_virtualhost_protocol is defined and unamservice_protocol is defined and ansible_os_family == 'RedHat'
-    notify:
-      - restart httpd  
-    
-  handlers:
-  - name: restart httpd 
-    service: name=httpd state=restarted
+  - name: application_web_docker
+    application_docker_image: "{{ unamservice_docker_image }}"
+    application_container_name: "{{ unamservice_container_name }}"
+    application_port_mappers: "{{ unamservice_port_mappers }}"
+    application_image_version: "{{ unamservice_image_version }}"
+    application_container_env: "{{ unamservice_container_env }}"
+    application_graylog_host: "{{ unam_graylog_host | default(omit) }}"
+    application_graylog_port_gelf_udp: "{{ unam_graylog_port_gelf_udp | default(omit) }}"
+    application_protocol: "{{ unamservice_protocol | default(omit) }}"
+    application_virtualhost_protocol: "{{ unamservice_virtualhost_protocol | default(omit) }}"
+    application_base_url: "{{ unamservice_base_url | default(omit) }}"

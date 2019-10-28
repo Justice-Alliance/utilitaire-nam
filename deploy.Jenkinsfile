@@ -33,7 +33,7 @@ pipeline {
         }
         stage ('Faire le checkout de la branche utilitaire nam') {
             steps {
-				sh "git checkout ${BRANCH_NAME} && git pull ${BRANCH_NAME}"
+				sh "git checkout ${BRANCH_NAME} && git pull ${BRANCH_ORIGIN} ${BRANCH_NAME}"
             }
         } 
         stage ('Configurer Ansible') {

@@ -38,6 +38,7 @@
         "LOG4J2_GRAYLOG_URL": "{{ unam_graylog_host | default(omit) }}"
         "LOG4J2_GRAYLOG_PORT_GELF_UDP": "{{ unam_graylog_port_gelf_udp | default(omit) | string }}"
         "GRAYLOG_HOST_BASE": "{{ unamservice_container_name }}"
+        "DEBUG_PORT": "{{ unamservice_debug_port | default('0') }}"
 
   - name: Copie du certificat
     copy:

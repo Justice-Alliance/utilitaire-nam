@@ -18,3 +18,5 @@ unamservice_protocol: http
 unamservice_url: "{{ unamservice_protocol }}://{{ unamservice_base_url }}:{{ unamservice_external_port }}"
   
 unamservice_external_actuator_port: 27082
+
+unamservice_debug_port: "*:8001"

@@ -9,9 +9,23 @@ import groovy.transform.Field
 @Field final String PIPELINE_LIVRAISON_NUIT = "${REPERTOIRE_RACINE}/utilitaire-nam-livraison-nuit"
 @Field final String PIPELINE_TAG = "${REPERTOIRE_RACINE}/utilitaire-nam-etiquetage"
 @Field final String PIPELINE_LIVRAISON_TAG = "${REPERTOIRE_RACINE}/utilitaire-nam-livraison-tag"
-
+@Field final String PIPELINE_MULTIBRANCH = "${REPERTOIRE_RACINE}/utilitaire-nam-construction-branches"
 folder("${REPERTOIRE_RACINE}") {
     description ("Utilitaire NAM")
+}
+multibranchPipelineJob("${PIPELINE_MULTIBRANCH}") {
+    description("Pipeline multi-branches pour utilitaire-nam")
+    branchSources {
+        git {
+            remote('https://gitlab.forge.gouv.qc.ca/inspq/utilitaire-nam.git')
+        }
+    }
+    triggers {
+        scm('*/30 * * * *')
+    }
+    orphanedItemStrategy{
+        discardOldItems { numToKeep(5) }
+    }
 }
 
 pipelineJob("${PIPELINE_CONSTRUCTION}") {

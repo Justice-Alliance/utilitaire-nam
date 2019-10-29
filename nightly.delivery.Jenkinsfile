@@ -6,11 +6,6 @@ pipeline {
 		disableConcurrentBuilds()
     }
     stages {
-    	stage ('Checkout') {
-			steps {
-             	checkout scm
-			}      
-    	}
 		stage ('Construction de nuit de utilitaire-nam') {
         	// Ne construire que si la branche courante n'est pas un TAG
              when {

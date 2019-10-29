@@ -33,8 +33,7 @@ pipeline {
         }
         stage ('Faire le checkout de la branche unitilitaire nam a étiqueter et mettre à jour la version') {
             steps {
-            	checkout scm
-				//sh "git checkout ${BRANCH_NAME} && git pull"
+				sh "git checkout ${BRANCH_NAME} && git pull"
                 sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${VERSION_TAG}"
             }
         } 

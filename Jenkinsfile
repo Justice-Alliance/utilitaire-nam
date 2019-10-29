@@ -16,22 +16,22 @@ pipeline {
     	NOTIFICATION_TEAM = "${env.NOTIFICATION_SX5_TEAM}"
     }
     stages {
-        stage ('Préparer les variables') {
-   			steps {
-                script {
-                	sh "echo ${BRANCH} > BRANCH"
-	                BRANCH_ORIGIN = sh(
-	                	script: "cut -d / -f 1 BRANCH",
-	                	returnStdout: true
-	                	).trim()   
-	                BRANCH_NAME = sh(
-	                	script: "cut -d / -f 2 BRANCH",
-	                	returnStdout: true
-	                	).trim()  
-                	sh "rm BRANCH"
-                }
-            }
-        }
+        //stage ('Préparer les variables') {
+   		//	steps {
+        //        script {
+        //        	sh "echo ${BRANCH} > BRANCH"
+	    //            BRANCH_ORIGIN = sh(
+	    //            	script: "cut -d / -f 1 BRANCH",
+	    //            	returnStdout: true
+	    //            	).trim()   
+	    //            BRANCH_NAME = sh(
+	    //            	script: "cut -d / -f 2 BRANCH",
+	    //            	returnStdout: true
+	    //            	).trim()  
+        //        	sh "rm BRANCH"
+        //        }
+        //    }
+        //}
         stage ('Faire le checkout de la branche utilitaire nam') {
             steps {
             	checkout scm

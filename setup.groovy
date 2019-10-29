@@ -21,7 +21,7 @@ multibranchPipelineJob("${PIPELINE_MULTIBRANCH}") {
         }
     }
     triggers {
-        scm('*/30 * * * *')
+        cron('@daily')
     }
     orphanedItemStrategy{
         discardOldItems { numToKeep(5) }

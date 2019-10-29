@@ -6,6 +6,11 @@ pipeline {
 		disableConcurrentBuilds()
     }
     stages {
+    	stage ('Checkout') {
+			steps {
+             	checkout scm
+			}      
+    	}
 		stage ('Construction de utilitaire-nam') {
 			steps {
 				milestone(ordinal: 1)

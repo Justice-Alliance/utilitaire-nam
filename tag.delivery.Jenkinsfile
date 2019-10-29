@@ -8,9 +8,9 @@ pipeline {
     stages {
     	stage ('Checkout') {
 			steps {
-              
+             	checkout scm
 			    script {
-					sh "git fetch --all && git pull origin master"
+				//	sh "git fetch --all && git pull origin master"
 					TAG = sh(returnStdout: true, script: 'git describe --abbrev=0').trim()
 				}
 			}      

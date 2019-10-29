@@ -34,7 +34,8 @@ pipeline {
         }
         stage ('Faire le checkout de la branche utilitaire nam') {
             steps {
-				sh "git checkout ${BRANCH_NAME} && git pull"
+            	checkout scm
+				//sh "git checkout ${BRANCH_NAME} && git pull"
             }
         } 
         stage ('Construire utilitaire-nam') {

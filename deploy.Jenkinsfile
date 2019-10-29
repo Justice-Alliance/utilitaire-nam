@@ -10,12 +10,17 @@ pipeline {
         jdk 'openjdk-11'
         maven 'M3'
     }
-    environment {
-        unServicePom = readMavenPom file: 'utilitaire-NAM-Service/pom.xml'
-        UN_SERVICE_IMAGE = unServicePom.getArtifactId()
-	}
     stages {
+    	stage ('Checkout') {
+			steps {
+             	checkout scm
+			}      
+    	}
         stage ('Préparer les variables') {
+		    environment {
+		        unServicePom = readMavenPom file: 'utilitaire-NAM-Service/pom.xml'
+		        UN_SERVICE_IMAGE = unServicePom.getArtifactId()
+			}
    			steps {
                 script {
                 	sh "echo ${TAG} > BRANCH"
@@ -31,17 +36,17 @@ pipeline {
                 }
             }
         }
-        stage ('Faire le checkout de la branche utilitaire nam') {
-            steps {
-            	script {
-            		REMOTE = sh(
-            			script: 'git remote',
-	                	returnStdout: true
-	                	).trim()
-					sh "git checkout ${BRANCH_NAME} && git pull ${REMOTE} ${BRANCH_NAME}"
-            	}
-            }
-        } 
+        //stage ('Faire le checkout de la branche utilitaire nam') {
+        //    steps {
+        //    	script {
+        //    		REMOTE = sh(
+        //    			script: 'git remote',
+	    //            	returnStdout: true
+	    //            	).trim()
+		//			sh "git checkout ${BRANCH_NAME} && git pull ${REMOTE} ${BRANCH_NAME}"
+        //    	}
+        //    }
+        //} 
         stage ('Configurer Ansible') {
             steps {
 	            sh "rm -rf roles && mkdir -p roles"

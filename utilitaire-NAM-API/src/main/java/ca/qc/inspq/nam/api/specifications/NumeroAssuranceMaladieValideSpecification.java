@@ -5,15 +5,13 @@ import java.text.ParseException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import ca.qc.inspq.nam.api.modele.TypeRegex;
-
 public interface NumeroAssuranceMaladieValideSpecification {
 
 	boolean estSatisfaitePar(String nam) throws UnsupportedEncodingException, ParseException;
 	
-	default boolean sassurerQueLaChaineDeCaracteresRespecteLexpressionReguliere(String chaineTexte, TypeRegex regEx) {
+	default boolean sassurerQueLaChaineDeCaracteresRespecteLexpressionReguliere(String chaineTexte, String regEx) {
         if (chaineTexte != null) {
-            Pattern pattern = Pattern.compile(regEx.getValue());
+            Pattern pattern = Pattern.compile(regEx);
             Matcher matcher = pattern.matcher(chaineTexte);
 
             return matcher.matches();

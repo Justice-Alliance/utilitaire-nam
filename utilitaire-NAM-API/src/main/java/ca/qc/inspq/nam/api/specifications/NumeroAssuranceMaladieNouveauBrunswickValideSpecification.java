@@ -5,15 +5,15 @@ import java.text.ParseException;
 
 import org.springframework.stereotype.Service;
 
-import ca.qc.inspq.nam.api.modele.TypeRegex;
-
 @Service
 public class NumeroAssuranceMaladieNouveauBrunswickValideSpecification implements NumeroAssuranceMaladieValideSpecification {
+	
+	private static final String FORMAT_NAM_NOUVEAU_BRUNSWICK_VALIDE = "^[0-9]{9}$";
 	
 	@Override
 	public boolean estSatisfaitePar(String nam) throws UnsupportedEncodingException, ParseException
 	{
-		return sassurerQueLaChaineDeCaracteresRespecteLexpressionReguliere(nam, TypeRegex.REGEX_NAM_NOUVEAU_BRUNSWICK);
+		return sassurerQueLaChaineDeCaracteresRespecteLexpressionReguliere(nam, FORMAT_NAM_NOUVEAU_BRUNSWICK_VALIDE);
 	}
 
 }

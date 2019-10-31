@@ -5,23 +5,18 @@ import java.text.ParseException;
 
 import org.springframework.stereotype.Service;
 
-import ca.qc.inspq.nam.api.modele.TypeRegex;
-
 @Service
 public class NumeroAssuranceMaladieColombieBritanniqueValideSpecification implements NumeroAssuranceMaladieValideSpecification {
+	
+	private static final String FORMAT_NAM_COLOMBIE_BRITANNIQUE_VALIDE = "^9[0-9]{9}$";
 
 	@Override
 	public boolean estSatisfaitePar(String nam) throws UnsupportedEncodingException, ParseException {
-		return sassurerQueLaChaineDeCaracteresRespecteLexpressionReguliere(nam, TypeRegex.REGEX_NAM_COLOMBIE_BRITANNIQUE)
-               &&
-               validerNumeroCarteSanteColombieBritannique(nam);
+		return sassurerQueLaChaineDeCaracteresRespecteLexpressionReguliere(nam, FORMAT_NAM_COLOMBIE_BRITANNIQUE_VALIDE)
+               && validerNumeroCarteSanteColombieBritanniqueParAlgorithmeValidation(nam);
 	}
 	
-	private boolean validerNumeroCarteSanteColombieBritannique(String numeroCarteSante) {
-        if (numeroCarteSante.length() != 10) {
-            throw new IllegalArgumentException("Le numero de carte santé spécifié n'a pas la bonne taille");
-        }
-
+	private boolean validerNumeroCarteSanteColombieBritanniqueParAlgorithmeValidation(String numeroCarteSante) {
         char[] tableau = numeroCarteSante.toCharArray();
         int checkDigit = Integer.parseInt(String.valueOf(tableau[9]));
 

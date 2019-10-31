@@ -48,6 +48,8 @@ import ca.qc.inspq.nam.api.utilitaire.ServiceUtilitairesNAM;
 @SpringBootTest
 public class ServiceUtilitaireNAMTest {
 	
+	private static final SimpleDateFormat FORMATTEUR_DATE = new SimpleDateFormat("yyyy-MM-dd");
+	
 	private static final String NAM_QUEBEC = "TREM04121925";
 	private static final String NAM_ALBERTA = "940114192";
 	private static final String NAM_COLOMBIE_BRITANNIQUE = "9759528158";
@@ -61,6 +63,13 @@ public class ServiceUtilitaireNAMTest {
 	private static final String NAM_ILE_DU_PRINCE_EDOUARD = "940114195";
 	private static final String NAM_SASKATCHEWAN = "940114195";
 	private static final String NAM_YUKON = "940114195";
+	
+	private static final String AUCUN_PRENOM = null;
+	private static final String PRENOM = "Martin";
+	private static final String NOM = "Tremblay";
+	private static final String NOM_PAS_NORMALISE = "L'Heureux";
+	private static final String SEXE = "M";
+	private static final String DATE_NAISSANCE = "2004-12-19";
 	
 	private static final String PROVINCE_NON_VALIDE = "TT";
 	
@@ -109,7 +118,6 @@ public class ServiceUtilitaireNAMTest {
 	@MockBean
 	private NumeroAssuranceMaladieYukonValideSpecification numeroAssuranceMaladieYukonValideSpecification;
 	
-	// -------------- Valider un nam ------------------
 	@Test
 	public void quandJeValideUnNamPourleQuebec_alorsJappelleLaSpecificationPourNamDuQuebecValide() throws UnsupportedEncodingException, ParseException {
 		serviceUtilitaireNAM.validerNAM(NAM_QUEBEC, Provinces.QC.toString());
@@ -285,44 +293,71 @@ public class ServiceUtilitaireNAMTest {
 		serviceUtilitaireNAM.validerNAM(NAM_QUEBEC, PROVINCE_NON_VALIDE);
 	}
 	
-	// ----------------------------------------
-
+	// --------------- Obtenir une liste de NAM -------------------------
+	
+	// ça prend les 4 entrants, sinon InvalidParameterException (ne pas utiliser cette exception...)
 	@Test
-	public void doit_RetournerUneListeDeNAMValide_Quand_ObtenirCombinaisonsValidesDeNAM_EstAppeleAvecLesBonsParametres()
+	public void quandJeDemandeDobtenirTousLesNAMSPossiblesPourUnePersonne_siLesParametresNeSontPasTousFournis_alorsInvalidParameterException()
 			throws UnsupportedEncodingException, ParseException {
-
-		// Arrange
-		List<String> valideNams = new ArrayList<>();
-		String prenom = "Martin";
-		String nom = "Tremblay";
-		Date dateNaissance = new Date(2004 - 12 - 19);
-		String sexe = "M";
-		// Act
-		valideNams = serviceUtilitaireNAM.obtenirCombinaisonsValidesDeNAM(prenom, nom, dateNaissance, sexe);
-
-		// Assert
-		assertEquals(valideNams.size(), 9);
-
+		exception.expect(InvalidParameterException.class);
+		serviceUtilitaireNAM.obtenirCombinaisonsValidesDeNAM(AUCUN_PRENOM, NOM, FORMATTEUR_DATE.parse(DATE_NAISSANCE), SEXE);
 	}
-
-	@Test(expected = InvalidParameterException.class)
-	public void doit_RetournerInvalidParameterException_Quand_ObtenirCombinaisonsValidesDeNAM_EstAppeleAvecUnDesParametreNullOuVide()
-			throws UnsupportedEncodingException, ParseException {
-
-		// Arrange
-		InvalidParameterException exception = new InvalidParameterException(
-				"Vous devez fournir un prénom, un nom et une date de naissance.");
-		String prenom = "";
-		String nom = "";
-		Date dateNaissance = null;
-		String sexe = "";
-		// Act
-		serviceUtilitaireNAM.obtenirCombinaisonsValidesDeNAM(prenom, nom, dateNaissance, sexe);
-
-		// Assert
-		assertEquals("Vous devez fournir un prénom, un nom et une date de naissance.", exception.getMessage());
-
+	
+	// nom normalisé RAMQ dans le NAM
+	// TODO est-ce que la normalisation devrait vraiment se trouver ici?
+	@Test
+	public void quandJeDemandeDobtenirTousLesNAMSPossiblesPourUnePersonne_alorsLeNomEstNormaliseDansLesNAMS() throws UnsupportedEncodingException, ParseException {
+		var resultat = serviceUtilitaireNAM.obtenirCombinaisonsValidesDeNAM(PRENOM, NOM_PAS_NORMALISE, FORMATTEUR_DATE.parse(DATE_NAISSANCE), SEXE);
+		assertThat(resultat).isNotNull().noneMatch(nam -> nam.startsWith(NOM_PAS_NORMALISE.toUpperCase().substring(0, 3)));
 	}
+	
+	// prénom normalisé RAMQ dans le NAM
+	
+	// le nam contient les 3 premieres lettres du nom de famille à ses 3 premiers caracteres
+	@Test
+	public void quandJeDemandeDobtenirTousLesNAMSPossiblesPourUnePersonne_alorsTousLesNAMSCommencentParLes3PremieresLettresDeSonNomEnMajuscules() throws UnsupportedEncodingException, ParseException {
+		var resultat = serviceUtilitaireNAM.obtenirCombinaisonsValidesDeNAM(PRENOM, NOM, FORMATTEUR_DATE.parse(DATE_NAISSANCE), SEXE);
+		assertThat(resultat).isNotNull().allMatch(nam -> nam.startsWith(NOM.toUpperCase().substring(0, 3)));
+	}
+	
+	// si nom plus petit que 3 caractères, on pad right avec des X
+	
+	// le nam contient la première lettre du prénom à son 4e caracteres
+	
+	// le nam contient les deux derniers chiffres de l'année à ses caractères 5 et 6
+	
+	// si le mois est < 10, le nam contient le mois pad de 0 à gauche à ses caractères 7 et 8
+	
+	// si le mois est >= 10, le nam contient le mois à ses carac`teres 7 et 8
+	
+	// si le sexe est féminin, le mois dans le nam est le mois de naissance + 50
+	
+	// si le jour est < 10, le nam contient le jour pad de 0 à gauche à ses caractères 9 et 10
+	
+	// si le jour est >= 10, le nam contient le jour à ses caractères 9 et 10
+	
+	// le nam contient l'indicateur de jumeaux à son caractère 11
+	
+	// le nam contient les caracteres validateurs à son caractère 12
+	
+	// si les entrants sont valides, on reçoit tous les nams possibles pour ces entrants
+	@Test
+	public void quandJeDemandeDobtenirTousLesNAMSPossiblesPourUnePersonne_alorsOnRetourneTousLesNAMSPossiblesPourCettePersonne() throws UnsupportedEncodingException, ParseException {
+		var resultat = serviceUtilitaireNAM.obtenirCombinaisonsValidesDeNAM(PRENOM, NOM, FORMATTEUR_DATE.parse(DATE_NAISSANCE), SEXE);
+		assertThat(resultat).isNotNull().hasSize(9).containsExactly("TREM04121914", 
+				"TREM04121925", 
+				"TREM04121936", 
+				"TREM04121947", 
+				"TREM04121958", 
+				"TREM04121969", 
+				"TREM04121970", 
+				"TREM04121981", 
+				"TREM04121992");
+	}
+	
+	// -------------------------------------------------------------------
+
+	
 
 	@Test
 	public void doit_RetournerLeSexeDeLaPersonne_Quand_ObtenirSexe_EstAppeleAvecUnNAMValide()

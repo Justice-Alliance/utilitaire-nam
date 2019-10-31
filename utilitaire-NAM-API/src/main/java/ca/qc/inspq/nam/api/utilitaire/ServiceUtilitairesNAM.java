@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ca.qc.inspq.nam.api.modele.Sexe;
-import ca.qc.inspq.nam.api.modele.TypeRegex;
 import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieAlbertaValideSpecification;
 import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieQuebecValideSpecification;
 import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieColombieBritanniqueValideSpecification;
@@ -77,10 +76,9 @@ public class ServiceUtilitairesNAM {
 
     public boolean validerNAM(String nam, String province)
             throws UnsupportedEncodingException, ParseException {
-        if (province.equals("QC")) {
-        	return numeroAssuranceMaladieQuebecValideSpecification.estSatisfaitePar(nam);
-        }
         switch (province) {
+        	case "QC":
+        		return numeroAssuranceMaladieQuebecValideSpecification.estSatisfaitePar(nam);
             case "AB":
             	return numeroAssuranceMaladieAlbertaValideSpecification.estSatisfaitePar(nam);
             case "BC":
@@ -261,16 +259,6 @@ public class ServiceUtilitairesNAM {
         sb = replaceAll(sb, "[ñ]", "n");
         sb = replaceAll(sb, "[^0-9a-z%]", "");
         return sb.toString().toUpperCase().replace("SAINTE", "ST").replace("SAINT", "ST");
-    }    
-
-    private boolean validerStringRegex(String chaineTexte, TypeRegex regEx) {
-        if (chaineTexte != null) {
-            Pattern pattern = Pattern.compile(regEx.getValue());
-            Matcher matcher = pattern.matcher(chaineTexte);
-
-            return matcher.matches();
-        }
-        return false;
     }
 
     private int calculerCaractereValidateur(byte[] namConvertiEnDecimal, boolean blnDateValide) {

@@ -5,13 +5,13 @@ import java.text.ParseException;
 
 import org.springframework.stereotype.Service;
 
-import ca.qc.inspq.nam.api.modele.TypeRegex;
-
 @Service
 public class NumeroAssuranceMaladieNouvelleEcosseValideSpecification implements NumeroAssuranceMaladieValideSpecification {
+	
+	private static final String FORMAT_NAM_NOUVELLE_ECOSSE_VALIDE = "^[0-9]{10}$";
 
 	@Override
 	public boolean estSatisfaitePar(String nam) throws UnsupportedEncodingException, ParseException {
-		return sassurerQueLaChaineDeCaracteresRespecteLexpressionReguliere(nam, TypeRegex.REGEX_NAM_NOUVELLE_ECOSSE);
+		return sassurerQueLaChaineDeCaracteresRespecteLexpressionReguliere(nam, FORMAT_NAM_NOUVELLE_ECOSSE_VALIDE);
 	}
 }

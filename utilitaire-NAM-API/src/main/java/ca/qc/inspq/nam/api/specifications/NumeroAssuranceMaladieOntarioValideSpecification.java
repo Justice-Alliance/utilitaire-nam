@@ -5,35 +5,31 @@ import java.text.ParseException;
 
 import org.springframework.stereotype.Service;
 
-import ca.qc.inspq.nam.api.modele.TypeRegex;
-
 @Service
 public class NumeroAssuranceMaladieOntarioValideSpecification implements NumeroAssuranceMaladieValideSpecification {
 	
+	private static final String FORMAT_NAM_ONTARIO_VALIDE = "^[0-9]{10}$";
+	
 	@Override
 	public boolean estSatisfaitePar(String nam) throws UnsupportedEncodingException, ParseException {
-		return sassurerQueLaChaineDeCaracteresRespecteLexpressionReguliere(nam, TypeRegex.REGEX_NAM_ONTARIO) && validerNumeroCarteSanteOntario (nam);
+		return sassurerQueLaChaineDeCaracteresRespecteLexpressionReguliere(nam, FORMAT_NAM_ONTARIO_VALIDE) && 
+				validerNumeroCarteSanteOntarioParAlgorithmeValidation(nam);
 	}
 	
-	private boolean validerNumeroCarteSanteOntario(String numeroCarteSante) {
-        if (numeroCarteSante.length() != 10) {
-            throw new IllegalArgumentException("Le numero de carte santé spécifié n'a pas la bonne taille");
-        }
+	private boolean validerNumeroCarteSanteOntarioParAlgorithmeValidation(String numeroCarteSante) {
         char[] tableau = numeroCarteSante.toCharArray();
         int checkDigit = Integer.parseInt(String.valueOf(tableau[9]));
 
         int[] luhn = new int[9];
 
         for (int i = 0; i < tableau.length - 1; i++) {
-            if (i % 2 == 0) {
-                // Pair, donc position impaire dans la chaine
+            if (caractereEstAUnePositionImpaireDansLaChaineComplete(i)) {
                 luhn[i] = Integer.parseInt(String.valueOf(tableau[i])) * 2;
                 if (luhn[i] >= 10) {
                     luhn[i] = luhn[i] - 9;
                 }
             }
             else {
-                // Impair, donc position paire dans la chaine
                 luhn[i] = Integer.parseInt(String.valueOf(tableau[i]));
             }
         }
@@ -46,5 +42,9 @@ public class NumeroAssuranceMaladieOntarioValideSpecification implements NumeroA
 
         return (10 - unite) == checkDigit;
     }
+
+	private boolean caractereEstAUnePositionImpaireDansLaChaineComplete(int i) {
+		return i % 2 == 0;
+	}
 
 }

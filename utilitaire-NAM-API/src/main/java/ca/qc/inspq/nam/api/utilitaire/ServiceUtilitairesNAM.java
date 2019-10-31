@@ -19,6 +19,17 @@ import ca.qc.inspq.nam.api.modele.Sexe;
 import ca.qc.inspq.nam.api.modele.TypeRegex;
 import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieAlbertaValideSpecification;
 import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieQuebecValideSpecification;
+import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieColombieBritanniqueValideSpecification;
+import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieManitobaValideSpecification;
+import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieTerritoiresDuNordOuestValideSpecification;
+import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieNouvelleEcosseValideSpecification;
+import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieNouveauBrunswickValideSpecification;
+import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieTerreNeuveEtLabradorValideSpecification;
+import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieNunavutValideSpecification;
+import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieOntarioValideSpecification;
+import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieIleDuPrinceEdouardValideSpecification;
+import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieSaskatchewanValideSpecification;
+import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieYukonValideSpecification;
 
 @Service
 public class ServiceUtilitairesNAM {
@@ -28,7 +39,40 @@ public class ServiceUtilitairesNAM {
 	
 	@Autowired
 	private NumeroAssuranceMaladieAlbertaValideSpecification numeroAssuranceMaladieAlbertaValideSpecification;
+	
+	@Autowired
+	private NumeroAssuranceMaladieColombieBritanniqueValideSpecification numeroAssuranceMaladieColombieBritanniqueValideSpecification;
 
+	@Autowired
+	private NumeroAssuranceMaladieManitobaValideSpecification numeroAssuranceMaladieManitobaValideSpecification;
+	
+	@Autowired
+	private NumeroAssuranceMaladieTerritoiresDuNordOuestValideSpecification numeroAssuranceMaladieTerritoiresDuNordOuestValideSpecification;
+	
+	@Autowired
+	private NumeroAssuranceMaladieNouvelleEcosseValideSpecification numeroAssuranceMaladieNouvelleEcosseValideSpecification;
+	
+	@Autowired
+	private NumeroAssuranceMaladieNouveauBrunswickValideSpecification numeroAssuranceMaladieNouveauBrunswickValideSpecification;
+	
+	@Autowired
+	private NumeroAssuranceMaladieTerreNeuveEtLabradorValideSpecification numeroAssuranceMaladieTerreNeuveEtLabradorValideSpecification;
+	
+	@Autowired
+	private NumeroAssuranceMaladieNunavutValideSpecification numeroAssuranceMaladieNunavutValideSpecification;
+	
+	@Autowired
+	private NumeroAssuranceMaladieOntarioValideSpecification numeroAssuranceMaladieOntarioValideSpecification;
+	
+	@Autowired
+	private NumeroAssuranceMaladieIleDuPrinceEdouardValideSpecification numeroAssuranceMaladieIleDuPrinceEdouardValideSpecification;
+	
+	@Autowired
+	private NumeroAssuranceMaladieSaskatchewanValideSpecification numeroAssuranceMaladieSaskatchewanValideSpecification;
+	
+	@Autowired
+	private NumeroAssuranceMaladieYukonValideSpecification numeroAssuranceMaladieYukonValideSpecification;
+	
     private static final String ENCODAGE_EBCDIC = "Cp1047";
 
     public boolean validerNAM(String nam, String province)
@@ -40,31 +84,27 @@ public class ServiceUtilitairesNAM {
             case "AB":
             	return numeroAssuranceMaladieAlbertaValideSpecification.estSatisfaitePar(nam);
             case "BC":
-                return validerStringRegex(nam, TypeRegex.REGEX_NAM_COLOMBIE_BRITANNIQUE)
-                        &&
-                        validerNumeroCarteSanteColombieBritannique(nam);
+            	return numeroAssuranceMaladieColombieBritanniqueValideSpecification.estSatisfaitePar(nam);
             case "MB":
-                return validerStringRegex(nam, TypeRegex.REGEX_NAM_MANITOBA);
+                return numeroAssuranceMaladieManitobaValideSpecification.estSatisfaitePar(nam);
             case "NT":
-                return validerStringRegex(nam, TypeRegex.REGEX_NAM_TERRITOIRES_NO);
+                return numeroAssuranceMaladieTerritoiresDuNordOuestValideSpecification.estSatisfaitePar(nam);
             case "NS":
-                return validerStringRegex(nam, TypeRegex.REGEX_NAM_NOUVELLE_ECOSSE);
+                return numeroAssuranceMaladieNouvelleEcosseValideSpecification.estSatisfaitePar(nam);
             case "NB":
-                return validerStringRegex(nam, TypeRegex.REGEX_NAM_NOUVEAU_BRUNSWICK);
+                return numeroAssuranceMaladieNouveauBrunswickValideSpecification.estSatisfaitePar(nam);
             case "NL":
-                return validerStringRegex(nam, TypeRegex.REGEX_NAM_TERRE_NEUVE_LABRADOR);
+                return numeroAssuranceMaladieTerreNeuveEtLabradorValideSpecification.estSatisfaitePar(nam);
             case "NU":
-                return validerStringRegex(nam, TypeRegex.REGEX_NAM_NUNAVUT);
+                return numeroAssuranceMaladieNunavutValideSpecification.estSatisfaitePar(nam);
             case "ON":
-                return validerStringRegex(nam, TypeRegex.REGEX_NAM_ONTARIO)
-                        &&
-                        validerNumeroCarteSanteOntario(nam);
+                return numeroAssuranceMaladieOntarioValideSpecification.estSatisfaitePar(nam);
             case "PE":
-                return validerStringRegex(nam, TypeRegex.REGEX_NAM_ILE_PRINCE_EDOUARD);
+                return numeroAssuranceMaladieIleDuPrinceEdouardValideSpecification.estSatisfaitePar(nam);
             case "SK":
-                return validerStringRegex(nam, TypeRegex.REGEX_NAM_SASKATCHEWAN);
+                return numeroAssuranceMaladieSaskatchewanValideSpecification.estSatisfaitePar(nam);
             case "YT":
-                return validerStringRegex(nam, TypeRegex.REGEX_NAM_YUKON);
+                return numeroAssuranceMaladieYukonValideSpecification.estSatisfaitePar(nam);
             default:
                 throw new IllegalArgumentException("La province de la carte santé n'est pas valide.");
         }
@@ -231,61 +271,6 @@ public class ServiceUtilitairesNAM {
             return matcher.matches();
         }
         return false;
-    }
-
-    private boolean validerNumeroCarteSanteOntario(String numeroCarteSante) {
-        if (numeroCarteSante.length() != 10) {
-            throw new IllegalArgumentException("Le numero de carte santé spécifié n'a pas la bonne taille");
-        }
-        char[] tableau = numeroCarteSante.toCharArray();
-        int checkDigit = Integer.parseInt(String.valueOf(tableau[9]));
-
-        int[] luhn = new int[9];
-
-        for (int i = 0; i < tableau.length - 1; i++) {
-            if (i % 2 == 0) {
-                // Pair, donc position impaire dans la chaine
-                luhn[i] = Integer.parseInt(String.valueOf(tableau[i])) * 2;
-                if (luhn[i] >= 10) {
-                    luhn[i] = luhn[i] - 9;
-                }
-            }
-            else {
-                // Impair, donc position paire dans la chaine
-                luhn[i] = Integer.parseInt(String.valueOf(tableau[i]));
-            }
-        }
-
-        int somme = 0;
-        for (int x : luhn) {
-            somme += x;
-        }
-        int unite = somme % 10;
-
-        return (10 - unite) == checkDigit;
-    }
-
-    private boolean validerNumeroCarteSanteColombieBritannique(String numeroCarteSante) {
-        if (numeroCarteSante.length() != 10) {
-            throw new IllegalArgumentException("Le numero de carte santé spécifié n'a pas la bonne taille");
-        }
-
-        char[] tableau = numeroCarteSante.toCharArray();
-        int checkDigit = Integer.parseInt(String.valueOf(tableau[9]));
-
-        int[] poids = { 2, 4, 8, 5, 10, 9, 7, 3 };
-        int[] restes = new int[8];
-
-        for (int i = 1; i < tableau.length - 1; i++) {
-            restes[i - 1] = (Integer.parseInt(String.valueOf(tableau[i])) * poids[i - 1]) % 11;
-        }
-
-        int somme = 0;
-        for (int x : restes) {
-            somme += x;
-        }
-
-        return 11 - (somme % 11) == checkDigit;
     }
 
     private int calculerCaractereValidateur(byte[] namConvertiEnDecimal, boolean blnDateValide) {

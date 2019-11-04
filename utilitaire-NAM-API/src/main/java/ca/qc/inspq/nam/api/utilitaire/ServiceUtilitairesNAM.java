@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import ca.qc.inspq.nam.api.modele.Personne;
 import ca.qc.inspq.nam.api.modele.Sexe;
 import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieAlbertaValideSpecification;
 import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieQuebecValideSpecification;
@@ -106,78 +107,68 @@ public class ServiceUtilitairesNAM {
             default:
                 throw new IllegalArgumentException("La province de la carte santé n'est pas valide.");
         }
+    }    	
+    	
+    public List<String> obtenirCombinaisonsValidesDeNAM(Personne personne) throws UnsupportedEncodingException {
+    	validerPersonne(personne);
+        List<String> nams = new ArrayList<>();
+        String namReel = construireNAMReel(personne);
+        String namPartiel = obtenirSequenceGenerationNAM(personne);
+        for (int i = 1; i < 10; i++) {
+            String namPartielAvecJumeau = namPartiel.toString() + i;
+            int validateur = calculerCaractereValidateur(namPartielAvecJumeau.getBytes(ENCODAGE_EBCDIC), true);
+            nams.add(String.format("%s%d%d", namReel.toString(), i, validateur));
+        }
+        return nams;
     }
     
-    public List<String> obtenirCombinaisonsValidesDeNAM(String prenom,
-            String nom,
-            Date dateNaissance,
-            String sexe) throws UnsupportedEncodingException {
-        List<String> nams = new ArrayList<>();
+    private void validerPersonne(Personne personne) {
+    	if (personne.getDateNaissance() == null || personne.getSexe() == null || personne.getPrenomNormalise() == null || personne.getNomNormalise() == null) {
+    		throw new InvalidParameterException();
+    	}
+    }
 
-        if (StringUtils.isBlank(prenom)
-                || StringUtils.isBlank(nom)
-                || StringUtils.isBlank(sexe)
-                || dateNaissance == null) {
-            throw new InvalidParameterException("Vous devez fournir un prénom, un nom et une date de naissance.");
-        }
-        // Normaliser le prénom et le nom
-        prenom = normaliserRAMQ(prenom);
-        nom = normaliserRAMQ(nom);
-        // Générer un NAM
-        StringBuilder namPartiel = new StringBuilder();
-        StringBuilder namReel = new StringBuilder();
-        // Si le nom de famille est plus petit que 3 caractères, on rempli avec X.
-        if (nom.length() < 3) {
-            namPartiel.append(StringUtils.rightPad(nom, 3, "X"));
-        }
-        else {
-            namPartiel.append(nom.substring(0, 3));
-        }
-        // On prend la première lettre du prénom
-        namPartiel.append(prenom.substring(0, 1));
-
-        namReel.append(namPartiel.toString());
-
-        // On prend l'année sur 4 chiffres
-        SimpleDateFormat sdfYYYY = new SimpleDateFormat("yyyy");
-        namPartiel.append(sdfYYYY.format(dateNaissance));
-
-        SimpleDateFormat sdfYY = new SimpleDateFormat("yy");
-        namReel.append(sdfYY.format(dateNaissance));
-
-        // On prend le mois et le sexe
-        namPartiel.append(sexe);
-        SimpleDateFormat sdfMM = new SimpleDateFormat("MM");
-        Integer mm = Integer.parseInt(sdfMM.format(dateNaissance));
+	private String obtenirSequenceGenerationNAM(Personne personne) {
+		StringBuilder namPartiel = new StringBuilder();
+        namPartiel.append(obtenirNomEtPrenomPourNam(personne));
+        namPartiel.append(personne.getDateNaissance().getYear());
+        namPartiel.append(personne.getSexe().getCode());
+        Integer mm = personne.getDateNaissance().getMonthValue();
         namPartiel.append(StringUtils.leftPad(mm.toString(), 2, "0"));
-
-        if ("F".equals(sexe)) {
-            namReel.append(mm + 50);
-        }
-        else if ("M".equals(sexe)) {
-            namReel.append(StringUtils.leftPad(mm.toString(), 2, "0"));
+        String jourNaissance = StringUtils.leftPad(Integer.toString(personne.getDateNaissance().getDayOfMonth()), 2, "0");
+        namPartiel.append(jourNaissance);
+		return namPartiel.toString();
+	}
+    
+    private String construireNAMReel(Personne personne) {
+        StringBuilder namReel = new StringBuilder();
+        namReel.append(obtenirNomEtPrenomPourNam(personne));
+        namReel.append(Integer.toString(personne.getDateNaissance().getYear()).substring(2));
+        switch (personne.getSexe()) {
+	        case FEMININ:
+	        	namReel.append(personne.getDateNaissance().getMonthValue() + 50);
+	        	break;
+	        case MASCULIN:
+	        	namReel.append(StringUtils.leftPad(Integer.toString(personne.getDateNaissance().getMonthValue()), 2, "0"));
+	        	break;
+	       	default:
+	       		throw new InvalidParameterException("Vous devez fournir le sexe valide, utilisez M ou F.");
+	        }
+        String jourNaissance = StringUtils.leftPad(Integer.toString(personne.getDateNaissance().getDayOfMonth()), 2, "0");
+        namReel.append(jourNaissance);
+        return namReel.toString();
+    }
+    
+    private String obtenirNomEtPrenomPourNam(Personne personne) {
+    	StringBuilder nomEtPrenomPourNam = new StringBuilder();
+        if (personne.getNomNormalise().length() < 3) {
+        	nomEtPrenomPourNam.append(StringUtils.rightPad(personne.getNomNormalise(), 3, "X"));
         }
         else {
-            //throw new IllegalArgumentException("Vous devez fournir le sexe valide");
-            throw new InvalidParameterException("Vous devez fournir le sexe valide, utilisez M ou F.");
+        	nomEtPrenomPourNam.append(personne.getNomNormalise().substring(0, 3));
         }
-
-        // On prend le jour du mois
-        SimpleDateFormat sdfJJ = new SimpleDateFormat("dd");
-        String jourNaissance = StringUtils.leftPad(sdfJJ.format(dateNaissance), 2, "0");
-        namPartiel.append(jourNaissance);
-
-        namReel.append(jourNaissance);
-
-        // Le caractère de distinction des jumeux va de 1 à 9 ou de A à Z mais dans le cas présent,
-        // on ne génère que les possibilités de 1 à 9.
-        for (int i = 1; i < 10; i++) {
-            String namPartielAvecJumeau = namPartiel.toString().toUpperCase() + i;
-            int validateur = calculerCaractereValidateur(namPartielAvecJumeau.getBytes(ENCODAGE_EBCDIC), true);
-            nams.add(String.format("%s%d%d", namReel.toString(), i, validateur).toUpperCase());
-        }
-
-        return nams;
+        nomEtPrenomPourNam.append(personne.getPrenomNormalise().substring(0, 1));
+        return nomEtPrenomPourNam.toString();
     }
 
     public Sexe obtenirSexe(String nam)

@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -66,10 +67,15 @@ public class ServiceUtilitaireNAMTest {
 	
 	private static final String AUCUN_PRENOM = null;
 	private static final String PRENOM = "Martin";
+	private static final String PRENOM_NON_NORMALISE = "Étienne";
 	private static final String NOM = "Tremblay";
 	private static final String NOM_PAS_NORMALISE = "L'Heureux";
+	private static final String NOM_TROP_COURT = "Li";
 	private static final String SEXE = "M";
+	private static final String SEXE_FEMININ = "F";
 	private static final String DATE_NAISSANCE = "2004-12-19";
+	private static final String DATE_NAISSANCE_JANVIER = "2004-01-11";
+	private static final String DATE_NAISSANCE_JOUR_SEPT = "2004-10-07";
 	
 	private static final String PROVINCE_NON_VALIDE = "TT";
 	
@@ -308,37 +314,93 @@ public class ServiceUtilitaireNAMTest {
 	@Test
 	public void quandJeDemandeDobtenirTousLesNAMSPossiblesPourUnePersonne_alorsLeNomEstNormaliseDansLesNAMS() throws UnsupportedEncodingException, ParseException {
 		var resultat = serviceUtilitaireNAM.obtenirCombinaisonsValidesDeNAM(PRENOM, NOM_PAS_NORMALISE, FORMATTEUR_DATE.parse(DATE_NAISSANCE), SEXE);
-		assertThat(resultat).isNotNull().noneMatch(nam -> nam.startsWith(NOM_PAS_NORMALISE.toUpperCase().substring(0, 3)));
+		assertThat(resultat).isNotNull().hasSize(9).noneMatch(nam -> nam.startsWith(NOM_PAS_NORMALISE.toUpperCase().substring(0, 3)));
 	}
 	
 	// prénom normalisé RAMQ dans le NAM
+	@Test
+	public void quandJeDemandeDobtenirTousLesNAMSPossiblesPourUnePersonne_AlorsLePrenomEstNormaliseDansLesNAMS() throws UnsupportedEncodingException, ParseException {
+		var resultat = serviceUtilitaireNAM.obtenirCombinaisonsValidesDeNAM(PRENOM_NON_NORMALISE, NOM, FORMATTEUR_DATE.parse(DATE_NAISSANCE), SEXE);
+		assertThat(resultat).isNotNull().hasSize(9).noneMatch(nam -> nam.startsWith(PRENOM_NON_NORMALISE.toUpperCase().substring(0, 1), 3));
+	}
 	
 	// le nam contient les 3 premieres lettres du nom de famille à ses 3 premiers caracteres
 	@Test
 	public void quandJeDemandeDobtenirTousLesNAMSPossiblesPourUnePersonne_alorsTousLesNAMSCommencentParLes3PremieresLettresDeSonNomEnMajuscules() throws UnsupportedEncodingException, ParseException {
 		var resultat = serviceUtilitaireNAM.obtenirCombinaisonsValidesDeNAM(PRENOM, NOM, FORMATTEUR_DATE.parse(DATE_NAISSANCE), SEXE);
-		assertThat(resultat).isNotNull().allMatch(nam -> nam.startsWith(NOM.toUpperCase().substring(0, 3)));
+		assertThat(resultat).isNotNull().hasSize(9).allMatch(nam -> nam.startsWith(NOM.toUpperCase().substring(0, 3)));
 	}
 	
 	// si nom plus petit que 3 caractères, on pad right avec des X
+	@Test
+	public void quandJeDemandeDobtenirTousLesNAMSPossiblesPourUnePersonneDontLeNomADeuxCaracteresOuMoins_alorsLesTroisPremiersCaracteresDeTousLesNAMSSontLeNomSuiviDeX() throws UnsupportedEncodingException, ParseException {
+		var resultat = serviceUtilitaireNAM.obtenirCombinaisonsValidesDeNAM(PRENOM, NOM_TROP_COURT, FORMATTEUR_DATE.parse(DATE_NAISSANCE), SEXE);
+		assertThat(resultat).isNotNull().hasSize(9).allMatch(nam -> nam.startsWith(NOM_TROP_COURT.toUpperCase() + "X"));
+	}
 	
 	// le nam contient la première lettre du prénom à son 4e caracteres
-	
+	@Test
+	public void quandJeDemandeDobtenirTousLesNAMSPossiblesPourUnePersonneDontLeNomADeuxCaracteresOuMoins_alorsLeQuatriemeCaractereDeTousLesNAMSEstLaPremiereLettreDuPrenom() throws UnsupportedEncodingException, ParseException {
+		var resultat = serviceUtilitaireNAM.obtenirCombinaisonsValidesDeNAM(PRENOM, NOM, FORMATTEUR_DATE.parse(DATE_NAISSANCE), SEXE);
+		assertThat(resultat).isNotNull().hasSize(9).allMatch(nam -> nam.startsWith(PRENOM.toUpperCase().substring(0, 1), 3));
+	}
 	// le nam contient les deux derniers chiffres de l'année à ses caractères 5 et 6
+	@Test
+	public void quandJeDemandeDobtenirTousLesNAMSPossiblesPourUnePersonne_alorsLesCaracteres5Et6SontLesDeuxDerniersChiffresDeLanneeDeNaissancePourTousLesNAMS () throws UnsupportedEncodingException, ParseException {
+		var resultat = serviceUtilitaireNAM.obtenirCombinaisonsValidesDeNAM(PRENOM, NOM, FORMATTEUR_DATE.parse(DATE_NAISSANCE), SEXE);
+		assertThat(resultat).isNotNull().hasSize(9).allMatch(nam -> nam.startsWith(DATE_NAISSANCE.substring(2, 4), 4));
+	}
 	
 	// si le mois est < 10, le nam contient le mois pad de 0 à gauche à ses caractères 7 et 8
+	@Test
+	public void quandJeDemandeDobtenirTousLesNAMSPossiblesPourUnePersonneDontLeMoisDeNaissanceEstPlusPetitQueDix_alorsLesCaracteres7Et8SontZeroEtLeMoisDeNaissancePourTousLesNAMS() throws UnsupportedEncodingException, ParseException {
+		var resultat = serviceUtilitaireNAM.obtenirCombinaisonsValidesDeNAM(PRENOM, NOM, FORMATTEUR_DATE.parse(DATE_NAISSANCE_JANVIER), SEXE);
+		assertThat(resultat).isNotNull().hasSize(9).allMatch(nam -> nam.startsWith(DATE_NAISSANCE_JANVIER.substring(5, 7), 6));
+	}
 	
-	// si le mois est >= 10, le nam contient le mois à ses carac`teres 7 et 8
+	// si le mois est >= 10, le nam contient le mois à ses caractères 7 et 8
+	@Test
+	public void quandJeDemandeDobtenirTousLesNAMSPossiblesPourUnePersonneDontLeMoisDeNaissanceEstPlusGrandQueNeuf_alorsLesCaracteres7Et8SontLeMoisDeNaissancePourTousLesNAMS() throws UnsupportedEncodingException, ParseException {
+		var resultat = serviceUtilitaireNAM.obtenirCombinaisonsValidesDeNAM(PRENOM, NOM, FORMATTEUR_DATE.parse(DATE_NAISSANCE), SEXE);
+		assertThat(resultat).isNotNull().hasSize(9).allMatch(nam -> nam.startsWith(DATE_NAISSANCE.substring(5, 7), 6));
+	}
 	
 	// si le sexe est féminin, le mois dans le nam est le mois de naissance + 50
+	@Test
+	public void quandJeDemandeDobtenirTousLesNAMSPossiblesPourUnePersonneDontLeSexeEstFeminin_alorsLesCaracteres7Et8SontLeMoisdeNaissancePlus50PourTousLesNAMS() throws UnsupportedEncodingException, ParseException {
+		var resultat = serviceUtilitaireNAM.obtenirCombinaisonsValidesDeNAM(PRENOM, NOM, FORMATTEUR_DATE.parse(DATE_NAISSANCE), SEXE_FEMININ);
+		assertThat(resultat).isNotNull().hasSize(9).allMatch(nam -> nam.startsWith(Integer.toString(Integer.parseInt(DATE_NAISSANCE.substring(5, 7)) + 50), 6));
+	}
 	
 	// si le jour est < 10, le nam contient le jour pad de 0 à gauche à ses caractères 9 et 10
+	@Test
+	public void quandJeDemandeDobtenirTousLesNAMSPossiblesPourUnePersonneDontLeJourDeNaissanceEstPlusPetitQueDix_alorsLesCaracteres9Et10SontZeroEtLeJourDeNaissancePourTousLesNAMS() throws UnsupportedEncodingException, ParseException {
+		var resultat = serviceUtilitaireNAM.obtenirCombinaisonsValidesDeNAM(PRENOM, NOM, FORMATTEUR_DATE.parse(DATE_NAISSANCE_JOUR_SEPT), SEXE);
+		assertThat(resultat).isNotNull().hasSize(9).allMatch(nam -> nam.startsWith(DATE_NAISSANCE_JOUR_SEPT.substring(8), 8));	
+	}
 	
 	// si le jour est >= 10, le nam contient le jour à ses caractères 9 et 10
+	@Test
+	public void quandJeDemandeDobtenirTousLesNAMSPossiblesPourUnePersonneDontLeJourDeNaissanceEstPlusGrandQueNeuf_alorsLesCaracteres9Et10SontLeJourDeNaissancePourTousLesNAMS() throws UnsupportedEncodingException, ParseException {
+		var resultat = serviceUtilitaireNAM.obtenirCombinaisonsValidesDeNAM(PRENOM, NOM, FORMATTEUR_DATE.parse(DATE_NAISSANCE), SEXE);
+		assertThat(resultat).isNotNull().hasSize(9).allMatch(nam -> nam.startsWith(DATE_NAISSANCE.substring(8), 8));
+	}
 	
 	// le nam contient l'indicateur de jumeaux à son caractère 11
+	@Test
+	public void quandJeDemandeDobtenirTousLesNAMSPossiblesPourUnePersonne_alorsLeCaractere11EstComprisEntre1Et9() throws UnsupportedEncodingException, ParseException {
+		var resultat = serviceUtilitaireNAM.obtenirCombinaisonsValidesDeNAM(PRENOM, NOM, FORMATTEUR_DATE.parse(DATE_NAISSANCE), SEXE);
+		assertThat(resultat).isNotNull().hasSize(9).extracting(nam -> nam.substring(10, 11)).containsExactly("1", "2", "3", "4", "5", "6", "7", "8", "9");
+	}
+	
 	
 	// le nam contient les caracteres validateurs à son caractère 12
+	@Test
+	public void quandJeDemandeDobtenirTousLesNAMSPossiblesPourUnePersonne_alorsLeCaractere12estLeChiffreValidateur() throws UnsupportedEncodingException, ParseException {
+		var resultat = serviceUtilitaireNAM.obtenirCombinaisonsValidesDeNAM(PRENOM, NOM, FORMATTEUR_DATE.parse(DATE_NAISSANCE), SEXE);
+		//assertThat(resultat).isNotNull().allMatch(nam -> Pattern.matches("^[012456789]{1}$", nam.substring(11)));
+		assertThat(resultat).isNotNull().hasSize(9).extracting(x -> x.substring(11)).containsExactly("4", "5", "6", "7", "8", "9", "0", "1", "2");
+	}
 	
 	// si les entrants sont valides, on reçoit tous les nams possibles pour ces entrants
 	@Test

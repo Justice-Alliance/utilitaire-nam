@@ -30,6 +30,7 @@ import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieOntarioValideSpe
 import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieIleDuPrinceEdouardValideSpecification;
 import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieSaskatchewanValideSpecification;
 import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieYukonValideSpecification;
+import ca.qc.inspq.nam.api.specifications.PersonneGenerationNAMValideSpecification;
 
 @Service
 public class ServiceUtilitairesNAM {
@@ -73,6 +74,10 @@ public class ServiceUtilitairesNAM {
 	@Autowired
 	private NumeroAssuranceMaladieYukonValideSpecification numeroAssuranceMaladieYukonValideSpecification;
 	
+	@Autowired
+	private PersonneGenerationNAMValideSpecification personneGenerationNAMValideSpecification; 
+	
+	
     private static final String ENCODAGE_EBCDIC = "Cp1047";
 
     public boolean validerNAM(String nam, String province)
@@ -110,7 +115,7 @@ public class ServiceUtilitairesNAM {
     }    	
     	
     public List<String> obtenirCombinaisonsValidesDeNAM(Personne personne) throws UnsupportedEncodingException {
-    	validerPersonne(personne);
+    	personneGenerationNAMValideSpecification.estSatisfaitePar(personne);
         List<String> nams = new ArrayList<>();
         String namReel = construireNAMReel(personne);
         String namPartiel = obtenirSequenceGenerationNAM(personne);
@@ -120,12 +125,6 @@ public class ServiceUtilitairesNAM {
             nams.add(String.format("%s%d%d", namReel.toString(), i, validateur));
         }
         return nams;
-    }
-    
-    private void validerPersonne(Personne personne) {
-    	if (personne.getDateNaissance() == null || personne.getSexe() == null || personne.getPrenomNormalise() == null || personne.getNomNormalise() == null) {
-    		throw new InvalidParameterException();
-    	}
     }
 
 	private String obtenirSequenceGenerationNAM(Personne personne) {

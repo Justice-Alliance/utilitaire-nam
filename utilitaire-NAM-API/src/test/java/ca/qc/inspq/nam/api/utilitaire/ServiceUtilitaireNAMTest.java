@@ -42,6 +42,7 @@ import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieOntarioValideSpe
 import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieIleDuPrinceEdouardValideSpecification;
 import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieSaskatchewanValideSpecification;
 import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieYukonValideSpecification;
+import ca.qc.inspq.nam.api.specifications.PersonneGenerationNAMValideSpecification;
 import ca.qc.inspq.nam.api.utilitaire.ServiceUtilitairesNAM;
 
 @RunWith(SpringRunner.class)
@@ -79,8 +80,20 @@ public class ServiceUtilitaireNAMTest {
 	private static final LocalDate DATE_NAISSANCE_JOUR_SEPT = LocalDate.of(2004, 10, 07);
 	private static final String JOUR_SEPT_ATTENDU_DANS_NAM = "07";
 	
+	private static final int NOMBRE_NAMS_ATTENDUS = 9;
 	private static final int DEBUT_NOM_DANS_NAM = 0;
 	private static final int FIN_NOM_DANS_NAM = 3;
+	private static final int DEBUT_PRENOM_DANS_NAM = 3;
+	private static final int FIN_PRENOM_DANS_NAM = 4;
+	private static final int DEBUT_ANNEE_NAISSANCE_DANS_NAM = 4;
+	private static final int FIN_ANNEE_NAISSANCE_DANS_NAM = 6;
+	private static final int DEBUT_MOIS_NAISSANCE_DANS_NAM = 6;
+	private static final int FIN_MOIS_NAISSANCE_DANS_NAM = 8;
+	private static final int DEBUT_JOUR_NAISSANCE_DANS_NAM = 8;
+	private static final int FIN_JOUR_NAISSANCE_DANS_NAM = 10;
+	private static final int DEBUT_CARACTERE_DISTINCTION_DANS_NAM = 10;
+	private static final int FIN_CARACTERE_DISTINCTION_DANS_NAM = 11;
+	private static final int DEBUT_CARACTERE_VALIDATEUR_DANS_NAM = 11;
 	
 	private static final String PROVINCE_NON_VALIDE = "TT";
 	
@@ -128,6 +141,9 @@ public class ServiceUtilitaireNAMTest {
 	
 	@MockBean
 	private NumeroAssuranceMaladieYukonValideSpecification numeroAssuranceMaladieYukonValideSpecification;
+	
+	@SpyBean
+	private PersonneGenerationNAMValideSpecification personneGenerationNAMValideSpecification;
 	
 	@Test
 	public void quandJeValideUnNamPourleQuebec_alorsJappelleLaSpecificationPourNamDuQuebecValide() throws UnsupportedEncodingException, ParseException {
@@ -307,10 +323,24 @@ public class ServiceUtilitaireNAMTest {
 	// --------------- Obtenir une liste de NAM -------------------------
 	
 	@Test
+	public void quandJeDemandeDobtenirTousLesNAMSPossiblesPourUnePersonne_alorsJappelleLaSpecificationPourPersonneDeGenerationDeNAM() throws UnsupportedEncodingException, ParseException {
+		var personne = new Personne(PRENOM, NOM, DATE_NAISSANCE, Sexe.MASCULIN);
+		serviceUtilitaireNAM.obtenirCombinaisonsValidesDeNAM(personne);
+		verify(personneGenerationNAMValideSpecification, times(1)).estSatisfaitePar(personne);
+	}
+	
+	@Test
+	public void quandJeDemandDobtenirTousLesNAMSPossiblesPourUnePersonne_siLaPersonneNestPasValide_alorsJeRetourneInvalidParameterException() throws UnsupportedEncodingException, ParseException  {
+		exception.expect(InvalidParameterException.class);
+		var personne = new Personne(null, null, null, null);
+		serviceUtilitaireNAM.obtenirCombinaisonsValidesDeNAM(personne);
+	}
+	
+	@Test
 	public void quandJeDemandeDobtenirTousLesNAMSPossiblesPourUnePersonne_alorsTousLesNAMSCommencentParLes3PremieresLettresDeSonNomEnMajuscules() throws UnsupportedEncodingException, ParseException {
 		var personne = new Personne(PRENOM, NOM, DATE_NAISSANCE, Sexe.MASCULIN);
 		var resultat = serviceUtilitaireNAM.obtenirCombinaisonsValidesDeNAM(personne);
-		assertThat(resultat).isNotNull().hasSize(9)
+		assertThat(resultat).isNotNull().hasSize(NOMBRE_NAMS_ATTENDUS)
 				.extracting(nam -> nam.substring(DEBUT_NOM_DANS_NAM, FIN_NOM_DANS_NAM))
 				.containsOnly(NOM_ATTENDU_DANS_NAM);
 	}
@@ -319,77 +349,95 @@ public class ServiceUtilitaireNAMTest {
 	public void quandJeDemandeDobtenirTousLesNAMSPossiblesPourUnePersonneDontLeNomADeuxCaracteresOuMoins_alorsLesTroisPremiersCaracteresDeTousLesNAMSSontLeNomSuiviDeX() throws UnsupportedEncodingException, ParseException {
 		var personne = new Personne(PRENOM, NOM_TROP_COURT, DATE_NAISSANCE, Sexe.MASCULIN);
 		var resultat = serviceUtilitaireNAM.obtenirCombinaisonsValidesDeNAM(personne);
-		assertThat(resultat).isNotNull().hasSize(9).allMatch(nam -> nam.startsWith(NOM_TROP_COURT_ATTENDU_DANS_NAM));
+		assertThat(resultat).isNotNull().hasSize(NOMBRE_NAMS_ATTENDUS).allMatch(nam -> nam.startsWith(NOM_TROP_COURT_ATTENDU_DANS_NAM));
 	}
 	
 	@Test
 	public void quandJeDemandeDobtenirTousLesNAMSPossiblesPourUnePersonneDontLeNomADeuxCaracteresOuMoins_alorsLeQuatriemeCaractereDeTousLesNAMSEstLaPremiereLettreDuPrenom() throws UnsupportedEncodingException, ParseException {
 		var personne = new Personne(PRENOM, NOM, DATE_NAISSANCE, Sexe.MASCULIN);
 		var resultat = serviceUtilitaireNAM.obtenirCombinaisonsValidesDeNAM(personne);
-		assertThat(resultat).isNotNull().hasSize(9).extracting(nam -> nam.substring(3, 4)).containsOnly(PRENOM_ATTENDU_DANS_NAM);
+		assertThat(resultat).isNotNull().hasSize(NOMBRE_NAMS_ATTENDUS)
+		.extracting(nam -> nam.substring(DEBUT_PRENOM_DANS_NAM, FIN_PRENOM_DANS_NAM))
+		.containsOnly(PRENOM_ATTENDU_DANS_NAM);
 	}
 	
 	@Test
 	public void quandJeDemandeDobtenirTousLesNAMSPossiblesPourUnePersonne_alorsLesCaracteres5Et6SontLesDeuxDerniersChiffresDeLanneeDeNaissancePourTousLesNAMS () throws UnsupportedEncodingException, ParseException {
 		var personne = new Personne(PRENOM, NOM, DATE_NAISSANCE, Sexe.MASCULIN);
 		var resultat = serviceUtilitaireNAM.obtenirCombinaisonsValidesDeNAM(personne);
-		assertThat(resultat).isNotNull().hasSize(9).extracting(nam -> nam.substring(4, 6)).containsOnly(ANNEE_ATTENDUE_DANS_NAM);
+		assertThat(resultat).isNotNull().hasSize(NOMBRE_NAMS_ATTENDUS)
+		.extracting(nam -> nam.substring(DEBUT_ANNEE_NAISSANCE_DANS_NAM, FIN_ANNEE_NAISSANCE_DANS_NAM))
+		.containsOnly(ANNEE_ATTENDUE_DANS_NAM);
 	}
 	
 	@Test
 	public void quandJeDemandeDobtenirTousLesNAMSPossiblesPourUnePersonneDontLeMoisDeNaissanceEstPlusPetitQueDix_alorsLesCaracteres7Et8SontZeroEtLeMoisDeNaissancePourTousLesNAMS() throws UnsupportedEncodingException, ParseException {
 		var personne = new Personne(PRENOM, NOM, DATE_NAISSANCE_JANVIER, Sexe.MASCULIN);
 		var resultat = serviceUtilitaireNAM.obtenirCombinaisonsValidesDeNAM(personne);
-		assertThat(resultat).isNotNull().hasSize(9).extracting(nam -> nam.substring(6, 8)).containsOnly(MOIS_JANVIER_ATTENDU_DANS_NAM);
+		assertThat(resultat).isNotNull().hasSize(NOMBRE_NAMS_ATTENDUS)
+		.extracting(nam -> nam.substring(DEBUT_MOIS_NAISSANCE_DANS_NAM, FIN_MOIS_NAISSANCE_DANS_NAM))
+		.containsOnly(MOIS_JANVIER_ATTENDU_DANS_NAM);
 	}
 	
 	@Test
 	public void quandJeDemandeDobtenirTousLesNAMSPossiblesPourUnePersonneDontLeMoisDeNaissanceEstPlusGrandQueNeuf_alorsLesCaracteres7Et8SontLeMoisDeNaissancePourTousLesNAMS() throws UnsupportedEncodingException, ParseException {
 		var personne = new Personne(PRENOM, NOM, DATE_NAISSANCE, Sexe.MASCULIN);
 		var resultat = serviceUtilitaireNAM.obtenirCombinaisonsValidesDeNAM(personne);
-		assertThat(resultat).isNotNull().hasSize(9).extracting(nam -> nam.substring(6, 8)).containsOnly(MOIS_ATTENDU_DANS_NAM);
+		assertThat(resultat).isNotNull().hasSize(NOMBRE_NAMS_ATTENDUS)
+		.extracting(nam -> nam.substring(DEBUT_MOIS_NAISSANCE_DANS_NAM, FIN_MOIS_NAISSANCE_DANS_NAM))
+		.containsOnly(MOIS_ATTENDU_DANS_NAM);
 	}
 	
 	@Test
 	public void quandJeDemandeDobtenirTousLesNAMSPossiblesPourUnePersonneDontLeSexeEstFeminin_alorsLesCaracteres7Et8SontLeMoisdeNaissancePlus50PourTousLesNAMS() throws UnsupportedEncodingException, ParseException {
 		var personne = new Personne(PRENOM, NOM, DATE_NAISSANCE, Sexe.FEMININ);
 		var resultat = serviceUtilitaireNAM.obtenirCombinaisonsValidesDeNAM(personne);
-		assertThat(resultat).isNotNull().hasSize(9).extracting(nam -> nam.substring(6, 8)).containsOnly(MOIS_ATTENDU_DANS_NAM_POUR_FEMME);
+		assertThat(resultat).isNotNull().hasSize(NOMBRE_NAMS_ATTENDUS)
+		.extracting(nam -> nam.substring(DEBUT_MOIS_NAISSANCE_DANS_NAM, FIN_MOIS_NAISSANCE_DANS_NAM))
+		.containsOnly(MOIS_ATTENDU_DANS_NAM_POUR_FEMME);
 	}
 	
 	@Test
 	public void quandJeDemandeDobtenirTousLesNAMSPossiblesPourUnePersonneDontLeJourDeNaissanceEstPlusPetitQueDix_alorsLesCaracteres9Et10SontZeroEtLeJourDeNaissancePourTousLesNAMS() throws UnsupportedEncodingException, ParseException {
 		var personne = new Personne(PRENOM, NOM, DATE_NAISSANCE_JOUR_SEPT, Sexe.MASCULIN);
 		var resultat = serviceUtilitaireNAM.obtenirCombinaisonsValidesDeNAM(personne);
-		assertThat(resultat).isNotNull().hasSize(9).extracting(nam -> nam.substring(8, 10)).containsOnly(JOUR_SEPT_ATTENDU_DANS_NAM);	
+		assertThat(resultat).isNotNull().hasSize(NOMBRE_NAMS_ATTENDUS)
+		.extracting(nam -> nam.substring(DEBUT_JOUR_NAISSANCE_DANS_NAM, FIN_JOUR_NAISSANCE_DANS_NAM))
+		.containsOnly(JOUR_SEPT_ATTENDU_DANS_NAM);	
 	}
 	
 	@Test
 	public void quandJeDemandeDobtenirTousLesNAMSPossiblesPourUnePersonneDontLeJourDeNaissanceEstPlusGrandQueNeuf_alorsLesCaracteres9Et10SontLeJourDeNaissancePourTousLesNAMS() throws UnsupportedEncodingException, ParseException {
 		var personne = new Personne(PRENOM, NOM, DATE_NAISSANCE, Sexe.MASCULIN);
 		var resultat = serviceUtilitaireNAM.obtenirCombinaisonsValidesDeNAM(personne);
-		assertThat(resultat).isNotNull().hasSize(9).extracting(nam -> nam.substring(8, 10)).containsOnly(JOUR_ATTENDU_DANS_NAM);
+		assertThat(resultat).isNotNull().hasSize(NOMBRE_NAMS_ATTENDUS)
+		.extracting(nam -> nam.substring(DEBUT_JOUR_NAISSANCE_DANS_NAM, FIN_JOUR_NAISSANCE_DANS_NAM))
+		.containsOnly(JOUR_ATTENDU_DANS_NAM);
 	}
 	
 	@Test
 	public void quandJeDemandeDobtenirTousLesNAMSPossiblesPourUnePersonne_alorsLeCaractere11EstComprisEntre1Et9() throws UnsupportedEncodingException, ParseException {
 		var personne = new Personne(PRENOM, NOM, DATE_NAISSANCE, Sexe.MASCULIN);
 		var resultat = serviceUtilitaireNAM.obtenirCombinaisonsValidesDeNAM(personne);
-		assertThat(resultat).isNotNull().hasSize(9).extracting(nam -> nam.substring(10, 11)).containsExactly("1", "2", "3", "4", "5", "6", "7", "8", "9");
+		assertThat(resultat).isNotNull().hasSize(NOMBRE_NAMS_ATTENDUS)
+		.extracting(nam -> nam.substring(DEBUT_CARACTERE_DISTINCTION_DANS_NAM, FIN_CARACTERE_DISTINCTION_DANS_NAM))
+		.containsExactly("1", "2", "3", "4", "5", "6", "7", "8", "9");
 	}
 	
 	@Test
 	public void quandJeDemandeDobtenirTousLesNAMSPossiblesPourUnePersonne_alorsLeCaractere12estLeChiffreValidateur() throws UnsupportedEncodingException, ParseException {
 		var personne = new Personne(PRENOM, NOM, DATE_NAISSANCE, Sexe.MASCULIN);
 		var resultat = serviceUtilitaireNAM.obtenirCombinaisonsValidesDeNAM(personne);
-		assertThat(resultat).isNotNull().hasSize(9).extracting(x -> x.substring(11)).containsExactly("4", "5", "6", "7", "8", "9", "0", "1", "2");
+		assertThat(resultat).isNotNull().hasSize(NOMBRE_NAMS_ATTENDUS)
+		.extracting(x -> x.substring(DEBUT_CARACTERE_VALIDATEUR_DANS_NAM))
+		.containsExactly("4", "5", "6", "7", "8", "9", "0", "1", "2");
 	}
 	
 	@Test
 	public void quandJeDemandeDobtenirTousLesNAMSPossiblesPourUnePersonne_alorsOnRetourneTousLesNAMSPossiblesPourCettePersonne() throws UnsupportedEncodingException, ParseException {
 		var personne = new Personne(PRENOM, NOM, DATE_NAISSANCE, Sexe.MASCULIN);
 		var resultat = serviceUtilitaireNAM.obtenirCombinaisonsValidesDeNAM(personne);
-		assertThat(resultat).isNotNull().hasSize(9).containsExactly("TREM04121914", 
+		assertThat(resultat).isNotNull().hasSize(NOMBRE_NAMS_ATTENDUS).containsExactly("TREM04121914", 
 				"TREM04121925", 
 				"TREM04121936", 
 				"TREM04121947", 

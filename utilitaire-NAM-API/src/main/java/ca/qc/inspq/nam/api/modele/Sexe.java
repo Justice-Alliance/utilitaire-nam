@@ -13,4 +13,13 @@ public enum Sexe {
     public String getCode() {
     	return this.code;
     }
+    
+    public static Sexe fromString(String libelle) {
+		for (Sexe sexe : Sexe.values()) {
+			if (sexe.code.equalsIgnoreCase(libelle)) {
+				return sexe;
+			}
+		}
+		return null;
+	}
 }

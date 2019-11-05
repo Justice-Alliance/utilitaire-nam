@@ -15,10 +15,21 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import ca.qc.inspq.nam.api.modele.Personne;
 import ca.qc.inspq.nam.api.modele.Sexe;
-import ca.qc.inspq.nam.api.modele.TypeRegex;
 import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieAlbertaValideSpecification;
 import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieQuebecValideSpecification;
+import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieColombieBritanniqueValideSpecification;
+import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieManitobaValideSpecification;
+import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieTerritoiresDuNordOuestValideSpecification;
+import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieNouvelleEcosseValideSpecification;
+import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieNouveauBrunswickValideSpecification;
+import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieTerreNeuveEtLabradorValideSpecification;
+import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieNunavutValideSpecification;
+import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieOntarioValideSpecification;
+import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieIleDuPrinceEdouardValideSpecification;
+import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieSaskatchewanValideSpecification;
+import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieYukonValideSpecification;
 
 @Service
 public class ServiceUtilitairesNAM {
@@ -28,118 +39,136 @@ public class ServiceUtilitairesNAM {
 	
 	@Autowired
 	private NumeroAssuranceMaladieAlbertaValideSpecification numeroAssuranceMaladieAlbertaValideSpecification;
+	
+	@Autowired
+	private NumeroAssuranceMaladieColombieBritanniqueValideSpecification numeroAssuranceMaladieColombieBritanniqueValideSpecification;
 
+	@Autowired
+	private NumeroAssuranceMaladieManitobaValideSpecification numeroAssuranceMaladieManitobaValideSpecification;
+	
+	@Autowired
+	private NumeroAssuranceMaladieTerritoiresDuNordOuestValideSpecification numeroAssuranceMaladieTerritoiresDuNordOuestValideSpecification;
+	
+	@Autowired
+	private NumeroAssuranceMaladieNouvelleEcosseValideSpecification numeroAssuranceMaladieNouvelleEcosseValideSpecification;
+	
+	@Autowired
+	private NumeroAssuranceMaladieNouveauBrunswickValideSpecification numeroAssuranceMaladieNouveauBrunswickValideSpecification;
+	
+	@Autowired
+	private NumeroAssuranceMaladieTerreNeuveEtLabradorValideSpecification numeroAssuranceMaladieTerreNeuveEtLabradorValideSpecification;
+	
+	@Autowired
+	private NumeroAssuranceMaladieNunavutValideSpecification numeroAssuranceMaladieNunavutValideSpecification;
+	
+	@Autowired
+	private NumeroAssuranceMaladieOntarioValideSpecification numeroAssuranceMaladieOntarioValideSpecification;
+	
+	@Autowired
+	private NumeroAssuranceMaladieIleDuPrinceEdouardValideSpecification numeroAssuranceMaladieIleDuPrinceEdouardValideSpecification;
+	
+	@Autowired
+	private NumeroAssuranceMaladieSaskatchewanValideSpecification numeroAssuranceMaladieSaskatchewanValideSpecification;
+	
+	@Autowired
+	private NumeroAssuranceMaladieYukonValideSpecification numeroAssuranceMaladieYukonValideSpecification;
+	
     private static final String ENCODAGE_EBCDIC = "Cp1047";
 
     public boolean validerNAM(String nam, String province)
             throws UnsupportedEncodingException, ParseException {
-        if (province.equals("QC")) {
-        	return numeroAssuranceMaladieQuebecValideSpecification.estSatisfaitePar(nam);
-        }
         switch (province) {
+        	case "QC":
+        		return numeroAssuranceMaladieQuebecValideSpecification.estSatisfaitePar(nam);
             case "AB":
             	return numeroAssuranceMaladieAlbertaValideSpecification.estSatisfaitePar(nam);
             case "BC":
-                return validerStringRegex(nam, TypeRegex.REGEX_NAM_COLOMBIE_BRITANNIQUE)
-                        &&
-                        validerNumeroCarteSanteColombieBritannique(nam);
+            	return numeroAssuranceMaladieColombieBritanniqueValideSpecification.estSatisfaitePar(nam);
             case "MB":
-                return validerStringRegex(nam, TypeRegex.REGEX_NAM_MANITOBA);
+                return numeroAssuranceMaladieManitobaValideSpecification.estSatisfaitePar(nam);
             case "NT":
-                return validerStringRegex(nam, TypeRegex.REGEX_NAM_TERRITOIRES_NO);
+                return numeroAssuranceMaladieTerritoiresDuNordOuestValideSpecification.estSatisfaitePar(nam);
             case "NS":
-                return validerStringRegex(nam, TypeRegex.REGEX_NAM_NOUVELLE_ECOSSE);
+                return numeroAssuranceMaladieNouvelleEcosseValideSpecification.estSatisfaitePar(nam);
             case "NB":
-                return validerStringRegex(nam, TypeRegex.REGEX_NAM_NOUVEAU_BRUNSWICK);
+                return numeroAssuranceMaladieNouveauBrunswickValideSpecification.estSatisfaitePar(nam);
             case "NL":
-                return validerStringRegex(nam, TypeRegex.REGEX_NAM_TERRE_NEUVE_LABRADOR);
+                return numeroAssuranceMaladieTerreNeuveEtLabradorValideSpecification.estSatisfaitePar(nam);
             case "NU":
-                return validerStringRegex(nam, TypeRegex.REGEX_NAM_NUNAVUT);
+                return numeroAssuranceMaladieNunavutValideSpecification.estSatisfaitePar(nam);
             case "ON":
-                return validerStringRegex(nam, TypeRegex.REGEX_NAM_ONTARIO)
-                        &&
-                        validerNumeroCarteSanteOntario(nam);
+                return numeroAssuranceMaladieOntarioValideSpecification.estSatisfaitePar(nam);
             case "PE":
-                return validerStringRegex(nam, TypeRegex.REGEX_NAM_ILE_PRINCE_EDOUARD);
+                return numeroAssuranceMaladieIleDuPrinceEdouardValideSpecification.estSatisfaitePar(nam);
             case "SK":
-                return validerStringRegex(nam, TypeRegex.REGEX_NAM_SASKATCHEWAN);
+                return numeroAssuranceMaladieSaskatchewanValideSpecification.estSatisfaitePar(nam);
             case "YT":
-                return validerStringRegex(nam, TypeRegex.REGEX_NAM_YUKON);
+                return numeroAssuranceMaladieYukonValideSpecification.estSatisfaitePar(nam);
             default:
                 throw new IllegalArgumentException("La province de la carte santé n'est pas valide.");
         }
+    }    	
+    	
+    public List<String> obtenirCombinaisonsValidesDeNAM(Personne personne) throws UnsupportedEncodingException {
+    	validerPersonne(personne);
+        List<String> nams = new ArrayList<>();
+        String namReel = construireNAMReel(personne);
+        String namPartiel = obtenirSequenceGenerationNAM(personne);
+        for (int i = 1; i < 10; i++) {
+            String namPartielAvecJumeau = namPartiel.toString() + i;
+            int validateur = calculerCaractereValidateur(namPartielAvecJumeau.getBytes(ENCODAGE_EBCDIC), true);
+            nams.add(String.format("%s%d%d", namReel.toString(), i, validateur));
+        }
+        return nams;
     }
     
-    public List<String> obtenirCombinaisonsValidesDeNAM(String prenom,
-            String nom,
-            Date dateNaissance,
-            String sexe) throws UnsupportedEncodingException {
-        List<String> nams = new ArrayList<>();
+    private void validerPersonne(Personne personne) {
+    	if (personne.getDateNaissance() == null || personne.getSexe() == null || personne.getPrenomNormalise() == null || personne.getNomNormalise() == null) {
+    		throw new InvalidParameterException();
+    	}
+    }
 
-        if (StringUtils.isBlank(prenom)
-                || StringUtils.isBlank(nom)
-                || StringUtils.isBlank(sexe)
-                || dateNaissance == null) {
-            throw new InvalidParameterException("Vous devez fournir un prénom, un nom et une date de naissance.");
-        }
-        // Normaliser le prénom et le nom
-        prenom = normaliserRAMQ(prenom);
-        nom = normaliserRAMQ(nom);
-        // Générer un NAM
-        StringBuilder namPartiel = new StringBuilder();
-        StringBuilder namReel = new StringBuilder();
-        // Si le nom de famille est plus petit que 3 caractères, on rempli avec X.
-        if (nom.length() < 3) {
-            namPartiel.append(StringUtils.rightPad(nom, 3, "X"));
-        }
-        else {
-            namPartiel.append(nom.substring(0, 3));
-        }
-        // On prend la première lettre du prénom
-        namPartiel.append(prenom.substring(0, 1));
-
-        namReel.append(namPartiel.toString());
-
-        // On prend l'année sur 4 chiffres
-        SimpleDateFormat sdfYYYY = new SimpleDateFormat("yyyy");
-        namPartiel.append(sdfYYYY.format(dateNaissance));
-
-        SimpleDateFormat sdfYY = new SimpleDateFormat("yy");
-        namReel.append(sdfYY.format(dateNaissance));
-
-        // On prend le mois et le sexe
-        namPartiel.append(sexe);
-        SimpleDateFormat sdfMM = new SimpleDateFormat("MM");
-        Integer mm = Integer.parseInt(sdfMM.format(dateNaissance));
+	private String obtenirSequenceGenerationNAM(Personne personne) {
+		StringBuilder namPartiel = new StringBuilder();
+        namPartiel.append(obtenirNomEtPrenomPourNam(personne));
+        namPartiel.append(personne.getDateNaissance().getYear());
+        namPartiel.append(personne.getSexe().getCode());
+        Integer mm = personne.getDateNaissance().getMonthValue();
         namPartiel.append(StringUtils.leftPad(mm.toString(), 2, "0"));
-
-        if ("F".equals(sexe)) {
-            namReel.append(mm + 50);
-        }
-        else if ("M".equals(sexe)) {
-            namReel.append(StringUtils.leftPad(mm.toString(), 2, "0"));
+        String jourNaissance = StringUtils.leftPad(Integer.toString(personne.getDateNaissance().getDayOfMonth()), 2, "0");
+        namPartiel.append(jourNaissance);
+		return namPartiel.toString();
+	}
+    
+    private String construireNAMReel(Personne personne) {
+        StringBuilder namReel = new StringBuilder();
+        namReel.append(obtenirNomEtPrenomPourNam(personne));
+        namReel.append(Integer.toString(personne.getDateNaissance().getYear()).substring(2));
+        switch (personne.getSexe()) {
+	        case FEMININ:
+	        	namReel.append(personne.getDateNaissance().getMonthValue() + 50);
+	        	break;
+	        case MASCULIN:
+	        	namReel.append(StringUtils.leftPad(Integer.toString(personne.getDateNaissance().getMonthValue()), 2, "0"));
+	        	break;
+	       	default:
+	       		throw new InvalidParameterException("Vous devez fournir le sexe valide, utilisez M ou F.");
+	        }
+        String jourNaissance = StringUtils.leftPad(Integer.toString(personne.getDateNaissance().getDayOfMonth()), 2, "0");
+        namReel.append(jourNaissance);
+        return namReel.toString();
+    }
+    
+    private String obtenirNomEtPrenomPourNam(Personne personne) {
+    	StringBuilder nomEtPrenomPourNam = new StringBuilder();
+        if (personne.getNomNormalise().length() < 3) {
+        	nomEtPrenomPourNam.append(StringUtils.rightPad(personne.getNomNormalise(), 3, "X"));
         }
         else {
-            //throw new IllegalArgumentException("Vous devez fournir le sexe valide");
-            throw new InvalidParameterException("Vous devez fournir le sexe valide, utilisez M ou F.");
+        	nomEtPrenomPourNam.append(personne.getNomNormalise().substring(0, 3));
         }
-
-        // On prend le jour du mois
-        SimpleDateFormat sdfJJ = new SimpleDateFormat("dd");
-        String jourNaissance = StringUtils.leftPad(sdfJJ.format(dateNaissance), 2, "0");
-        namPartiel.append(jourNaissance);
-
-        namReel.append(jourNaissance);
-
-        // Le caractère de distinction des jumeux va de 1 à 9 ou de A à Z mais dans le cas présent,
-        // on ne génère que les possibilités de 1 à 9.
-        for (int i = 1; i < 10; i++) {
-            String namPartielAvecJumeau = namPartiel.toString().toUpperCase() + i;
-            int validateur = calculerCaractereValidateur(namPartielAvecJumeau.getBytes(ENCODAGE_EBCDIC), true);
-            nams.add(String.format("%s%d%d", namReel.toString(), i, validateur).toUpperCase());
-        }
-
-        return nams;
+        nomEtPrenomPourNam.append(personne.getPrenomNormalise().substring(0, 1));
+        return nomEtPrenomPourNam.toString();
     }
 
     public Sexe obtenirSexe(String nam)
@@ -221,71 +250,6 @@ public class ServiceUtilitairesNAM {
         sb = replaceAll(sb, "[ñ]", "n");
         sb = replaceAll(sb, "[^0-9a-z%]", "");
         return sb.toString().toUpperCase().replace("SAINTE", "ST").replace("SAINT", "ST");
-    }    
-
-    private boolean validerStringRegex(String chaineTexte, TypeRegex regEx) {
-        if (chaineTexte != null) {
-            Pattern pattern = Pattern.compile(regEx.getValue());
-            Matcher matcher = pattern.matcher(chaineTexte);
-
-            return matcher.matches();
-        }
-        return false;
-    }
-
-    private boolean validerNumeroCarteSanteOntario(String numeroCarteSante) {
-        if (numeroCarteSante.length() != 10) {
-            throw new IllegalArgumentException("Le numero de carte santé spécifié n'a pas la bonne taille");
-        }
-        char[] tableau = numeroCarteSante.toCharArray();
-        int checkDigit = Integer.parseInt(String.valueOf(tableau[9]));
-
-        int[] luhn = new int[9];
-
-        for (int i = 0; i < tableau.length - 1; i++) {
-            if (i % 2 == 0) {
-                // Pair, donc position impaire dans la chaine
-                luhn[i] = Integer.parseInt(String.valueOf(tableau[i])) * 2;
-                if (luhn[i] >= 10) {
-                    luhn[i] = luhn[i] - 9;
-                }
-            }
-            else {
-                // Impair, donc position paire dans la chaine
-                luhn[i] = Integer.parseInt(String.valueOf(tableau[i]));
-            }
-        }
-
-        int somme = 0;
-        for (int x : luhn) {
-            somme += x;
-        }
-        int unite = somme % 10;
-
-        return (10 - unite) == checkDigit;
-    }
-
-    private boolean validerNumeroCarteSanteColombieBritannique(String numeroCarteSante) {
-        if (numeroCarteSante.length() != 10) {
-            throw new IllegalArgumentException("Le numero de carte santé spécifié n'a pas la bonne taille");
-        }
-
-        char[] tableau = numeroCarteSante.toCharArray();
-        int checkDigit = Integer.parseInt(String.valueOf(tableau[9]));
-
-        int[] poids = { 2, 4, 8, 5, 10, 9, 7, 3 };
-        int[] restes = new int[8];
-
-        for (int i = 1; i < tableau.length - 1; i++) {
-            restes[i - 1] = (Integer.parseInt(String.valueOf(tableau[i])) * poids[i - 1]) % 11;
-        }
-
-        int somme = 0;
-        for (int x : restes) {
-            somme += x;
-        }
-
-        return 11 - (somme % 11) == checkDigit;
     }
 
     private int calculerCaractereValidateur(byte[] namConvertiEnDecimal, boolean blnDateValide) {

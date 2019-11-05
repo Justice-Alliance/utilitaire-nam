@@ -9,7 +9,8 @@ import static org.junit.Assert.assertEquals;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidParameterException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 import ca.qc.inspq.nam.api.UtilitaireNamApiApplication;
+import ca.qc.inspq.nam.api.modele.Personne;
 import ca.qc.inspq.nam.api.modele.Provinces;
 import ca.qc.inspq.nam.api.modele.Sexe;
 import ca.qc.inspq.nam.api.utilitaire.ServiceUtilitairesNAM;
@@ -77,14 +79,15 @@ public class UtilitaireDefinitions {
 	
 	@Quand("je demande de générer une liste de numéros d'assurance maladie pour {string} {string}, né le {string}, de sexe {string}")
 	public void je_demande_de_générer_une_liste_de_numéros_d_assurance_maladie_pour_né_le_de_sexe(String prenom, String nom, String dateNaissance, String sexe) throws UnsupportedEncodingException, ParseException {
-		listeNamsGeneres = utilitairesNAM.obtenirCombinaisonsValidesDeNAM(prenom, nom, new SimpleDateFormat("yyyy-MM-dd").parse(dateNaissance), Sexe.valueOf(sexe.toUpperCase()).getCode());
+		var personne = new Personne(prenom, nom, LocalDate.parse(dateNaissance, DateTimeFormatter.ofPattern("yyyy-MM-dd")), Sexe.fromString(sexe.equals("masculin") ? "M" : "F"));
+		listeNamsGeneres = utilitairesNAM.obtenirCombinaisonsValidesDeNAM(personne);
 		erreurGenerationObtenue = false;
 	}
 	
 	@Quand("je demande de générer une liste de numéros d'assurance maladie en fournissant des informations non valides")
 	public void je_demande_de_générer_une_liste_de_numéros_d_assurance_maladie_en_fournissant_des_informations_non_valides() throws UnsupportedEncodingException {
 		try {
-			listeNamsGeneres = utilitairesNAM.obtenirCombinaisonsValidesDeNAM(null, null, null, null);
+			listeNamsGeneres = utilitairesNAM.obtenirCombinaisonsValidesDeNAM(new Personne(null, null, null, null));
 			erreurGenerationObtenue = false;
 		} catch (InvalidParameterException e) {
 			erreurGenerationObtenue = true;

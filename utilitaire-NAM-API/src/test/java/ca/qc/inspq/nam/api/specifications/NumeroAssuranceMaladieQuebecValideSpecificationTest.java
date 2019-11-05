@@ -16,15 +16,21 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest
 public class NumeroAssuranceMaladieQuebecValideSpecificationTest {
 	
-	private static final String NAM_QUEBEC_VALIDE = "TREM04121925";
+	private static final String NAM_QUEBEC_VALIDE_MOINS_DE_100_ANS = "TREM04121925";
+	private static final String NAM_QUEBEC_VALIDE_PLUS_DE_100_ANS = "TREM04121916";
 	private static final String NAM_QUEBEC_NON_VALIDE = "TREM04121935";
 	
 	@Autowired
 	private NumeroAssuranceMaladieQuebecValideSpecification spec;
 
 	@Test
-	public void quandJeVerifieSiUnNamRespecteLaSpecificationDeNamValideDuQuebec_siLeNamEstValide_alorsJeRetourneVrai() throws UnsupportedEncodingException, ParseException {
-		assertThat(spec.estSatisfaitePar(NAM_QUEBEC_VALIDE)).isTrue();
+	public void quandJeVerifieSiUnNamRespecteLaSpecificationDeNamValideDuQuebec_siLeNamEstValideEtLaPersonneAMoinsDe100Ans_alorsJeRetourneVrai() throws UnsupportedEncodingException, ParseException {
+		assertThat(spec.estSatisfaitePar(NAM_QUEBEC_VALIDE_MOINS_DE_100_ANS)).isTrue();
+	}
+	
+	@Test
+	public void quandJeVerifieSiUnNamRespecteLaSpecificationDeNamValideDuQuebec_siLeNamEstValideEtPersonnePlusDe100Ans_alorsJeRetourneVrai() throws UnsupportedEncodingException, ParseException {
+		assertThat(spec.estSatisfaitePar(NAM_QUEBEC_VALIDE_PLUS_DE_100_ANS)).isTrue();
 	}
 	
 	@Test

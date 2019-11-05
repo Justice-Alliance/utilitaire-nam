@@ -1,9 +1,7 @@
 package ca.qc.inspq.nam.api.service;
 
 import java.io.UnsupportedEncodingException;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Collection;
 
 import javax.ws.rs.GET;

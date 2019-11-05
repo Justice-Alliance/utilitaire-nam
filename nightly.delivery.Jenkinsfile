@@ -42,16 +42,12 @@ pipeline {
 				milestone(ordinal: 6)
 			}
         }
-		post {  
-        	always {
-            	mail (to: 'philippe.gauthier@inspq.qc.ca',
-                      subject: "Étiqueter Utilitaire-NAM", 
-                      body: "La construction, le déploiement et les tests de utilitaire NAM on été réalisés avec succès. Voulez-vous étiqueter cette construction? ${env.BUILD_URL}")
-             }
-        }
         stage ('Étiqueter utilitaire-nam') {
             steps {
 				milestone(ordinal: 7)
+            	mail (to: 'philippe.gauthier@inspq.qc.ca',
+                      subject: "Étiqueter Utilitaire-NAM", 
+                      body: "La construction, le déploiement et les tests de utilitaire NAM on été réalisés avec succès. Voulez-vous étiqueter cette construction? ${env.BUILD_URL}")
                 script {
                 	def VERSION
 		            def VERSION_TAG

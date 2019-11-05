@@ -98,7 +98,6 @@ pipeline {
 	post {
 		aborted {
       		echo "Aucun TAG n'a été créé."
-      		currentBuild.result = 'SUCCESS'
       	} 
     }
 }

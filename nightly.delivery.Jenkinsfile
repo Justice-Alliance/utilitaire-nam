@@ -47,7 +47,7 @@ pipeline {
 				milestone(ordinal: 7)
                 script {
                 	try {
-	                	timeout (time: 30, unit: "SECONDS" ){
+	                	timeout (time: 24, unit: "HOURS" ){
 		                	def VERSION
 		                	def VERSION_TAG
 		                	def VERSION_NEXT

@@ -15,7 +15,13 @@ pipeline {
 				}
 			}      
     	}
-
+		post {  
+        	always {
+            	mail (to: 'philippe.gauthier@inspq.qc.ca',
+                      subject: "Déploiement de Utilitaire-NAM en PP", 
+                      body: "Une nouvelle version de utilitaire NAM est maintenant disponible. Déployer en pré-production? ${env.BUILD_URL}")
+             }
+        }
         stage ('Déploiement en PP') {
             steps {
 				milestone(ordinal: 1)
@@ -47,6 +53,13 @@ pipeline {
 		        }
 				milestone(ordinal: 2)
 			}
+        }
+		post {  
+        	always {
+            	mail (to: 'philippe.gauthier@inspq.qc.ca',
+                      subject: "Déploiement de Utilitaire-NAM en PROD", 
+                      body: "La nouvelle version de utilitaire NAM a été déployé en pré-production avec succès. Déployer en production? ${env.BUILD_URL}")
+             }
         }
         stage ('Déploiement en PROD') {
             steps {

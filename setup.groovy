@@ -199,7 +199,7 @@ pipelineJob("${PIPELINE_LIVRAISON_TAG}") {
               			url('https://gitlab.forge.gouv.qc.ca/inspq/utilitaire-nam.git')
 	                	refspec ('+refs/tags/*:refs/remotes/origin/tags/*')
           			}
-                	branch ('*tags*')
+                	branch ('**/tags/**')
                 }
             }
             scriptPath('tag.delivery.Jenkinsfile')

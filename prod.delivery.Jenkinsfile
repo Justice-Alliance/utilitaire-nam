@@ -20,15 +20,22 @@ pipeline {
             steps {
 				milestone(ordinal: 1)
 				script {
-					DEPLOY_PP = input(
-                		id: 'tag_choice',
-                		message: 'Voulez-vous déployer la version ${TAG} de utilitaire NAM en PP ?',
-                		parameters: [ 
-                			[$class: 'ChoiceParameterDefinition', 
-                			choices: [ 'oui','non' ].join('\n'), 
-                			name: 'tag'] 
-                		]
-                	)
+					def DEPLOY_PP
+					try {
+		            	timeout (time: 24, unit: "HOURS" ){
+							DEPLOY_PP = input(
+		                		id: 'tag_choice',
+		                		message: 'Voulez-vous déployer la version ${TAG} de utilitaire NAM en PP ?',
+		                		parameters: [ 
+		                			[$class: 'ChoiceParameterDefinition', 
+		                			choices: [ 'oui','non' ].join('\n'), 
+		                			name: 'tag'] 
+		                		]
+		                	)
+		                } 
+		            } catch (err) {
+                	    DEPLOY_PP = "non"      
+                	}
                 	if ( "${DEPLOY_PP}" == "oui" ) {
 					
 		        		build job: "utilitaire-nam-deploiement", parameters:[string(name: 'ENV', value: 'PP'), string(name: 'TAG', value: "${TAG}")]
@@ -45,15 +52,22 @@ pipeline {
             steps {
 				milestone(ordinal: 3)
 				script {
-					DEPLOY_PROD = input(
-                		id: 'tag_choice',
-                		message: 'Voulez-vous déployer la version ${TAG} de utilitaire NAM en PROD ?',
-                		parameters: [ 
-                			[$class: 'ChoiceParameterDefinition', 
-                			choices: [ 'oui','non' ].join('\n'), 
-                			name: 'tag'] 
-                		]
-                	)
+					def DEPLOY_PROD
+					try {
+		            	timeout (time: 24, unit: "HOURS" ){
+							DEPLOY_PROD = input(
+		                		id: 'tag_choice',
+		                		message: 'Voulez-vous déployer la version ${TAG} de utilitaire NAM en PROD ?',
+		                		parameters: [ 
+		                			[$class: 'ChoiceParameterDefinition', 
+		                			choices: [ 'oui','non' ].join('\n'), 
+		                			name: 'tag'] 
+		                		]
+		                	)
+		                } 
+		            } catch (err) {
+                	    DEPLOY_PROD = "non"      
+                	}
                 	if ( "${DEPLOY_PROD}" == "oui" ) {
 					
 		        		build job: "utilitaire-nam-deploiement", parameters:[string(name: 'ENV', value: 'PROD'), string(name: 'TAG', value: "${TAG}")]

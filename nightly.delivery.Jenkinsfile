@@ -46,13 +46,14 @@ pipeline {
             steps {
 				milestone(ordinal: 7)
                 script {
+                	def VERSION
+		            def VERSION_TAG
+		            def VERSION_NEXT
+		            def VERSION_MESSAGE
+		            def TAG_CHOICE
                 	try {
 	                	timeout (time: 24, unit: "HOURS" ){
-		                	def VERSION
-		                	def VERSION_TAG
-		                	def VERSION_NEXT
-		                	def VERSION_MESSAGE
-		                	def TAG_CHOICE = input(
+		                	TAG_CHOICE = input(
 		                		id: 'tag_choice',
 		                		message: 'Les tests sont conclants, voulez vous dans ce cas taguer cette version ?',
 		                		parameters: [ 

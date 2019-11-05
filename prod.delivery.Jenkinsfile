@@ -15,16 +15,12 @@ pipeline {
 				}
 			}      
     	}
-		post {  
-        	always {
-            	mail (to: 'philippe.gauthier@inspq.qc.ca',
-                      subject: "Déploiement de Utilitaire-NAM en PP", 
-                      body: "Une nouvelle version de utilitaire NAM est maintenant disponible. Déployer en pré-production? ${env.BUILD_URL}")
-             }
-        }
         stage ('Déploiement en PP') {
             steps {
 				milestone(ordinal: 1)
+            	mail (to: 'philippe.gauthier@inspq.qc.ca',
+                      subject: "Déploiement de Utilitaire-NAM en PP", 
+                      body: "Une nouvelle version de utilitaire NAM est maintenant disponible. Déployer en pré-production? ${env.BUILD_URL}")
 				script {
 					def DEPLOY_PP
 					try {
@@ -45,7 +41,10 @@ pipeline {
                 	if ( "${DEPLOY_PP}" == "oui" ) {
 					
 		        		build job: "utilitaire-nam-deploiement", parameters:[string(name: 'ENV', value: 'PP'), string(name: 'TAG', value: "${TAG}")]
-		        	}
+		            	mail (to: 'philippe.gauthier@inspq.qc.ca',
+		                      subject: "Déploiement de Utilitaire-NAM en PROD", 
+		                      body: "La nouvelle version de utilitaire NAM a été déployée en pré-production avec succès. Déployer en production? ${env.BUILD_URL}")
+				        	}
 		        	else {
 		        	    currentBuild.getRawBuild().getExecutor().interrupt(Result.SUCCESS)
 		        	}
@@ -53,13 +52,6 @@ pipeline {
 		        }
 				milestone(ordinal: 2)
 			}
-        }
-		post {  
-        	always {
-            	mail (to: 'philippe.gauthier@inspq.qc.ca',
-                      subject: "Déploiement de Utilitaire-NAM en PROD", 
-                      body: "La nouvelle version de utilitaire NAM a été déployé en pré-production avec succès. Déployer en production? ${env.BUILD_URL}")
-             }
         }
         stage ('Déploiement en PROD') {
             steps {

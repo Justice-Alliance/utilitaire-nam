@@ -46,50 +46,60 @@ pipeline {
             steps {
 				milestone(ordinal: 7)
                 script {
-                	timeout (time: 30, unit: "SECONDS" ){
-	                	def VERSION
-	                	def VERSION_TAG
-	                	def VERSION_NEXT
-	                	def VERSION_MESSAGE
-	                	def TAG_CHOICE = input(
-	                		id: 'tag_choice',
-	                		message: 'Les tests sont conclants, voulez vous dans ce cas taguer cette version ?',
-	                		parameters: [ 
-	                			[$class: 'ChoiceParameterDefinition', 
-	                			choices: [ 'oui','non' ].join('\n'), 
-	                			name: 'tag'] 
-	                		]
-	                	)
-	                	if ( "${TAG_CHOICE}" == "oui" ) {
-		                	VERSION = input(
-		                		id: 'version',
-		                		message: 'Numéros de version à assigner à Utilitaire-NAM',
-		                		parameters: [
-		                			string(
-		                				name: 'VERSION_TAG', 
-		                				description: 'Numéro de version à assigner au tag de Utilitaire-NAM'),
-		                			string(
-		                				name: 'VERSION_NEXT', 
-		                				description: 'Numéro à assigner à la prochaine version de Utilitaire-NAM'),
-		                			string(
-		                				name: 'MESSAGE', 
-		                				description: 'Message à mettre dans le commit sur Git'),
+                	try {
+	                	timeout (time: 30, unit: "SECONDS" ){
+		                	def VERSION
+		                	def VERSION_TAG
+		                	def VERSION_NEXT
+		                	def VERSION_MESSAGE
+		                	def TAG_CHOICE = input(
+		                		id: 'tag_choice',
+		                		message: 'Les tests sont conclants, voulez vous dans ce cas taguer cette version ?',
+		                		parameters: [ 
+		                			[$class: 'ChoiceParameterDefinition', 
+		                			choices: [ 'oui','non' ].join('\n'), 
+		                			name: 'tag'] 
 		                		]
 		                	)
-		                	VERSION_TAG = VERSION.VERSION_TAG?:''
-		                	VERSION_NEXT = VERSION.VERSION_NEXT?:''
-		                	VERSION_MESSAGE = VERSION.VERSION_MESSAGE?:'Nouveau tag ${VERSION_TAG} par Jenkins'
-		                	if ( "${VERSION_TAG}" != '' && "${VERSION_NEXT}" != '' ) {
-					        	build job: "utilitaire-nam-etiquetage", 
-					        		parameters:[ 
-				    	    			string(name: 'VERSION_TAG', value: "${VERSION_TAG}"), 
-				        				string(name: 'VERSION_NEXT', value: "${VERSION_NEXT}"), 
-				        				string(name: 'MESSAGE', value: "${VERSION_MESSAGE}"),
-				        				string(name: 'BRANCH', value: "${env.BRANCH_OR_TAG}")
-				        			]
+		                	if ( "${TAG_CHOICE}" == "oui" ) {
+			                	VERSION = input(
+			                		id: 'version',
+			                		message: 'Numéros de version à assigner à Utilitaire-NAM',
+			                		parameters: [
+			                			string(
+			                				name: 'VERSION_TAG', 
+			                				description: 'Numéro de version à assigner au tag de Utilitaire-NAM'),
+			                			string(
+			                				name: 'VERSION_NEXT', 
+			                				description: 'Numéro à assigner à la prochaine version de Utilitaire-NAM'),
+			                			string(
+			                				name: 'MESSAGE', 
+			                				description: 'Message à mettre dans le commit sur Git'),
+			                		]
+			                	)
+			                	VERSION_TAG = VERSION.VERSION_TAG?:''
+			                	VERSION_NEXT = VERSION.VERSION_NEXT?:''
+			                	VERSION_MESSAGE = VERSION.VERSION_MESSAGE?:'Nouveau tag ${VERSION_TAG} par Jenkins'
+			                	if ( "${VERSION_TAG}" != '' && "${VERSION_NEXT}" != '' ) {
+						        	build job: "utilitaire-nam-etiquetage", 
+						        		parameters:[ 
+					    	    			string(name: 'VERSION_TAG', value: "${VERSION_TAG}"), 
+					        				string(name: 'VERSION_NEXT', value: "${VERSION_NEXT}"), 
+					        				string(name: 'MESSAGE', value: "${VERSION_MESSAGE}"),
+					        				string(name: 'BRANCH', value: "${env.BRANCH_OR_TAG}")
+					        			]
+					        	}
 				        	}
-			        	}
-			        }
+				        }
+					} catch(org.jenkinsci.plugins.workflow.steps.FlowInterruptedException e) {
+						cause = e.causes.get(0)
+    					if (cause instanceof org.jenkinsci.plugins.workflow.steps.TimeoutStepExecution.ExceededTimeout) {
+      						currentBuild.result = 'SUCCESS'
+      						println("Aucun tag n'a été produit")
+					    } else {
+      						currentBuild.result = 'ABORTED'
+						}	     
+					}
 	        	}
 				milestone(ordinal: 8)
 			}

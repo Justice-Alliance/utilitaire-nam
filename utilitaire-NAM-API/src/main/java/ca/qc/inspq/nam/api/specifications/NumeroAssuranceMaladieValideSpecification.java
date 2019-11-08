@@ -1,13 +1,9 @@
 package ca.qc.inspq.nam.api.specifications;
 
-import java.io.UnsupportedEncodingException;
-import java.text.ParseException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public interface NumeroAssuranceMaladieValideSpecification {
-
-	boolean estSatisfaitePar(String nam) throws UnsupportedEncodingException, ParseException;
+public interface NumeroAssuranceMaladieValideSpecification extends Specification<String> {
 	
 	default boolean sassurerQueLaChaineDeCaracteresRespecteLexpressionReguliere(String chaineTexte, String regEx) {
         if (chaineTexte != null) {

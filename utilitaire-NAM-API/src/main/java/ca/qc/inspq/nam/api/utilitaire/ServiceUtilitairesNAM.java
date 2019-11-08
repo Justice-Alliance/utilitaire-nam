@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import ca.qc.inspq.nam.api.modele.NAMInfo;
 import ca.qc.inspq.nam.api.modele.Personne;
 import ca.qc.inspq.nam.api.modele.Sexe;
 import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieAlbertaValideSpecification;
@@ -115,13 +116,15 @@ public class ServiceUtilitairesNAM {
     }    	
     	
     public List<String> obtenirCombinaisonsValidesDeNAM(Personne personne) throws UnsupportedEncodingException {
-    	personneGenerationNAMValideSpecification.estSatisfaitePar(personne);
+    	if (!personneGenerationNAMValideSpecification.estSatisfaitePar(personne)) {
+    		throw new InvalidParameterException();
+    	}
         List<String> nams = new ArrayList<>();
         String namReel = construireNAMReel(personne);
-        String namPartiel = obtenirSequenceGenerationNAM(personne);
+        String sequenceGenerationNAM = obtenirSequenceGenerationNAM(personne);
         for (int i = 1; i < 10; i++) {
-            String namPartielAvecJumeau = namPartiel.toString() + i;
-            int validateur = calculerCaractereValidateur(namPartielAvecJumeau.getBytes(ENCODAGE_EBCDIC), true);
+            String sequenceGenerationNAMAvecJumeau = sequenceGenerationNAM.toString() + i;
+            int validateur = calculerCaractereValidateur(sequenceGenerationNAMAvecJumeau.getBytes(ENCODAGE_EBCDIC), true);
             nams.add(String.format("%s%d%d", namReel.toString(), i, validateur));
         }
         return nams;
@@ -168,6 +171,10 @@ public class ServiceUtilitairesNAM {
         }
         nomEtPrenomPourNam.append(personne.getPrenomNormalise().substring(0, 1));
         return nomEtPrenomPourNam.toString();
+    }
+    
+    public NAMInfo obtenirInformationsContenuesDansLeNam(String nam) {
+    	return null;
     }
 
     public Sexe obtenirSexe(String nam)

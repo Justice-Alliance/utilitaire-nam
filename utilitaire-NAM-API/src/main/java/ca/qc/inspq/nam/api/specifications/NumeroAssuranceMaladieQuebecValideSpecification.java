@@ -23,60 +23,64 @@ public class NumeroAssuranceMaladieQuebecValideSpecification implements NumeroAs
 	private SimpleDateFormat formatDateNaissance = new SimpleDateFormat("yyyyMMdd");
 
 	@Override
-	public boolean estSatisfaitePar(String nam) throws UnsupportedEncodingException, ParseException {
-        return sassurerQueLaChaineDeCaracteresRespecteLexpressionReguliere(nam, FORMAT_NAM_QUEBEC_VALIDE)
-        		&& validerNumeroAssuranceMaladieQuebecAvecAlgorithmeValidation(nam.toUpperCase());
+	public boolean estSatisfaitePar(String nam) {
+		return sassurerQueLaChaineDeCaracteresRespecteLexpressionReguliere(nam, FORMAT_NAM_QUEBEC_VALIDE)
+	       		&& validerNumeroAssuranceMaladieQuebecAvecAlgorithmeValidation(nam.toUpperCase());
 	}
 
-	private boolean validerNumeroAssuranceMaladieQuebecAvecAlgorithmeValidation(String nam)
-			throws ParseException, UnsupportedEncodingException {
-		var decoupageNam = new DecoupageNAM(nam);
+	private boolean validerNumeroAssuranceMaladieQuebecAvecAlgorithmeValidation(String nam) {
 		
-		boolean blnDateValide = true;
-
-		// Convertir AA en AAAA : Année de naissance de la personne assurée précédé du siècle.
-		// Si le siècle de naissance de la personne assurée est inconnu, il est supposé qu'il
-		// a moins de 100 ans
-		// Valider que l'année de naissance correspond à l'année de naissance du NAM
-		
-		Calendar courant = Calendar.getInstance();
-		courant.add(Calendar.YEAR, -100);
-		formatEntree.set2DigitYearStart(courant.getTime());
-		String annee = formatSortie.format(formatEntree.parse(decoupageNam.aaS));
-
-		// B) Trouver la valeur décimale de chaque caractère du numéro d'assurance maladie
-		//    décomposé, obtenu à l'étape A.
-		String namRecompose = String.format("%s%s%s%s%02d%s%s", decoupageNam.nomi, annee.substring(0, 2), decoupageNam.aaS, decoupageNam.sx, decoupageNam.mm, decoupageNam.jj, decoupageNam.s);
-		byte[] namConvertiEnDecimal = namRecompose.getBytes(ENCODAGE_EBCDIC);
-
-		//Validation sur la date de naissance
-		
-		formatDateNaissance.setLenient(false);
-		blnDateValide = formatDateNaissance.parse(
-		        annee + ((decoupageNam.mm > 9) ? String.valueOf(decoupageNam.mm) : "0" + String.valueOf(decoupageNam.mm)) + nam.substring(8, 10),
-		        new ParsePosition(0)) != null;
-
-		// C) Multiplier la valeur décimale de chaque caractère du matricule décomposé par
-		//    les multiplicateurs respectifs
-		// D) Additionner les produits de ces multiplications
-		// E) Le caractère validateur est le chiffre dans la position des unités de la somme des produits.
-		int caractereValidateur = calculerCaractereValidateur(namConvertiEnDecimal, blnDateValide);
-
-		// F) Si le code est égal, le NAM est valide.
-		if (!leCaractereValidateurEtLaDateNaissanceSontValides(decoupageNam.v, blnDateValide, caractereValidateur)) {
-			// On réessaie avec un usager ayant plus de 100 ans
-		    courant.add(Calendar.YEAR, -100);
-		    formatEntree.set2DigitYearStart(courant.getTime());
-		    annee = formatSortie.format(formatEntree.parse(decoupageNam.aaS));
-		    namRecompose = String.format("%s%s%s%s%02d%s%s", decoupageNam.nomi, annee.substring(0, 2), decoupageNam.aaS, decoupageNam.sx, decoupageNam.mm, decoupageNam.jj, decoupageNam.s);
-		    namConvertiEnDecimal = namRecompose.getBytes(ENCODAGE_EBCDIC);
-		    caractereValidateur = calculerCaractereValidateur(namConvertiEnDecimal, blnDateValide);
-		    blnDateValide = formatDateNaissance.parse(
-		            annee + ((decoupageNam.mm > 9) ? String.valueOf(decoupageNam.mm) : "0" + String.valueOf(decoupageNam.mm)) + nam.substring(8, 10),
-		            new ParsePosition(0)) != null;
-		    return leCaractereValidateurEtLaDateNaissanceSontValides(decoupageNam.v, blnDateValide, caractereValidateur);
-		} else {
-			return true;
+		try {
+			var decoupageNam = new DecoupageNAM(nam);
+			
+			boolean blnDateValide = true;
+	
+			// Convertir AA en AAAA : Année de naissance de la personne assurée précédé du siècle.
+			// Si le siècle de naissance de la personne assurée est inconnu, il est supposé qu'il
+			// a moins de 100 ans
+			// Valider que l'année de naissance correspond à l'année de naissance du NAM
+			
+			Calendar courant = Calendar.getInstance();
+			courant.add(Calendar.YEAR, -100);
+			formatEntree.set2DigitYearStart(courant.getTime());
+			String annee = formatSortie.format(formatEntree.parse(decoupageNam.aaS));
+	
+			// B) Trouver la valeur décimale de chaque caractère du numéro d'assurance maladie
+			//    décomposé, obtenu à l'étape A.
+			String namRecompose = String.format("%s%s%s%s%02d%s%s", decoupageNam.nomi, annee.substring(0, 2), decoupageNam.aaS, decoupageNam.sx, decoupageNam.mm, decoupageNam.jj, decoupageNam.s);
+			byte[] namConvertiEnDecimal = namRecompose.getBytes(ENCODAGE_EBCDIC);
+	
+			//Validation sur la date de naissance
+			
+			formatDateNaissance.setLenient(false);
+			blnDateValide = formatDateNaissance.parse(
+			        annee + ((decoupageNam.mm > 9) ? String.valueOf(decoupageNam.mm) : "0" + String.valueOf(decoupageNam.mm)) + nam.substring(8, 10),
+			        new ParsePosition(0)) != null;
+	
+			// C) Multiplier la valeur décimale de chaque caractère du matricule décomposé par
+			//    les multiplicateurs respectifs
+			// D) Additionner les produits de ces multiplications
+			// E) Le caractère validateur est le chiffre dans la position des unités de la somme des produits.
+			int caractereValidateur = calculerCaractereValidateur(namConvertiEnDecimal, blnDateValide);
+	
+			// F) Si le code est égal, le NAM est valide.
+			if (!leCaractereValidateurEtLaDateNaissanceSontValides(decoupageNam.v, blnDateValide, caractereValidateur)) {
+				// On réessaie avec un usager ayant plus de 100 ans
+			    courant.add(Calendar.YEAR, -100);
+			    formatEntree.set2DigitYearStart(courant.getTime());
+			    annee = formatSortie.format(formatEntree.parse(decoupageNam.aaS));
+			    namRecompose = String.format("%s%s%s%s%02d%s%s", decoupageNam.nomi, annee.substring(0, 2), decoupageNam.aaS, decoupageNam.sx, decoupageNam.mm, decoupageNam.jj, decoupageNam.s);
+			    namConvertiEnDecimal = namRecompose.getBytes(ENCODAGE_EBCDIC);
+			    caractereValidateur = calculerCaractereValidateur(namConvertiEnDecimal, blnDateValide);
+			    blnDateValide = formatDateNaissance.parse(
+			            annee + ((decoupageNam.mm > 9) ? String.valueOf(decoupageNam.mm) : "0" + String.valueOf(decoupageNam.mm)) + nam.substring(8, 10),
+			            new ParsePosition(0)) != null;
+			    return leCaractereValidateurEtLaDateNaissanceSontValides(decoupageNam.v, blnDateValide, caractereValidateur);
+			} else {
+				return true;
+			}
+		} catch (ParseException | UnsupportedEncodingException e) {
+			return false;
 		}
 	}
 

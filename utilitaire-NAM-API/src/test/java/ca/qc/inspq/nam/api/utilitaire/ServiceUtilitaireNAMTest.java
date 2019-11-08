@@ -320,8 +320,6 @@ public class ServiceUtilitaireNAMTest {
 		serviceUtilitaireNAM.validerNAM(NAM_QUEBEC, PROVINCE_NON_VALIDE);
 	}
 	
-	// --------------- Obtenir une liste de NAM -------------------------
-	
 	@Test
 	public void quandJeDemandeDobtenirTousLesNAMSPossiblesPourUnePersonne_alorsJappelleLaSpecificationPourPersonneDeGenerationDeNAM() throws UnsupportedEncodingException, ParseException {
 		var personne = new Personne(PRENOM, NOM, DATE_NAISSANCE, Sexe.MASCULIN);
@@ -448,41 +446,39 @@ public class ServiceUtilitaireNAMTest {
 				"TREM04121992");
 	}
 	
+	// ------------ obtenir informations contenues dans nam --------------
+	
+	// quand on obtient le sexe, alors le nam est valider avec le validateur QC
+	
+	// quand on obtient le sexe, si le mois dans le nam est > 50, alors on retourne feminin
+	
+	// quand on obtient le sexe, si le mois dans le nam est < 50, alors on retourne masculin
+	@Test
+	public void quandJeDemandeDobtenirLeSexeContenuDansUnNAM_siLeNamEstUnNamDhomme_alorsJeRetourneMasculin()
+			throws UnsupportedEncodingException, ParseException {
+		when(numeroAssuranceMaladieQuebecValideSpecification.estSatisfaitePar(eq(NAM_QUEBEC))).thenReturn(true);
+		var sexeObtenu = serviceUtilitaireNAM.obtenirSexe(NAM_QUEBEC);
+		assertThat(sexeObtenu).isEqualTo(Sexe.MASCULIN);
+	}
+	
+	// quand on obtient le sexe, si le nam n'est pas valide, alors on lance InvalidParameterException
+	@Test
+	public void quandJeDemandeDobtenirLeSexeContenuDansUnNam_siLeNamNestPasValide_alorsInvalidParameterExceptionEstLancee()
+			throws UnsupportedEncodingException, ParseException {
+		exception.expect(InvalidParameterException.class);
+		when(numeroAssuranceMaladieQuebecValideSpecification.estSatisfaitePar(eq(NAM_QUEBEC))).thenReturn(false);
+		serviceUtilitaireNAM.obtenirSexe(NAM_QUEBEC);
+	}
+	
+	// TODO Fred: fait le même exercice pour la date de naissance
+	
 	// -------------------------------------------------------------------
 
 	
 
-	@Test
-	public void doit_RetournerLeSexeDeLaPersonne_Quand_ObtenirSexe_EstAppeleAvecUnNAMValide()
-			throws UnsupportedEncodingException, ParseException {
+	
 
-		// Arrange
-		String nam = "TREM04121925";
-		when(serviceUtilitaireNAM.validerNAM(nam, "QC")).thenReturn(true);
-		Sexe sexeAttendu = Sexe.MASCULIN;
-		// Act
-		Sexe sexe = serviceUtilitaireNAM.obtenirSexe(nam);
-
-		// Assert
-		assertEquals(sexe, sexeAttendu);
-
-	}
-
-	@Test(expected = InvalidParameterException.class)
-	public void doit_RetournerInvalidParameterException_Quand_ObtenirSexe_EstAppeleAvecUnNAMInValide()
-			throws UnsupportedEncodingException, ParseException {
-
-		// Arrange
-		InvalidParameterException exception = new InvalidParameterException("Le NAM est invalide");
-		String nam = "TREM04121935";
-		when(serviceUtilitaireNAM.validerNAM(nam, "QC")).thenReturn(false);
-		// Act
-		serviceUtilitaireNAM.obtenirSexe(nam);
-
-		// Assert
-		assertEquals("Le NAM est invalide", exception.getMessage());
-
-	}
+	
 
 	@Test
 	public void doit_RetournerUneDateNaissanceValide_Quand_TrouverDateNaissance_EstAppeleAvecUnNAMValide()
@@ -515,161 +511,4 @@ public class ServiceUtilitaireNAMTest {
 		assertEquals("Le NAM est invalide", exception.getMessage());
 
 	}
-
-	@Test
-	public void doit_RetournerNull_Quand_NormaliserRAMQ_EstAppeleAvecUnParametreStringNull() {
-
-		// Arrange
-		String texte = null;
-
-		// Act
-		String resultat = serviceUtilitaireNAM.normaliserRAMQ(texte);
-
-		// Assert
-
-		assertNull(resultat);
-
-	}
-	
-	
-	@Test
-	@Ignore
-	public void doit_RetournerVRAI_Quand_ValiderNumeroCarteSanteQuebec_EstAppelerAvecCorrecteNAM()
-			throws UnsupportedEncodingException, ParseException {
-
-		// Arrange
-		String nam = "TREM04121914";
-		boolean resultatAttendu = true;
-		//when(utilitairesNAM.validerStringRegex(nam, TypeRegex.REGEX_NAM_QUEBEC)).thenReturn(true);
-
-		// Act
-		//boolean validerNam = utilitairesNAM.validerNumeroCarteSanteQuebec(nam);
-
-		// Assert
-		//assertEquals(validerNam, resultatAttendu);
-
-	}
-	
-	@Test
-	@Ignore
-	public void doit_RetournerFAUX_Quand_ValiderNumeroCarteSanteQuebec_EstAppelerAvecIncorrectNAM()
-			throws UnsupportedEncodingException, ParseException {
-
-		// Arrange
-		String nam = "TREM04121934";
-		boolean resultatAttendu = false;
-		//when(utilitairesNAM.validerStringRegex(nam, TypeRegex.REGEX_NAM_QUEBEC)).thenReturn(false);
-
-		// Act
-		//boolean validerNam = utilitairesNAM.validerNumeroCarteSanteQuebec(nam);
-
-		// Assert
-		//assertEquals(validerNam, resultatAttendu);
-
-	}	
-
-	@Test
-	@Ignore
-	public void doit_RetournerVRAI_Quand_ValiderStringRegex_EstAppelerAvecBonChaineCharacteres()
-			throws UnsupportedEncodingException, ParseException {
-
-		// Arrange
-		String chaineTexte = "BOUF94011419";
-		boolean resultatAttendu = true;
-
-		// Act
-		//boolean validerChaine = utilitairesNAM.validerStringRegex(chaineTexte, TypeRegex.REGEX_NAM_QUEBEC);
-
-		// Assert
-		//assertEquals(validerChaine, resultatAttendu);
-
-	}
-
-	@Test
-	@Ignore
-	public void doit_RetournerFAUX_Quand_ValiderStringRegex_EstAppelerAvecChaineCharacteresNull()
-			throws UnsupportedEncodingException, ParseException {
-
-		// Arrange
-		String chaineTexte = null;
-		boolean resultatAttendu = false;
-
-		// Act
-		//boolean validerChaine = utilitairesNAM.validerStringRegex(chaineTexte, 	TypeRegex.REGEX_NAM_QUEBEC);
-
-		// Assert
-		//assertEquals(validerChaine, resultatAttendu);
-
-	}
-
-	@Test
-	@Ignore
-	public void doit_RetournerVRAI_Quand_ValiderNumeroCarteSanteOntario_EstAppelerAvecCorrectNAM()
-			throws UnsupportedEncodingException, ParseException {
-
-		// Arrange
-		String nam = "9401141925";
-		boolean resultatAttendu = true;
-
-		// Act
-		//boolean validerNam = utilitairesNAM.validerNumeroCarteSanteOntario(nam);
-
-		// Assert
-		//assertEquals(validerNam, resultatAttendu);
-
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	@Ignore
-	public void doit_RetournerIllegalArgumentException_Quand_ValiderNumeroCarteSanteOntario_EstAppelerAvecNAMDeLongueurDifferentDe10()
-			throws UnsupportedEncodingException, ParseException {
-
-		// Arrange
-		String nam = "940114192536";
-		IllegalArgumentException exception = new IllegalArgumentException(
-				"Le numero de carte santé spécifié n'a pas la bonne taille");
-
-		// Act
-		//utilitairesNAM.validerNumeroCarteSanteOntario(nam);
-
-		// Assert
-		//assertEquals("Le numero de carte santé spécifié n'a pas la bonne taille", exception.getMessage());
-
-	}
-
-	@Test
-	@Ignore
-	public void doit_RetournerVRAI_Quand_ValiderNumeroCarteSanteColombieBritannique_EstAppelerAvecCorrectNAM()
-			throws UnsupportedEncodingException, ParseException {
-
-		// Arrange
-		String nam = "9759528158";
-		boolean resultatAttendu = true;
-
-		// Act
-		//boolean validerNam = utilitairesNAM.validerNumeroCarteSanteColombieBritannique(nam);
-
-		// Assert
-		//assertEquals(validerNam, resultatAttendu);
-
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	@Ignore
-	public void doit_RetournerIllegalArgumentException_Quand_ValiderNumeroCarteSanteColombieBritannique_EstAppelerAvecNAMDeLongueurDifferentDe10()
-			throws UnsupportedEncodingException, ParseException {
-
-		// Arrange
-		String nam = "940114192536";
-		IllegalArgumentException exception = new IllegalArgumentException(
-				"Le numero de carte santé spécifié n'a pas la bonne taille");
-
-		// Act
-		//utilitairesNAM.validerNumeroCarteSanteColombieBritannique(nam);
-
-		// Assert
-		assertEquals("Le numero de carte santé spécifié n'a pas la bonne taille", exception.getMessage());
-
-	}
-
 }

@@ -1,19 +1,21 @@
 package ca.qc.inspq.nam.api.specifications;
 
-import java.security.InvalidParameterException;
-
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import ca.qc.inspq.nam.api.modele.Personne;
 
 @Service
-public class PersonneGenerationNAMValideSpecification implements PersonneValideSpecification {
+public class PersonneGenerationNAMValideSpecification implements Specification<Personne> {
 	
 	@Override
-	 public void estSatisfaitePar(Personne personne) {
-		if (personne.getPrenomNormalise() == null || personne.getNomNormalise() == null || personne.getSexe() == null || 
-				personne.getDateNaissance() == null) {
-			throw new InvalidParameterException();
-		}
+	 public boolean estSatisfaitePar(Personne personne) {
+		return toutesLesInformationsSurLaPersonneSontFournies(personne);
 	}
-
+	
+	private boolean toutesLesInformationsSurLaPersonneSontFournies(Personne personne) {
+		return StringUtils.isNotEmpty(personne.getPrenomNormalise()) &&
+				StringUtils.isNotEmpty(personne.getNomNormalise()) && 
+				personne.getSexe() != null &&
+				personne.getDateNaissance() != null;
+	}
 }

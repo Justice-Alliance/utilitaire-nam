@@ -45,7 +45,7 @@ public class UtilitaireDefinitions {
 	@Quand("je valide le numéro d'assurance maladie {string} émis par la province {string}")
 	public void je_valide_le_numéro_d_assurance_maladie_émis_par_la_province(String nam, String province)
 			throws UnsupportedEncodingException, ParseException {
-		resultat = utilitairesNAM.validerNAM(nam, Provinces.fromString(province).toString());
+		resultat = utilitairesNAM.validerNAM(nam, Provinces.fromString(province));
 		erreurValidationObtenue = false;
 	}
 	

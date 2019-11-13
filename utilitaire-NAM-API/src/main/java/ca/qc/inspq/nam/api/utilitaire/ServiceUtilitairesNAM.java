@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import ca.qc.inspq.nam.api.modele.NAMInfo;
 import ca.qc.inspq.nam.api.modele.Personne;
 import ca.qc.inspq.nam.api.modele.Sexe;
+import ca.qc.inspq.nam.api.modele.Provinces;
 import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieAlbertaValideSpecification;
 import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieQuebecValideSpecification;
 import ca.qc.inspq.nam.api.specifications.NumeroAssuranceMaladieColombieBritanniqueValideSpecification;
@@ -80,35 +81,47 @@ public class ServiceUtilitairesNAM {
 	
 	
     private static final String ENCODAGE_EBCDIC = "Cp1047";
+    
+    private static final int DEBUT_NOM_PRENOM_NAM_RECOMPOSE = 0;
+    private static final int FIN_NOM_PRENOM_NAM_RECOMPOSE = 4;
+    private static final int DEBUT_ANNEE_NAISSANCE_NAM_RECOMPOSE = 4;
+    private static final int FIN_ANNEE_NAISSANCE_NAM_RECOMPOSE = 8;
+    private static final int DEBUT_MOIS_NAISSANCE_NAM_RECOMPOSE = 9;
+    private static final int FIN_MOIS_NAISSANCE_NAM_RECOMPOSE = 11;
+    private static final int DEBUT_JOUR_NAISSANCE_NAM_RECOMPOSE = 11;
+    private static final int FIN_JOUR_NAISSANCE_NAM_RECOMPOSE = 13;
+    private static final int DEBUT_RESTE_SEQUENCE_APRES_ANNEE_NAM_RECOMPOSE = 8;
+    private static final int POSITION_CARACTERE_VALIDATEUR_NAM = 11;
+    
+    private static final int CENT_ANS = 100;
 
-    public boolean validerNAM(String nam, String province)
-            throws UnsupportedEncodingException, ParseException {
+    public boolean validerNAM(String nam, Provinces province) {
         switch (province) {
-        	case "QC":
+        	case QC:
         		return numeroAssuranceMaladieQuebecValideSpecification.estSatisfaitePar(nam);
-            case "AB":
+            case AB:
             	return numeroAssuranceMaladieAlbertaValideSpecification.estSatisfaitePar(nam);
-            case "BC":
+            case BC:
             	return numeroAssuranceMaladieColombieBritanniqueValideSpecification.estSatisfaitePar(nam);
-            case "MB":
+            case MB:
                 return numeroAssuranceMaladieManitobaValideSpecification.estSatisfaitePar(nam);
-            case "NT":
+            case NT:
                 return numeroAssuranceMaladieTerritoiresDuNordOuestValideSpecification.estSatisfaitePar(nam);
-            case "NS":
+            case NS:
                 return numeroAssuranceMaladieNouvelleEcosseValideSpecification.estSatisfaitePar(nam);
-            case "NB":
+            case NB:
                 return numeroAssuranceMaladieNouveauBrunswickValideSpecification.estSatisfaitePar(nam);
-            case "NL":
+            case NL:
                 return numeroAssuranceMaladieTerreNeuveEtLabradorValideSpecification.estSatisfaitePar(nam);
-            case "NU":
+            case NU:
                 return numeroAssuranceMaladieNunavutValideSpecification.estSatisfaitePar(nam);
-            case "ON":
+            case ON:
                 return numeroAssuranceMaladieOntarioValideSpecification.estSatisfaitePar(nam);
-            case "PE":
+            case PE:
                 return numeroAssuranceMaladieIleDuPrinceEdouardValideSpecification.estSatisfaitePar(nam);
-            case "SK":
+            case SK:
                 return numeroAssuranceMaladieSaskatchewanValideSpecification.estSatisfaitePar(nam);
-            case "YT":
+            case YT:
                 return numeroAssuranceMaladieYukonValideSpecification.estSatisfaitePar(nam);
             default:
                 throw new IllegalArgumentException("La province de la carte santé n'est pas valide.");
@@ -177,10 +190,9 @@ public class ServiceUtilitairesNAM {
     	return null;
     }
 
-    public Sexe obtenirSexe(String nam)
-            throws NumberFormatException, UnsupportedEncodingException, ParseException {
+    public Sexe obtenirSexe(String nam) throws UnsupportedEncodingException, ParseException {
         nam = nam.toUpperCase();
-        if (validerNAM(nam, "QC")) {
+        if (validerNAM(nam, Provinces.QC)) {
             int partieMois = Integer.parseInt(nam.substring(6, 8));
             return partieMois > 50 ? Sexe.FEMININ : Sexe.MASCULIN;
         }
@@ -188,58 +200,48 @@ public class ServiceUtilitairesNAM {
     }
 
     public Date trouverDateNaissance(String nam) throws UnsupportedEncodingException, ParseException {
-        // S'assurer que nous avons 12 caractères pour le NAM et que le format est bon
         nam = nam.toUpperCase();
-        boolean valide = validerNAM(nam, "QC");
-
+        boolean valide = validerNAM(nam, Provinces.QC);
         if (valide) {
-            // A) Décomposer le NAM
-            String nomi = nam.substring(0, 4);
-            String aaS = nam.substring(4, 6);
-            int partieMois = Integer.parseInt(nam.substring(6, 8));
-            int mm = partieMois % 50;
-            String sx = partieMois > 50 ? Sexe.FEMININ.code : Sexe.MASCULIN.code;
-            String jj = nam.substring(8, 10);
-            String s = nam.substring(10, 11);
-            int v = Integer.parseInt(nam.substring(11, 12));
-
-            // Convertir AA en AAAA : Année de naissance de la personne assurée précédé du siècle.
-            // Si le siècle de naissance de la personne assurée est inconnu, il est supposé qu'il
-            // a moins de 100 ans
-            // Valider que l'année de naissance correspond à l'année de naissance du NAM
-            SimpleDateFormat formatEntree = new SimpleDateFormat("yy");
-            SimpleDateFormat formatSortie = new SimpleDateFormat("yyyy");
-            Calendar courant = Calendar.getInstance();
-            courant.add(Calendar.YEAR, -100);
-            formatEntree.set2DigitYearStart(courant.getTime());
-            String annee = formatSortie.format(formatEntree.parse(aaS));
-
-            // B) Trouver la valeur décimale de chaque caractère du numéro d'assurance maladie
-            //    décomposé, obtenu à l'étape A.
-            String namRecompose = String.format("%s%s%s%s%02d%s%s", nomi, annee.substring(0, 2), aaS, sx, mm, jj, s);
-            byte[] namConvertiEnDecimal = namRecompose.getBytes(ENCODAGE_EBCDIC);
-
-            // C) Multiplier la valeur décimale de chaque caractère du matricule décomposé par
-            //    les multiplicateurs respectifs
-            // D) Additionner les produits de ces multiplications
-            // E) Le caractère validateur est le chiffre dans la position des unités de la somme des produits.
-            int caractereValidateur = calculerCaractereValidateur(namConvertiEnDecimal, true);
-
-            // F) Si le code est égal, le NAM est valide.
+        	String namRecompose = creerSequenceValidationNAM(nam);
+        	int v = Integer.parseInt(nam.substring(POSITION_CARACTERE_VALIDATEUR_NAM));
+            int caractereValidateur = calculerCaractereValidateur(namRecompose.getBytes(ENCODAGE_EBCDIC), true);
             valide = v == caractereValidateur;
             while (!valide) {
-                // On réessaie avec un usager ayant plus de 100 ans
-                courant.add(Calendar.YEAR, -100);
-                formatEntree.set2DigitYearStart(courant.getTime());
-                annee = formatSortie.format(formatEntree.parse(aaS));
-                namRecompose = String.format("%s%s%s%s%02d%s%s", nomi, annee.substring(0, 2), aaS, sx, mm, jj, s);
-                namConvertiEnDecimal = namRecompose.getBytes(ENCODAGE_EBCDIC);
-                caractereValidateur = calculerCaractereValidateur(namConvertiEnDecimal, true);
+            	namRecompose = reduireDeCentAnsDateDeNaissanceDansSequenceDeValidation(namRecompose);
+                caractereValidateur = calculerCaractereValidateur(namRecompose.getBytes(ENCODAGE_EBCDIC), true);
                 valide = v == caractereValidateur;
             }
-            return new SimpleDateFormat("yyyy-MM-dd").parse(String.format("%s-%d-%s", annee, mm, jj));
+            int annee = Integer.parseInt(namRecompose.substring(DEBUT_ANNEE_NAISSANCE_NAM_RECOMPOSE, FIN_ANNEE_NAISSANCE_NAM_RECOMPOSE));
+            int mois = Integer.parseInt(namRecompose.substring(DEBUT_MOIS_NAISSANCE_NAM_RECOMPOSE, FIN_MOIS_NAISSANCE_NAM_RECOMPOSE));
+            int jour = Integer.parseInt(namRecompose.substring(DEBUT_JOUR_NAISSANCE_NAM_RECOMPOSE, FIN_JOUR_NAISSANCE_NAM_RECOMPOSE));
+            return new SimpleDateFormat("yyyy-MM-dd").parse(String.format("%s-%d-%s", annee, mois, jour));
         }
         throw new InvalidParameterException("Le NAM est invalide");
+    }
+
+	private String reduireDeCentAnsDateDeNaissanceDansSequenceDeValidation(String namRecompose) {
+		return namRecompose.substring(DEBUT_NOM_PRENOM_NAM_RECOMPOSE, FIN_NOM_PRENOM_NAM_RECOMPOSE) 
+				+ (Integer.parseInt(namRecompose.substring(DEBUT_ANNEE_NAISSANCE_NAM_RECOMPOSE, FIN_ANNEE_NAISSANCE_NAM_RECOMPOSE)) - CENT_ANS) 
+				+ namRecompose.substring(DEBUT_RESTE_SEQUENCE_APRES_ANNEE_NAM_RECOMPOSE);
+	}
+    
+    private String creerSequenceValidationNAM (String nam) throws UnsupportedEncodingException, ParseException {
+        String nomi = nam.substring(0, 4);
+        String aaS = nam.substring(4, 6);
+        int partieMois = Integer.parseInt(nam.substring(6, 8));
+        int mm = partieMois % 50;
+        String sx = partieMois > 50 ? Sexe.FEMININ.code : Sexe.MASCULIN.code;
+        String jj = nam.substring(8, 10);
+        String s = nam.substring(10, 11);
+        SimpleDateFormat formatEntree = new SimpleDateFormat("yy");
+        SimpleDateFormat formatSortie = new SimpleDateFormat("yyyy");
+        Calendar courant = Calendar.getInstance();
+        courant.add(Calendar.YEAR, -100);
+        formatEntree.set2DigitYearStart(courant.getTime());
+        String annee = formatSortie.format(formatEntree.parse(aaS));
+        String namRecompose = String.format("%s%s%s%s%02d%s%s", nomi, annee.substring(0, 2), aaS, sx, mm, jj, s);
+    	return namRecompose;
     }
     
     public String normaliserRAMQ(String text) {

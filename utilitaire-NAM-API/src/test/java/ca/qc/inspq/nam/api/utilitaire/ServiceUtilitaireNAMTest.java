@@ -483,8 +483,6 @@ public class ServiceUtilitaireNAMTest {
 		serviceUtilitaireNAM.obtenirSexe(NAM_QUEBEC);
 	}
 	
-	// TODO Fred: fait le même exercice pour la date de naissance
-	
 	@Test
 	public void quandJeDemandeDobtenirLaDateDeNaissanceContenueDansUnNAM_alorsLeNamEstValiderAvecLaSpecificationDeValiditeDuQuebec()
 			throws UnsupportedEncodingException, ParseException{

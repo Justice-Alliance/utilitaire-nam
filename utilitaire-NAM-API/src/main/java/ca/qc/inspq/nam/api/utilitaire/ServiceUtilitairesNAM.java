@@ -8,13 +8,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import ca.qc.inspq.nam.api.modele.CaractereValidateur;
 import ca.qc.inspq.nam.api.modele.NAMInfo;
 import ca.qc.inspq.nam.api.modele.Personne;
 import ca.qc.inspq.nam.api.modele.Sexe;
@@ -78,9 +77,6 @@ public class ServiceUtilitairesNAM {
 	
 	@Autowired
 	private PersonneGenerationNAMValideSpecification personneGenerationNAMValideSpecification; 
-	
-	
-    private static final String ENCODAGE_EBCDIC = "Cp1047";
     
     private static final int DEBUT_NOM_PRENOM_NAM_RECOMPOSE = 0;
     private static final int FIN_NOM_PRENOM_NAM_RECOMPOSE = 4;
@@ -137,10 +133,14 @@ public class ServiceUtilitairesNAM {
         String sequenceGenerationNAM = obtenirSequenceGenerationNAM(personne);
         for (int i = 1; i < 10; i++) {
             String sequenceGenerationNAMAvecJumeau = sequenceGenerationNAM.toString() + i;
-            int validateur = calculerCaractereValidateur(sequenceGenerationNAMAvecJumeau.getBytes(ENCODAGE_EBCDIC), true);
+            int validateur = new CaractereValidateur(sequenceGenerationNAMAvecJumeau).getValeur();
             nams.add(String.format("%s%d%d", namReel.toString(), i, validateur));
         }
         return nams;
+    }
+    
+    public NAMInfo obtenirInformationsContenuesDansLeNam(String nam) {
+    	return null;
     }
 
 	private String obtenirSequenceGenerationNAM(Personne personne) {
@@ -185,10 +185,6 @@ public class ServiceUtilitairesNAM {
         nomEtPrenomPourNam.append(personne.getPrenomNormalise().substring(0, 1));
         return nomEtPrenomPourNam.toString();
     }
-    
-    public NAMInfo obtenirInformationsContenuesDansLeNam(String nam) {
-    	return null;
-    }
 
     public Sexe obtenirSexe(String nam) throws UnsupportedEncodingException, ParseException {
         nam = nam.toUpperCase();
@@ -205,11 +201,11 @@ public class ServiceUtilitairesNAM {
         if (valide) {
         	String namRecompose = creerSequenceValidationNAM(nam);
         	int v = Integer.parseInt(nam.substring(POSITION_CARACTERE_VALIDATEUR_NAM));
-            int caractereValidateur = calculerCaractereValidateur(namRecompose.getBytes(ENCODAGE_EBCDIC), true);
+            int caractereValidateur = new CaractereValidateur(namRecompose).getValeur();
             valide = v == caractereValidateur;
             while (!valide) {
             	namRecompose = reduireDeCentAnsDateDeNaissanceDansSequenceDeValidation(namRecompose);
-                caractereValidateur = calculerCaractereValidateur(namRecompose.getBytes(ENCODAGE_EBCDIC), true);
+                caractereValidateur = new CaractereValidateur(namRecompose).getValeur();
                 valide = v == caractereValidateur;
             }
             int annee = Integer.parseInt(namRecompose.substring(DEBUT_ANNEE_NAISSANCE_NAM_RECOMPOSE, FIN_ANNEE_NAISSANCE_NAM_RECOMPOSE));
@@ -242,86 +238,5 @@ public class ServiceUtilitairesNAM {
         String annee = formatSortie.format(formatEntree.parse(aaS));
         String namRecompose = String.format("%s%s%s%s%02d%s%s", nomi, annee.substring(0, 2), aaS, sx, mm, jj, s);
     	return namRecompose;
-    }
-    
-    public String normaliserRAMQ(String text) {
-        if (text == null) {
-            return null;
-        }
-        StringBuffer sb = new StringBuffer(text.toLowerCase());
-        sb = replaceAll(sb, "[áàâä]", "a");
-        sb = replaceAll(sb, "[éèêë]", "e");
-        sb = replaceAll(sb, "[íìîï]", "i");
-        sb = replaceAll(sb, "[óòôö]", "o");
-        sb = replaceAll(sb, "[úùûü]", "u");
-        sb = replaceAll(sb, "[ç]", "c");
-        sb = replaceAll(sb, "[ñ]", "n");
-        sb = replaceAll(sb, "[^0-9a-z%]", "");
-        return sb.toString().toUpperCase().replace("SAINTE", "ST").replace("SAINT", "ST");
-    }
-
-    private int calculerCaractereValidateur(byte[] namConvertiEnDecimal, boolean blnDateValide) {
-        // Tableau pour multiplication :
-        //
-        // N O M I  --  A A A A  --  Sx  M M  --  J J S
-        // -------      -------      -------      -----
-        // 1 3 7 9      1 7 1 3      4   5 7      6 9 1
-
-        int somme = 0;
-
-        if (!blnDateValide) {
-            return -1;
-        }
-
-        for (int idx = 0; idx < 14; idx++) {
-            switch (idx) {
-                case 1:
-                    somme += (namConvertiEnDecimal[idx] & 0xff) * 3;
-                    break;
-                case 2:
-                    somme += (namConvertiEnDecimal[idx] & 0xff) * 7;
-                    break;
-                case 3:
-                    somme += (namConvertiEnDecimal[idx] & 0xff) * 9;
-                    break;
-                case 5:
-                    somme += (namConvertiEnDecimal[idx] & 0xff) * 7;
-                    break;
-                case 7:
-                    somme += (namConvertiEnDecimal[idx] & 0xff) * 3;
-                    break;
-                case 8:
-                    somme += (namConvertiEnDecimal[idx] & 0xff) * 4;
-                    break;
-                case 9:
-                    somme += (namConvertiEnDecimal[idx] & 0xff) * 5;
-                    break;
-                case 10:
-                    somme += (namConvertiEnDecimal[idx] & 0xff) * 7;
-                    break;
-                case 11:
-                    somme += (namConvertiEnDecimal[idx] & 0xff) * 6;
-                    break;
-                case 12:
-                    somme += (namConvertiEnDecimal[idx] & 0xff) * 9;
-                    break;
-                default:
-                    somme += namConvertiEnDecimal[idx] & 0xff;
-            }
-        }
-        return somme % 10;
-    }
-
-    private StringBuffer replaceAll(StringBuffer sb, String patron, String remplacant) {
-
-        Pattern p = Pattern.compile(patron);
-        Matcher m = p.matcher(sb);
-        StringBuffer sbOut = new StringBuffer();
-        while (m.find()) {
-            m.appendReplacement(sbOut, remplacant);
-        }
-        m.appendTail(sbOut);
-
-        return sbOut;
     }
 }

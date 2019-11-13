@@ -16,6 +16,7 @@ import com.vaadin.spring.annotation.SpringComponent;
 
 import ca.qc.inspq.nam.api.modele.NAMInfo;
 import ca.qc.inspq.nam.api.modele.Personne;
+import ca.qc.inspq.nam.api.modele.Provinces;
 import ca.qc.inspq.nam.api.modele.Sexe;
 import ca.qc.inspq.nam.api.service.ServiceNAM;
 import ca.qc.inspq.nam.api.utilitaire.ServiceUtilitairesNAM;
@@ -35,7 +36,7 @@ public class ServiceNAMSpring implements ServiceNAM {
     @RequestMapping("/valider")
     public Boolean valider(@RequestParam(value="nam") String nam, @RequestParam(value="province", defaultValue="QC") String province) 
     		throws UnsupportedEncodingException, ParseException {
-    	return utilitairesNAM.validerNAM(nam, province);
+    	return utilitairesNAM.validerNAM(nam, Provinces.fromString(province));
     }
 
     @Override

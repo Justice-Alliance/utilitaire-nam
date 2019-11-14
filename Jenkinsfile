@@ -8,7 +8,7 @@ pipeline {
     triggers { pollSCM('*/30 * * * *') }
     tools {
         jdk 'openjdk-11'
-        maven 'M3'
+        maven 'maven-3.6.1'
     }
 	environment {
         MVN_REPOSITORY = "${env.MVN_REPOSITORY_INSPQ}"

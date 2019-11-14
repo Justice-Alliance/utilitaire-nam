@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.1.xsd">
-    
+    <suppress>
+        <notes><![CDATA[
+        This suppresses datatable-dependencies-1.1.14.jar/META-INF/maven/com.fasterxml.jackson.core/jackson-databind/pom.xml: CVE-2019-14379
+        ]]></notes>
+        <sha1>4d5671aad3f615e2ace4989d87c3e4f5291ebc14</sha1>
+        <cve>CVE-2019-14379</cve>
+        <cpe>cpe:/:fasterxml:jackson:2.9.9</cpe>
+    </suppress>    
 </suppressions>

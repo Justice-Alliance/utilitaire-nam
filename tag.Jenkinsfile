@@ -37,10 +37,10 @@ pipeline {
                 sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${VERSION_TAG}"
             }
         } 
-        stage ('Preparer le release de Utilitaire-NAM') {
+        stage ('Construire et publier la version étiquetée de Utilitaire-NAM') {
             steps {
                 sh "mvn clean install -Dprivate-repository=${MVN_REPOSITORY}"
-                sh "mvn deploy -Dmaven.install.skip=true -DskipTests -Dprivate-repository=${MVN_REPOSITORY}"
+                sh "mvn deploy -Dmaven.install.skip=true -DskipTests -Dprivate-repository=${MVN_REPOSITORY} -Ddockerfile.skip=false"
                 sh "git add -- pom.xml **/pom.xml"
                 sh "git commit -m '${MESSAGE}'"
                 sh "git pull"
@@ -83,22 +83,7 @@ pipeline {
 	            reportName: 'résultats des sécurités des librairies'
 	          	]        	    
         	}
-        }
-        stage ('Packager les composants de Utilitaire-NAM dans des images Docker') {
-		    environment {
-			    unPom = readMavenPom file: 'utilitaire-NAM-Service/pom.xml'
-			    IMAGE = unPom.getArtifactId()
-		    	VERSION = readMavenPom().getVersion()
-			}
-            steps {
-                echo "Construction de l'image Docker ${IMAGE} version ${VERSION}"
-                
-                sh "docker build --build-arg APP_VERSION=${VERSION} --tag ${REPOSITORY}/inspq/${IMAGE}:${VERSION} --tag ${REPOSITORY}/inspq/${IMAGE}:latest --file utilitaire-NAM-Service/Dockerfile ."
-                sh "docker push ${REPOSITORY}/inspq/${IMAGE}:${VERSION}"
-                sh "docker push ${REPOSITORY}/inspq/${IMAGE}:latest"
-            }
-        }
-        
+        }        
         stage ('Pousser les mises à jour des fichiers pom.xml pour le nouveau SNAPSHOT'){
             steps {
             	sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${VERSION_NEXT}-SNAPSHOT"

@@ -10,7 +10,7 @@ import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 
-import ca.qc.inspq.nam.api.modele.Provinces;
+import ca.qc.inspq.nam.api.domaine.modele.Provinces;
 import ca.qc.inspq.nam.api.service.ServiceNAM;
 
 import com.vaadin.ui.ComboBox;

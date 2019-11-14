@@ -10,7 +10,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import ca.qc.inspq.nam.api.modele.NAMInfo;
+import ca.qc.inspq.nam.api.domaine.modele.NAMInfo;
 
 @Path("/nam")
 @Produces({ MediaType.APPLICATION_JSON })

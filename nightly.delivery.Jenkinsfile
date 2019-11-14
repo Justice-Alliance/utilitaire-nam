@@ -20,8 +20,8 @@ pipeline {
 				milestone(ordinal: 2)
 			}
 		}
-        stage ('Déploiement en DEV3') {
-        	// Ne déployer que si la branche courante est un origin/master
+        stage ('Déploiement du master en DEV3') {
+        	// Ne déployer que si la branche courante est origin/master
             when {
                 environment name: 'BRANCH_OR_TAG', value: 'origin/master'
             }
@@ -31,10 +31,13 @@ pipeline {
 				milestone(ordinal: 4)
 			}
         }
-        stage ('Déploiement en DEV2') {
-        	// Ne déployer que si la branche courante est un origin/master
+        stage ('Déploiement de la branche non master en DEV2') {
+        	// Ne déployer que si la branche courante n'est pas origin/master
             when {
-                environment name: 'BRANCH_OR_TAG', value: 'origin/master'
+            	not {
+	                environment name: 'BRANCH_OR_TAG', value: 'origin/master'
+            	    
+            	}
             }
             steps {
 				milestone(ordinal: 5)

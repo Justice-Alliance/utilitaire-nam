@@ -2,7 +2,6 @@ package ca.qc.inspq.nam.service.spring;
 
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
@@ -27,7 +26,6 @@ import ca.qc.inspq.nam.api.utilitaire.ServiceUtilitairesNAM;
 public class ServiceNAMSpring implements ServiceNAM {
 	
 	private String PATTERN_DATE ="yyyy-MM-dd";
-	private SimpleDateFormat FORMAT = new SimpleDateFormat(PATTERN_DATE);
     
     @Autowired
     private ServiceUtilitairesNAM utilitairesNAM;
@@ -52,6 +50,6 @@ public class ServiceNAMSpring implements ServiceNAM {
     @Override
     @RequestMapping("/info")
     public NAMInfo obtenirInfo(@RequestParam(value="nam") String nam) throws UnsupportedEncodingException, ParseException {
-        return new NAMInfo(FORMAT.format(utilitairesNAM.trouverDateNaissance(nam)), utilitairesNAM.obtenirSexe(nam));
+        return utilitairesNAM.obtenirInformationsContenuesDansLeNam(nam);
     }
 }

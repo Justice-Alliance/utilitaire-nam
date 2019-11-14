@@ -39,8 +39,18 @@ pipeline {
         } 
         stage ('Construire utilitaire-nam') {
             steps {
+            	script {
+	                VERSION = sh(
+	                	script: 'if [ "$(git describe --exact-match HEAD 2>>/dev/null || git rev-parse --abbrev-ref HEAD)" == "master" ]; then mvn -q -Dexec.executable="echo" -Dexec.args=\'${project.version}\' --non-recursive exec:exec 2>/dev/null; else git describe --exact-match HEAD 2>>/dev/null || git rev-parse --abbrev-ref HEAD; fi',
+	                	returnStdout: true
+	                	).trim()
+                }                        	
+            	// Configurer le numéro de version pour utiliser le nom de la branche si on est pas sur master
+            	sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${VERSION}"
                 sh "mvn clean install -Dprivate-repository=${MVN_REPOSITORY}"
-                sh "mvn deploy -Dmaven.install.skip=true -DskipTests -Dprivate-repository=${MVN_REPOSITORY}"
+                sh "mvn deploy -Dmaven.install.skip=true -DskipTests -Dprivate-repository=${MVN_REPOSITORY} -Ddockerfile.skip=false"
+                // Annuler les modifications faites au fichier pom par la première étape
+                sh "git checkout -- pom.xml **/pom.xml"
             }
             post {
                 success {
@@ -87,29 +97,11 @@ pipeline {
                 }
             }
         } 
-        stage ('Packager image Docker de utilitaire-nam') {
-		    environment {
-                unsvcPom = readMavenPom file: 'utilitaire-NAM-Service/pom.xml'
-			    IMAGE = unsvcPom.getArtifactId()
-                unPom = readMavenPom file: 'pom.xml'
-			    APP_VERSION = unPom.getVersion()
-			}
-            steps {	
-                script {
-	                VERSION = sh(
-	                	script: 'if [ "$(git describe --exact-match HEAD 2>>/dev/null || git rev-parse --abbrev-ref HEAD)" == "master" ]; then mvn -q -Dexec.executable="echo" -Dexec.args=\'${project.version}\' --non-recursive exec:exec 2>/dev/null; else git describe --exact-match HEAD 2>>/dev/null || git rev-parse --abbrev-ref HEAD; fi',
-	                	returnStdout: true
-	                	).trim()
-                }                        	
-                sh "docker build --build-arg APP_VERSION=${VERSION} --tag ${REPOSITORY}/inspq/${IMAGE}:${VERSION} --file utilitaire-NAM-Service/Dockerfile ."
-                sh "docker push ${REPOSITORY}/inspq/${IMAGE}:${VERSION}"
-            }
-        }
     }
     post {
         always {
             script {
-                equipe = 'mathieu.couture@inspq.qc.ca,philippe.gauthier@inspq.qc.ca,pierre-olivier.chiasson@inspq.qc.ca'
+                equipe = "${NOTIFICATION_TEAM}"
 				//equipe = 'bilel.hamdi@inspq.qc.ca'  // Ajout de mon adresse pour Test
             }
         }

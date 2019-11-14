@@ -1,12 +1,11 @@
 package ca.qc.inspq.nam.api.utilitaire;
 
 import java.io.UnsupportedEncodingException;
-import java.security.InvalidParameterException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -126,7 +125,7 @@ public class ServiceUtilitairesNAM {
     	
     public List<String> obtenirCombinaisonsValidesDeNAM(Personne personne) throws UnsupportedEncodingException {
     	if (!personneGenerationNAMValideSpecification.estSatisfaitePar(personne)) {
-    		throw new InvalidParameterException();
+    		throw new IllegalArgumentException();
     	}
         List<String> nams = new ArrayList<>();
         String namReel = construireNAMReel(personne);
@@ -139,8 +138,13 @@ public class ServiceUtilitairesNAM {
         return nams;
     }
     
-    public NAMInfo obtenirInformationsContenuesDansLeNam(String nam) {
-    	return null;
+    public NAMInfo obtenirInformationsContenuesDansLeNam(String nam) throws ParseException, UnsupportedEncodingException {
+    	String namEnMajuscules = nam.toUpperCase();
+    	if (validerNAM(namEnMajuscules, Provinces.QC)) {
+    		NAMInfo namInfo = new NAMInfo(trouverDateNaissance(namEnMajuscules), obtenirSexe(namEnMajuscules));
+        	return namInfo;
+    	};
+    	throw new IllegalArgumentException("Le NAM est invalide");
     }
 
 	private String obtenirSequenceGenerationNAM(Personne personne) {
@@ -167,7 +171,7 @@ public class ServiceUtilitairesNAM {
 	        	namReel.append(StringUtils.leftPad(Integer.toString(personne.getDateNaissance().getMonthValue()), 2, "0"));
 	        	break;
 	       	default:
-	       		throw new InvalidParameterException("Vous devez fournir le sexe valide, utilisez M ou F.");
+	       		throw new IllegalArgumentException("Vous devez fournir le sexe valide, utilisez M ou F.");
 	        }
         String jourNaissance = StringUtils.leftPad(Integer.toString(personne.getDateNaissance().getDayOfMonth()), 2, "0");
         namReel.append(jourNaissance);
@@ -186,34 +190,26 @@ public class ServiceUtilitairesNAM {
         return nomEtPrenomPourNam.toString();
     }
 
-    public Sexe obtenirSexe(String nam) throws UnsupportedEncodingException, ParseException {
-        nam = nam.toUpperCase();
-        if (validerNAM(nam, Provinces.QC)) {
-            int partieMois = Integer.parseInt(nam.substring(6, 8));
-            return partieMois > 50 ? Sexe.FEMININ : Sexe.MASCULIN;
-        }
-        throw new InvalidParameterException("Le NAM est invalide");
+    private Sexe obtenirSexe(String nam) throws UnsupportedEncodingException, ParseException {
+    	int partieMois = Integer.parseInt(nam.substring(6, 8));
+    	return partieMois > 50 ? Sexe.FEMININ : Sexe.MASCULIN;
     }
 
-    public Date trouverDateNaissance(String nam) throws UnsupportedEncodingException, ParseException {
-        nam = nam.toUpperCase();
-        boolean valide = validerNAM(nam, Provinces.QC);
-        if (valide) {
-        	String namRecompose = creerSequenceValidationNAM(nam);
-        	int v = Integer.parseInt(nam.substring(POSITION_CARACTERE_VALIDATEUR_NAM));
-            int caractereValidateur = new CaractereValidateur(namRecompose).getValeur();
-            valide = v == caractereValidateur;
-            while (!valide) {
-            	namRecompose = reduireDeCentAnsDateDeNaissanceDansSequenceDeValidation(namRecompose);
-                caractereValidateur = new CaractereValidateur(namRecompose).getValeur();
-                valide = v == caractereValidateur;
-            }
-            int annee = Integer.parseInt(namRecompose.substring(DEBUT_ANNEE_NAISSANCE_NAM_RECOMPOSE, FIN_ANNEE_NAISSANCE_NAM_RECOMPOSE));
-            int mois = Integer.parseInt(namRecompose.substring(DEBUT_MOIS_NAISSANCE_NAM_RECOMPOSE, FIN_MOIS_NAISSANCE_NAM_RECOMPOSE));
-            int jour = Integer.parseInt(namRecompose.substring(DEBUT_JOUR_NAISSANCE_NAM_RECOMPOSE, FIN_JOUR_NAISSANCE_NAM_RECOMPOSE));
-            return new SimpleDateFormat("yyyy-MM-dd").parse(String.format("%s-%d-%s", annee, mois, jour));
+    private String trouverDateNaissance(String nam) throws UnsupportedEncodingException, ParseException {
+        String namRecompose = creerSequenceValidationNAM(nam);
+        int v = Integer.parseInt(nam.substring(POSITION_CARACTERE_VALIDATEUR_NAM));
+        int caractereValidateur = new CaractereValidateur(namRecompose).getValeur();
+        boolean valide = v == caractereValidateur;
+        while (!valide) {
+        namRecompose = reduireDeCentAnsDateDeNaissanceDansSequenceDeValidation(namRecompose);
+        caractereValidateur = new CaractereValidateur(namRecompose).getValeur();
+        valide = v == caractereValidateur;
         }
-        throw new InvalidParameterException("Le NAM est invalide");
+        int annee = Integer.parseInt(namRecompose.substring(DEBUT_ANNEE_NAISSANCE_NAM_RECOMPOSE, FIN_ANNEE_NAISSANCE_NAM_RECOMPOSE));
+        int mois = Integer.parseInt(namRecompose.substring(DEBUT_MOIS_NAISSANCE_NAM_RECOMPOSE, FIN_MOIS_NAISSANCE_NAM_RECOMPOSE));
+        int jour = Integer.parseInt(namRecompose.substring(DEBUT_JOUR_NAISSANCE_NAM_RECOMPOSE, FIN_JOUR_NAISSANCE_NAM_RECOMPOSE));
+        LocalDate dateDeNaissance = LocalDate.of(annee, mois, jour);
+        return dateDeNaissance.toString();
     }
 
 	private String reduireDeCentAnsDateDeNaissanceDansSequenceDeValidation(String namRecompose) {

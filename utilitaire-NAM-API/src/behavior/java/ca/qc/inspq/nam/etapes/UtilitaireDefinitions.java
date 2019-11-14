@@ -7,8 +7,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
 import java.io.UnsupportedEncodingException;
-import java.security.InvalidParameterException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;  
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
@@ -61,16 +61,16 @@ public class UtilitaireDefinitions {
 	
 	@Quand("je demande d'obtenir les informations contenues dans le numéro d'assurance maladie {string}")
 	public void je_demande_d_assurance_maladie(String nam) throws UnsupportedEncodingException, ParseException {
-		this.dateNaissanceUsager = utilitairesNAM.trouverDateNaissance(nam);
-		this.sexeUsager = utilitairesNAM.obtenirSexe(nam);
+		this.dateNaissanceUsager = new SimpleDateFormat("yyyy-MM-dd").parse(utilitairesNAM.obtenirInformationsContenuesDansLeNam(nam).dateNaissance);
+		this.sexeUsager = utilitairesNAM.obtenirInformationsContenuesDansLeNam(nam).sexe;
 		erreurObtentionObtenue = false;
 	}
 	
 	@Quand("je demande d'obtenir les informations contenues dans un numéro d'assurance maladie non valide")
 	public void je_demande_d_assurance_maladie_non_valide() {
 		try {
-			this.dateNaissanceUsager = utilitairesNAM.trouverDateNaissance(null);
-			this.sexeUsager = utilitairesNAM.obtenirSexe(null);
+			this.dateNaissanceUsager = new SimpleDateFormat("yyyy-MM-dd").parse(utilitairesNAM.obtenirInformationsContenuesDansLeNam(null).dateNaissance);
+			this.sexeUsager = utilitairesNAM.obtenirInformationsContenuesDansLeNam(null).sexe;
 			erreurObtentionObtenue = false;
 		} catch (Exception exception) {
 			erreurObtentionObtenue = true;
@@ -89,7 +89,7 @@ public class UtilitaireDefinitions {
 		try {
 			listeNamsGeneres = utilitairesNAM.obtenirCombinaisonsValidesDeNAM(new Personne(null, null, null, null));
 			erreurGenerationObtenue = false;
-		} catch (InvalidParameterException e) {
+		} catch (IllegalArgumentException e) {
 			erreurGenerationObtenue = true;
 		}
 	}

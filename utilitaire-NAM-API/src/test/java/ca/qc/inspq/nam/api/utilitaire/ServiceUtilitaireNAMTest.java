@@ -9,10 +9,8 @@ import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.*;
 
 import java.io.UnsupportedEncodingException;
-import java.security.InvalidParameterException;
 import java.text.ParseException;
 import java.time.LocalDate;
-import java.time.ZoneId;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -94,8 +92,6 @@ public class ServiceUtilitaireNAMTest {
 	private static final int DEBUT_CARACTERE_DISTINCTION_DANS_NAM = 10;
 	private static final int FIN_CARACTERE_DISTINCTION_DANS_NAM = 11;
 	private static final int DEBUT_CARACTERE_VALIDATEUR_DANS_NAM = 11;
-	
-	//private static final Provinces PROVINCE_NON_VALIDE = TT;
 	
 	@Rule
 	public ExpectedException exception = ExpectedException.none();
@@ -314,11 +310,10 @@ public class ServiceUtilitaireNAMTest {
 		assertThat(resultat).isTrue();
 	}
 	/*
-	@Ignore
 	@Test
 	public void quandJeValideUnNam_siLaProvinceEnvoyeeNestPasValide_alorsJeRetourneIllegalArgumentException() {
 		exception.expect(IllegalArgumentException.class);
-		serviceUtilitaireNAM.validerNAM(NAM_QUEBEC, PROVINCE_NON_VALIDE);
+		serviceUtilitaireNAM.validerNAM(NAM_QUEBEC, Provinces.);
 	}
 	*/
 	
@@ -331,7 +326,7 @@ public class ServiceUtilitaireNAMTest {
 	
 	@Test
 	public void quandJeDemandDobtenirTousLesNAMSPossiblesPourUnePersonne_siLaPersonneNestPasValide_alorsJeRetourneInvalidParameterException() throws UnsupportedEncodingException  {
-		exception.expect(InvalidParameterException.class);
+		exception.expect(IllegalArgumentException.class);
 		var personne = new Personne(null, null, null, null);
 		serviceUtilitaireNAM.obtenirCombinaisonsValidesDeNAM(personne);
 	}
@@ -454,7 +449,7 @@ public class ServiceUtilitaireNAMTest {
 	public void quandJeDemandeDobtenirLeSexeContenuDansUnNam_alorsLeNamEstValiderAvecLaSpecificationDeValiditeDeNamDuQuebec () 
 			throws UnsupportedEncodingException, ParseException {
 		when(numeroAssuranceMaladieQuebecValideSpecification.estSatisfaitePar(eq(NAM_QUEBEC))).thenReturn(true);
-		serviceUtilitaireNAM.obtenirSexe(NAM_QUEBEC);
+		serviceUtilitaireNAM.obtenirInformationsContenuesDansLeNam(NAM_QUEBEC);
 		verify(numeroAssuranceMaladieQuebecValideSpecification, times(1)).estSatisfaitePar(NAM_QUEBEC);
 	}
 	
@@ -463,31 +458,31 @@ public class ServiceUtilitaireNAMTest {
 			throws UnsupportedEncodingException, ParseException
 	{
 		when(numeroAssuranceMaladieQuebecValideSpecification.estSatisfaitePar(eq(NAM_QUEBEC_FEMININ))).thenReturn(true);
-		var sexeObtenu = serviceUtilitaireNAM.obtenirSexe(NAM_QUEBEC_FEMININ);
-		assertThat(sexeObtenu).isEqualTo(Sexe.FEMININ);
+		var informationsObtenues = serviceUtilitaireNAM.obtenirInformationsContenuesDansLeNam(NAM_QUEBEC_FEMININ);
+		assertThat(informationsObtenues.sexe).isEqualTo(Sexe.FEMININ);
 	}
 	
 	@Test
 	public void quandJeDemandeDobtenirLeSexeContenuDansUnNAM_siLeNamEstUnNamDhomme_alorsJeRetourneMasculin()
 			throws UnsupportedEncodingException, ParseException {
 		when(numeroAssuranceMaladieQuebecValideSpecification.estSatisfaitePar(eq(NAM_QUEBEC))).thenReturn(true);
-		var sexeObtenu = serviceUtilitaireNAM.obtenirSexe(NAM_QUEBEC);
-		assertThat(sexeObtenu).isEqualTo(Sexe.MASCULIN);
+		var informationsObtenues = serviceUtilitaireNAM.obtenirInformationsContenuesDansLeNam(NAM_QUEBEC);
+		assertThat(informationsObtenues.sexe).isEqualTo(Sexe.MASCULIN);
 	}
 	
 	@Test
 	public void quandJeDemandeDobtenirLeSexeContenuDansUnNam_siLeNamNestPasValide_alorsInvalidParameterExceptionEstLancee()
 			throws UnsupportedEncodingException, ParseException {
-		exception.expect(InvalidParameterException.class);
+		exception.expect(IllegalArgumentException.class);
 		when(numeroAssuranceMaladieQuebecValideSpecification.estSatisfaitePar(eq(NAM_QUEBEC))).thenReturn(false);
-		serviceUtilitaireNAM.obtenirSexe(NAM_QUEBEC);
+		serviceUtilitaireNAM.obtenirInformationsContenuesDansLeNam(NAM_QUEBEC);
 	}
 	
 	@Test
 	public void quandJeDemandeDobtenirLaDateDeNaissanceContenueDansUnNAM_alorsLeNamEstValiderAvecLaSpecificationDeValiditeDuQuebec()
 			throws UnsupportedEncodingException, ParseException{
 		when(numeroAssuranceMaladieQuebecValideSpecification.estSatisfaitePar(eq(NAM_QUEBEC))).thenReturn(true);
-		serviceUtilitaireNAM.trouverDateNaissance(NAM_QUEBEC);
+		serviceUtilitaireNAM.obtenirInformationsContenuesDansLeNam(NAM_QUEBEC);
 		verify(numeroAssuranceMaladieQuebecValideSpecification, times(1)).estSatisfaitePar(NAM_QUEBEC);
 	}
 	
@@ -495,23 +490,23 @@ public class ServiceUtilitaireNAMTest {
 	public void quandJeDemandDobtenirLaDateDeNaissanceContenueDansUnNAM_siLeNamEstValide_alorsJeRetourneLaDateDeNaissance()
 			throws UnsupportedEncodingException, ParseException{
 		when(numeroAssuranceMaladieQuebecValideSpecification.estSatisfaitePar(eq(NAM_QUEBEC))).thenReturn(true);
-		var dateObtenue = serviceUtilitaireNAM.trouverDateNaissance(NAM_QUEBEC).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		assertThat(dateObtenue).isEqualTo(DATE_NAISSANCE);
+		var informationsObtenues = serviceUtilitaireNAM.obtenirInformationsContenuesDansLeNam(NAM_QUEBEC);
+		assertThat(LocalDate.parse(informationsObtenues.dateNaissance)).isEqualTo(DATE_NAISSANCE);
 	}
 	
 	@Test
 	public void quandJeDemandeDobtenirLaDateDeNaissanceContenueDansUnNAMDunePersonneDeplusDeCentAns_siLeNamEstValide_alorsJeRetourneLaDateDeNaissance()
 			throws UnsupportedEncodingException, ParseException {
 		when(numeroAssuranceMaladieQuebecValideSpecification.estSatisfaitePar(eq(NAM_QUEBEC_PLUS_DE_CENT_ANS))).thenReturn(true);
-		var dateObtenue = serviceUtilitaireNAM.trouverDateNaissance(NAM_QUEBEC_PLUS_DE_CENT_ANS).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		assertThat(dateObtenue).isEqualTo(DATE_NAISSANCE_PLUS_DE_CENT_ANS);
+		var informationsObtenues = serviceUtilitaireNAM.obtenirInformationsContenuesDansLeNam(NAM_QUEBEC_PLUS_DE_CENT_ANS);
+		assertThat(LocalDate.parse(informationsObtenues.dateNaissance)).isEqualTo(DATE_NAISSANCE_PLUS_DE_CENT_ANS);
 	}
 	
 	@Test
 	public void quandJeDemandeDobtenirLaDateDeNaissanceContenueDansUnNAM_siLeNamNestPasValide_alorsInvalidParameterExceptionEstLancee() throws UnsupportedEncodingException, ParseException  {
-		exception.expect(InvalidParameterException.class);
+		exception.expect(IllegalArgumentException.class);
 		when(numeroAssuranceMaladieQuebecValideSpecification.estSatisfaitePar(eq(NAM_QUEBEC))).thenReturn(false);
-		serviceUtilitaireNAM.trouverDateNaissance(NAM_QUEBEC);
+		serviceUtilitaireNAM.obtenirInformationsContenuesDansLeNam(NAM_QUEBEC);
 	}
 	// -------------------------------------------------------------------
 }

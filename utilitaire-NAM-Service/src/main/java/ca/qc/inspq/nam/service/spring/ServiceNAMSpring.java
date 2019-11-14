@@ -13,12 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.vaadin.spring.annotation.SpringComponent;
 
-import ca.qc.inspq.nam.api.modele.NAMInfo;
-import ca.qc.inspq.nam.api.modele.Personne;
-import ca.qc.inspq.nam.api.modele.Provinces;
-import ca.qc.inspq.nam.api.modele.Sexe;
+import ca.qc.inspq.nam.api.domaine.ServiceUtilitairesNAM;
+import ca.qc.inspq.nam.api.domaine.modele.NAMInfo;
+import ca.qc.inspq.nam.api.domaine.modele.Personne;
+import ca.qc.inspq.nam.api.domaine.modele.Provinces;
+import ca.qc.inspq.nam.api.domaine.modele.Sexe;
 import ca.qc.inspq.nam.api.service.ServiceNAM;
-import ca.qc.inspq.nam.api.utilitaire.ServiceUtilitairesNAM;
 
 @RequestMapping("/nam")
 @RestController

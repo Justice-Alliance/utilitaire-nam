@@ -11,7 +11,7 @@ import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 
-import ca.qc.inspq.nam.api.modele.NAMInfo;
+import ca.qc.inspq.nam.api.domaine.modele.NAMInfo;
 import ca.qc.inspq.nam.api.service.ServiceNAM;
 
 import com.vaadin.ui.TextField;
@@ -42,7 +42,7 @@ public class ObtenirInfo extends TabAbstrait {
                     if (!StringUtils.isEmpty(nam)) {
                         NAMInfo namInfo = serviceNAM.obtenirInfo(nam);
                         afficherMessage(
-                                String.format("Date de naissance: %s\nSexe: %s", namInfo.dateNaissance, namInfo.sexe),
+                                String.format("Date de naissance: %s\nSexe: %s", namInfo.getDateNaissance(), namInfo.getSexe()),
                                 Niveau.INFO);
                     } else {
                         afficherMessage("Vous devez saisir un NAM!", Niveau.AVERTISSEMENT);

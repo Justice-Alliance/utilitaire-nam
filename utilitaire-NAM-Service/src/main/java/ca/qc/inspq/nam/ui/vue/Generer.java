@@ -1,6 +1,6 @@
 package ca.qc.inspq.nam.ui.vue;
 
-import ca.qc.inspq.nam.api.modele.Sexe;
+import ca.qc.inspq.nam.api.domaine.modele.Sexe;
 import ca.qc.inspq.nam.api.service.ServiceNAM;
 
 import java.io.UnsupportedEncodingException;

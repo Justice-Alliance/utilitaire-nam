@@ -1,16 +1,22 @@
 FROM nexus3.inspq.qc.ca:5000/inspq/openjdk-11:latest
 ENV TZ=America/Toronto
 
-ARG APP_VERSION=0.1.1-SNAPSHOT
+ARG APP_VERSION=1.0.0
 ENV APP_VERSION=$APP_VERSION
+ARG JAR_FILE=app.jar
+ENV JAR_FILE=${JAR_FILE}
+ARG APP_HOME=/opt/app
+ENV APP_HOME=${APP_HOME}
+ARG SERVER_PORT=8080
+ENV SERVER_PORT=${SERVER_PORT}
+ARG MANAGEMENT_SERVER_PORT=28081
+ENV MANAGEMENT_SERVER_PORT=${MANAGEMENT_SERVER_PORT}
 
-ENV UNAM_HOME=/opt/unam
+RUN mkdir ${APP_HOME}
+ADD target/${JAR_FILE} ${APP_HOME}/${JAR_FILE}
+ADD docker-entrypoint.sh ${APP_HOME}/docker-entrypoint.sh
 
-RUN mkdir UNAM_HOME
-ADD utilitaire-NAM-Service/target/utilitaire-nam-service-${APP_VERSION}.jar $UNAM_HOME/utilitaire-nam-service.jar
-ADD utilitaire-NAM-Service/docker-entrypoint.sh $UNAM_HOME/docker-entrypoint.sh
+RUN chmod a+x ${APP_HOME}/docker-entrypoint.sh
+EXPOSE ${SERVER_PORT} ${MANAGEMENT_SERVER_PORT}
 
-RUN chmod a+x $UNAM_HOME/docker-entrypoint.sh
-EXPOSE 8080 28081
-
-ENTRYPOINT $UNAM_HOME/docker-entrypoint.sh
+ENTRYPOINT ${APP_HOME}/docker-entrypoint.sh

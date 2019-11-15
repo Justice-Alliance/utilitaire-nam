@@ -8,7 +8,7 @@ pipeline {
     }
     tools {
         jdk 'openjdk-11'
-        maven 'M3'
+        maven 'maven-3.6.1'
     }
     environment {
         unServicePom = readMavenPom file: 'utilitaire-NAM-Service/pom.xml'

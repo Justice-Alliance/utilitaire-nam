@@ -91,6 +91,9 @@ public class ServiceUtilitairesNAM {
     private static final int CENT_ANS = 100;
 
     public boolean validerNAM(String nam, Provinces province) {
+    	if (province == null) {
+    		throw new IllegalArgumentException("La province de la carte santé n'est pas valide.");
+    	}
         switch (province) {
         	case QC:
         		return numeroAssuranceMaladieQuebecValideSpecification.estSatisfaitePar(nam);

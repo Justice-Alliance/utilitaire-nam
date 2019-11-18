@@ -28,7 +28,7 @@ public class PersonneGenerationNAMValideSpecificationTest {
 	private PersonneGenerationNAMValideSpecification spec;
 	
 	@Test
-	public void quandJeVerifiesSiUnePersonneRespecteLaSpecificationPourGenererDesNAMS_siToutesLesInformationsDeLaPersonneSontValides_aLorsJeRetourneRien() 
+	public void quandJeVerifiesSiUnePersonneRespecteLaSpecificationPourGenererDesNAMS_siToutesLesInformationsDeLaPersonneSontValides_aLorsJeRetourneVrai() 
 			throws UnsupportedEncodingException, ParseException {
 		var personne = new Personne(PRENOM, NOM, DATE_NAISSANCE, Sexe.MASCULIN);
 		assertThat(spec.estSatisfaitePar(personne)).isTrue();
@@ -36,28 +36,28 @@ public class PersonneGenerationNAMValideSpecificationTest {
 	
 	
 	@Test
-	public void quandJeVerifieSiUnePersonneRespecteLaSpecificatitionPourGenererDesNAMS_siLePrenomDeLaPersonneNestPasValide_alorsJeRetourneInvalidParameterException() 
+	public void quandJeVerifieSiUnePersonneRespecteLaSpecificatitionPourGenererDesNAMS_siLePrenomDeLaPersonneNestPasValide_alorsJeRetourneFaux() 
 			throws UnsupportedEncodingException, ParseException  {
 		var personne = new Personne(null, NOM, DATE_NAISSANCE, Sexe.MASCULIN);
 		assertThat(spec.estSatisfaitePar(personne)).isFalse();
 	}
 	
 	@Test
-	public void quandJeVerifieSiUnePersonneRespecteLaSpecificationPourGenererDesNAMS_siLeNomDeLaPersonneNestPasValide_alorsJeRetourneInvalidParameterException() 
+	public void quandJeVerifieSiUnePersonneRespecteLaSpecificationPourGenererDesNAMS_siLeNomDeLaPersonneNestPasValide_alorsJeRetourneFaux() 
 			throws UnsupportedEncodingException, ParseException{
 		var personne = new Personne(PRENOM, null, DATE_NAISSANCE, Sexe.MASCULIN);
 		assertThat(spec.estSatisfaitePar(personne)).isFalse();
 	}
 	
 	@Test
-	public void quandJeVerifieSiUnePersonneRespecteLaSpecificationPourGenererDesNAMS_siLaDateDeNaissanceNestPasValide_alorsJeRetourneInvalidParameterException() 
+	public void quandJeVerifieSiUnePersonneRespecteLaSpecificationPourGenererDesNAMS_siLaDateDeNaissanceNestPasValide_alorsJeRetourneFaux() 
 			throws UnsupportedEncodingException, ParseException {
 		var personne = new Personne(PRENOM, NOM, null, Sexe.MASCULIN);
 		assertThat(spec.estSatisfaitePar(personne)).isFalse();
 	}
 
 	@Test
-	public void quandJeVerifieSiUnePersonneRespecteLaSpecificationPourGenererDesNAMS_siLeSexeNestPasValide_alorsJeRetourneInvalidParameterException() 
+	public void quandJeVerifieSiUnePersonneRespecteLaSpecificationPourGenererDesNAMS_siLeSexeNestPasValide_alorsJeRetourneFaux() 
 			throws UnsupportedEncodingException, ParseException {
 		var personne = new Personne(PRENOM, NOM, DATE_NAISSANCE, null);
 		assertThat(spec.estSatisfaitePar(personne)).isFalse();

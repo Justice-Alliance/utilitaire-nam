@@ -28,7 +28,7 @@
 		<vaadin-spring-boot-starter.version>3.2.1</vaadin-spring-boot-starter.version>
 		<vaadin.plugin.version>8.8.0</vaadin.plugin.version>
 		<private-repository>https://nexus3.inspq.qc.ca:8443</private-repository>
-		<dockerfile.skip>false</dockerfile.skip>
+		<dockerfile.skip>true</dockerfile.skip>
 		<docker.repository>nexus3.inspq.qc.ca:5000</docker.repository>
 		<docker.repository.prefix>inspq</docker.repository.prefix>
 		<dockerfile-maven-version>1.4.10</dockerfile-maven-version>		

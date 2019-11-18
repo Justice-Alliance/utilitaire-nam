@@ -32,9 +32,9 @@ public class ServiceNAMSpring implements ServiceNAM {
 
     @Override
     @RequestMapping("/valider")
-    public Boolean valider(@RequestParam(value="nam") String nam, @RequestParam(value="province", defaultValue="QC") String province) 
+    public Boolean valider(@RequestParam(value="nam") String nam, @RequestParam(value="province", defaultValue="QC") Provinces province) 
     		throws UnsupportedEncodingException, ParseException {
-    	return utilitairesNAM.validerNAM(nam, Provinces.fromString(province));
+    	return utilitairesNAM.validerNAM(nam, province);
     }
 
     @Override

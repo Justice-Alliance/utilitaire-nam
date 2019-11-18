@@ -48,7 +48,7 @@ public class Valider extends TabAbstrait {
                     Provinces province = (Provinces) cbbProvince.getValue();
                     boolean valide = false;
                     if (!StringUtils.isEmpty(nam) && province != null) {
-                        valide = serviceNAM.valider(nam, province.name());
+                        valide = serviceNAM.valider(nam, province);
                         if (valide) {
                             afficherMessage("Le NAM est valide!", Niveau.INFO);
                         } else {

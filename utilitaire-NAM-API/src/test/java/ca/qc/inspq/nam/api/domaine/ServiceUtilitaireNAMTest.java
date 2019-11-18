@@ -311,6 +311,12 @@ public class ServiceUtilitaireNAMTest {
 	}
 	
 	@Test
+	public void quandJeValideUnNam_siLaProvinceEstNulle_alorsJeRetourneIllegalArgumentException() {
+		exception.expect(IllegalArgumentException.class);
+		serviceUtilitaireNAM.validerNAM(NAM_QUEBEC, null);
+	}
+	
+	@Test
 	public void quandJeDemandeDobtenirTousLesNAMSPossiblesPourUnePersonne_alorsJappelleLaSpecificationPourPersonneDeGenerationDeNAM() throws UnsupportedEncodingException {
 		var personne = new Personne(PRENOM, NOM, DATE_NAISSANCE, Sexe.MASCULIN);
 		serviceUtilitaireNAM.obtenirCombinaisonsValidesDeNAM(personne);
@@ -445,6 +451,14 @@ public class ServiceUtilitaireNAMTest {
 	}
 	
 	@Test
+	public void quandJeDemandeDobtenirLesInformationsContenuesDansUnNam_siLeNamNestPasValide_alorsIllegalArgumentExceptionEstLancee()
+			throws UnsupportedEncodingException, ParseException {
+		exception.expect(IllegalArgumentException.class);
+		when(numeroAssuranceMaladieQuebecValideSpecification.estSatisfaitePar(eq(NAM_QUEBEC))).thenReturn(false);
+		serviceUtilitaireNAM.obtenirInformationsContenuesDansLeNam(NAM_QUEBEC);
+	}
+	
+	@Test
 	public void quandJeDemandeDobtenirLesInformationsContenuesDansUnNAM_siLeNamEstUnNamDeFemme_alorsJeRetourneFeminin()
 			throws UnsupportedEncodingException, ParseException {
 		when(numeroAssuranceMaladieQuebecValideSpecification.estSatisfaitePar(eq(NAM_QUEBEC_FEMININ))).thenReturn(true);
@@ -458,14 +472,6 @@ public class ServiceUtilitaireNAMTest {
 		when(numeroAssuranceMaladieQuebecValideSpecification.estSatisfaitePar(eq(NAM_QUEBEC))).thenReturn(true);
 		var informationsObtenues = serviceUtilitaireNAM.obtenirInformationsContenuesDansLeNam(NAM_QUEBEC);
 		assertThat(informationsObtenues.getSexe()).isEqualTo(Sexe.MASCULIN);
-	}
-	
-	@Test
-	public void quandJeDemandeDobtenirLesInformationsContenuesDansUnNam_siLeNamNestPasValide_alorsIllegalArgumentExceptionEstLancee()
-			throws UnsupportedEncodingException, ParseException {
-		exception.expect(IllegalArgumentException.class);
-		when(numeroAssuranceMaladieQuebecValideSpecification.estSatisfaitePar(eq(NAM_QUEBEC))).thenReturn(false);
-		serviceUtilitaireNAM.obtenirInformationsContenuesDansLeNam(NAM_QUEBEC);
 	}
 	
 	@Test

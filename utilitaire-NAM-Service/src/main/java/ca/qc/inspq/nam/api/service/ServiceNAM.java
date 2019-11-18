@@ -11,13 +11,14 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import ca.qc.inspq.nam.api.domaine.modele.NAMInfo;
+import ca.qc.inspq.nam.api.domaine.modele.Provinces;
 
 @Path("/nam")
 @Produces({ MediaType.APPLICATION_JSON })
 public interface ServiceNAM {
     @Path("/valider")
     @GET
-    public Boolean valider(@QueryParam("nam") String nam, @QueryParam("province") String province) 
+    public Boolean valider(@QueryParam("nam") String nam, @QueryParam("province") Provinces province) 
     		throws UnsupportedEncodingException, ParseException;
 
     @Path("/generer")

@@ -1,6 +1,6 @@
 - name: application_web_docker
   src: https://gitlab.forge.gouv.qc.ca/ansible-inspq/roles/application_web_docker.git
-  version: master
+  version: v1.0.0
   scm: git
 - name: deploy_vm_linux
   src: https://gitlab.forge.gouv.qc.ca/ansible-inspq/roles/deploy_vm_linux.git

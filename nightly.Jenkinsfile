@@ -131,7 +131,7 @@ pipeline {
 	            	alwaysLinkToLastBuild: false,
 	            	keepAll: true,
 	            	reportDir: "reports/html",
-	            reportFiles: "analysis-${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${VERSION}.html",
+	            reportFiles: "analysis-${DOCKER_REPOSITORY}-${DOCKER_REPOSITORY_PREFIX}-${SVC_ARTIFACT_ID}-${VERSION}.html",
 	            reportName: "résultats du test de balayage de l'image"
 	          	]        	    
         	}

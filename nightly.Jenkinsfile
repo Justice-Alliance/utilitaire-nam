@@ -117,8 +117,8 @@ pipeline {
         			try {
 	        			sh "./clairctl analyze ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${VERSION}"     		    
         			} catch (err) {
-        			      //unstable("Vulnérabilités identifées dans l'image")
-        			      currentBuild.result = 'FAILURE'
+        			      unstable("Vulnérabilités identifées dans l'image")
+        			      //currentBuild.result = 'FAILURE'
         			}
 	        		sh "mkdir -p reports && ./clairctl report ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${VERSION} && mv reports/html/analysis-${DOCKER_REPOSITORY}-${DOCKER_REPOSITORY_PREFIX}-${SVC_ARTIFACT_ID}-${VERSION}.html reports/html/analyse-image.html"
 	        		sh "docker stop utilitairenamclair untilitairenamclairdb && rm clairctl"		    

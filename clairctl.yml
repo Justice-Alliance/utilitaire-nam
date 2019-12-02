@@ -1,0 +1,6 @@
+clair:
+  port: 16060
+  uri: http://localhost
+  report:
+    path: ./reports
+    format: html

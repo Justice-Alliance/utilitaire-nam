@@ -117,9 +117,10 @@ pipeline {
         			try {
 	        			sh "./clairctl analyze ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${VERSION}"     		    
         			} catch (err) {
-        			      unstable("Vulnérabilités identifées dans l'image")
+        			      //unstable("Vulnérabilités identifées dans l'image")
+        			      currentBuild.result = 'FAILURE'
         			}
-	        		sh "mkdir -p reports && ./clairctl report ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${VERSION}"
+	        		sh "mkdir -p reports && ./clairctl report ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${VERSION} && mv reports/html/analysis-${DOCKER_REPOSITORY}-${DOCKER_REPOSITORY_PREFIX}-${SVC_ARTIFACT_ID}-${VERSION}.html reports/html/analyse-image.html"
 	        		sh "docker stop utilitairenamclair untilitairenamclairdb && rm clairctl"		    
         		}
        		}
@@ -131,7 +132,7 @@ pipeline {
 	            	alwaysLinkToLastBuild: false,
 	            	keepAll: true,
 	            	reportDir: "reports/html",
-	            reportFiles: "analysis-${DOCKER_REPOSITORY}-${DOCKER_REPOSITORY_PREFIX}-${SVC_ARTIFACT_ID}-${VERSION}.html",
+	            reportFiles: "analyse-image.html",
 	            reportName: "résultats du test de balayage de l'image"
 	          	]        	    
         	}

@@ -113,14 +113,14 @@ pipeline {
 	                	).trim()
 	      			sh "docker run -d --rm --name untilitairenamclairdb arminc/clair-db && sleep 15"
     	    		sh "docker run -p 16060:6060 --link untilitairenamclairdb:postgres -d --rm --name utilitairenamclair arminc/clair-local-scan && sleep 5"
-        			sh "wget -qO clairctl https://github.com/jgsqware/clairctl/releases/download/v1.2.8/clairctl-linux-amd64"
+        			sh "wget -qO clairctl https://github.com/jgsqware/clairctl/releases/download/v1.2.8/clairctl-linux-amd64 && chmod u+x clairctl"
         			try {
 	        			sh "./clairctl analyze ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${VERSION}"     		    
         			} catch (err) {
         			      unstable("Vulnérabilités identifées dans l'image")
         			}
 	        		sh "mkdir -p reports && ./clairctl report ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${VERSION}"
-	        		sh "docker stop utilitairenamclair untilitairenamclairdb"		    
+	        		sh "docker stop utilitairenamclair untilitairenamclairdb && rm clairctl"		    
         		}
        		}
       	}

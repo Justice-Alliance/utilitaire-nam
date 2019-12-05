@@ -13,6 +13,7 @@ pipeline {
     environment {
         unServicePom = readMavenPom file: 'utilitaire-NAM-Service/pom.xml'
         UN_SERVICE_IMAGE = unServicePom.getArtifactId()
+    	NOTIFICATION_TEAM = "${env.NOTIFICATION_SX5_TEAM}"        
 	}
     stages {
     	stage ('Checkout') {
@@ -69,7 +70,7 @@ pipeline {
     post {
         always {
             script {
-                equipe = 'mathieu.couture@inspq.qc.ca,etienne.sadio@inspq.qc.ca,soleman.merchan@inspq.qc.ca,philippe.gauthier@inspq.qc.ca,pierre-olivier.chiasson@inspq.qc.ca,eric.parent@inspq.qc.ca'
+                equipe = "${NOTIFICATION_TEAM}"
             }
         }
         success {

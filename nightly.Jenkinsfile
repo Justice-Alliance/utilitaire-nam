@@ -14,8 +14,8 @@ pipeline {
         MVN_REPOSITORY = "${env.MVN_REPOSITORY_INSPQ}"
     	REPOSITORY = "${env.REPOSITORY_INSPQ}"
     	NOTIFICATION_TEAM = "${env.NOTIFICATION_SX5_TEAM}"
-    	projectPom = readMavenPom file: 'pom.xml'
-    	svcPom = readMavenPom file: 'utilitaire-NAM-Service/pom.xml'
+    	projectPom = readMavenPom file: 'dev/utilitaire-nam/pom.xml'
+    	svcPom = readMavenPom file: 'dev/utilitaire-nam/utilitaire-NAM-Service/pom.xml'
 	    SVC_ARTIFACT_ID = svcPom.getArtifactId()
     	POMVERSION = projectPom.getVersion()
     	DOCKER_REPOSITORY = projectPom.getProperties().getProperty('docker.repository')
@@ -48,16 +48,16 @@ pipeline {
             steps {
             	script {
 	                VERSION = sh(
-	                	script: 'if [ "$(git describe --exact-match HEAD 2>>/dev/null || git rev-parse --abbrev-ref HEAD)" == "master" ]; then mvn -q -Dexec.executable="echo" -Dexec.args=\'${project.version}\' --non-recursive exec:exec 2>/dev/null; else git describe --exact-match HEAD 2>>/dev/null || git rev-parse --abbrev-ref HEAD; fi',
+	                	script: 'if [ "$(git describe --exact-match HEAD 2>>/dev/null || git rev-parse --abbrev-ref HEAD)" == "master" ]; then mvn -f dev/utilitaire-nam/pom.xml -q -Dexec.executable="echo" -Dexec.args=\'${project.version}\' --non-recursive exec:exec 2>/dev/null; else git describe --exact-match HEAD 2>>/dev/null || git rev-parse --abbrev-ref HEAD; fi',
 	                	returnStdout: true
 	                	).trim()
                 }                        	
             	// Configurer le numéro de version pour utiliser le nom de la branche si on est pas sur master
-            	sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${VERSION}"
-                sh "mvn clean install -Dprivate-repository=${MVN_REPOSITORY}"
-                sh "mvn deploy -Dmaven.install.skip=true -DskipTests -Dprivate-repository=${MVN_REPOSITORY} -Ddockerfile.skip=false"
+            	sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${VERSION} -f dev/utilitaire-nam/pom.xml"
+                sh "mvn clean install -Dprivate-repository=${MVN_REPOSITORY} -f dev/utilitaire-nam/pom.xml"
+                sh "mvn deploy -Dmaven.install.skip=true -DskipTests -Dprivate-repository=${MVN_REPOSITORY} -Ddockerfile.skip=false -f dev/utilitaire-nam/pom.xml"
                 // Annuler les modifications faites au fichier pom par la première étape
-                sh "git checkout -- pom.xml **/pom.xml"
+                sh "git checkout -- **/pom.xml"
             }
             post {
                 success {
@@ -72,7 +72,7 @@ pipeline {
 	            	allowMissing: false,
 	            	alwaysLinkToLastBuild: false,
 	            	keepAll: true,
-	            	reportDir: 'utilitaire-NAM-API/target/cukedoctor',
+	            	reportDir: 'dev/utilitaire-nam/utilitaire-NAM-API/target/cukedoctor',
 	            reportFiles: 'documentation.html',
 	            reportName: 'Documentation et résultats des tests BDD'
 	          	]        	    
@@ -80,7 +80,7 @@ pipeline {
         }        
         stage ('Exécuter les tests de sécurité') {
             steps {
-                sh "mvn validate -Psecurity"
+                sh "cd dev/utilitaire-nam && mvn validate -Psecurity"
             }
         }
         stage ("Publier le résultats des tests de l'anaylse statique et des librairies") {
@@ -89,7 +89,7 @@ pipeline {
 	            	allowMissing: false,
 	            	alwaysLinkToLastBuild: false,
 	            	keepAll: true,
-	            	reportDir: 'target',
+	            	reportDir: 'dev/utilitaire-nam/target',
 	            reportFiles: 'dependency-check-report.html',
 	            reportName: 'résultats des sécurités des librairies'
 	          	]        	    
@@ -99,7 +99,7 @@ pipeline {
         	steps {
             	script { 
                 	withSonarQubeEnv('SonarQube') { 
-                   		sh "mvn sonar:sonar"
+                   		sh "cd dev/utilitaire-nam && mvn sonar:sonar"
                 	}
                 }
             }
@@ -108,20 +108,20 @@ pipeline {
        		steps {
 	       	   	script {
 	                VERSION = sh(
-	                	script: 'if [ "$(git describe --exact-match HEAD 2>>/dev/null || git rev-parse --abbrev-ref HEAD)" == "master" ]; then mvn -q -Dexec.executable="echo" -Dexec.args=\'${project.version}\' --non-recursive exec:exec 2>/dev/null; else git describe --exact-match HEAD 2>>/dev/null || git rev-parse --abbrev-ref HEAD; fi',
+	                	script: 'if [ "$(git describe --exact-match HEAD 2>>/dev/null || git rev-parse --abbrev-ref HEAD)" == "master" ]; then mvn -q -f dev/utilitaire-nam/pom.xml -Dexec.executable="echo" -Dexec.args=\'${project.version}\' --non-recursive exec:exec 2>/dev/null; else git describe --exact-match HEAD 2>>/dev/null || git rev-parse --abbrev-ref HEAD; fi',
 	                	returnStdout: true
 	                	).trim()
 	      			sh "docker pull arminc/clair-db && docker run -d --rm --name untilitairenamclairdb arminc/clair-db && sleep 15"
     	    		sh "docker pull arminc/clair-local-scan && docker run -p 16060:6060 --link untilitairenamclairdb:postgres -d --rm --name utilitairenamclair arminc/clair-local-scan && sleep 5"
-        			sh "wget -qO clairctl https://github.com/jgsqware/clairctl/releases/download/v1.2.8/clairctl-linux-amd64 && chmod u+x clairctl"
+        			sh "cd ops && wget -qO clairctl https://github.com/jgsqware/clairctl/releases/download/v1.2.8/clairctl-linux-amd64 && chmod u+x clairctl"
         			try {
-	        			sh "./clairctl analyze ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${VERSION}"     		    
+	        			sh "cd ops && ./clairctl analyze ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${VERSION}"     		    
         			} catch (err) {
         			      unstable("Vulnérabilités identifées dans l'image")
         			      //currentBuild.result = 'FAILURE'
         			}
-	        		sh "mkdir -p reports && ./clairctl report ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${VERSION} && mv reports/html/analysis-${DOCKER_REPOSITORY}-${DOCKER_REPOSITORY_PREFIX}-${SVC_ARTIFACT_ID}-${VERSION}.html reports/html/analyse-image.html"
-	        		sh "docker stop utilitairenamclair untilitairenamclairdb && rm clairctl"		    
+	        		sh "cd ops && mkdir -p reports && ./clairctl report ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${VERSION} && mv reports/html/analysis-${DOCKER_REPOSITORY}-${DOCKER_REPOSITORY_PREFIX}-${SVC_ARTIFACT_ID}-${VERSION}.html reports/html/analyse-image.html"
+	        		sh "docker stop utilitairenamclair untilitairenamclairdb && rm ops/clairctl"		    
         		}
        		}
       	}
@@ -131,7 +131,7 @@ pipeline {
 	            	allowMissing: false,
 	            	alwaysLinkToLastBuild: false,
 	            	keepAll: true,
-	            	reportDir: "reports/html",
+	            	reportDir: "ops/reports/html",
 	            reportFiles: "analyse-image.html",
 	            reportName: "résultats du test de balayage de l'image"
 	          	]        	    
@@ -142,7 +142,6 @@ pipeline {
         always {
             script {
                 equipe = "${NOTIFICATION_TEAM}"
-				//equipe = 'bilel.hamdi@inspq.qc.ca'  // Ajout de mon adresse pour Test
             }
         }
         success {

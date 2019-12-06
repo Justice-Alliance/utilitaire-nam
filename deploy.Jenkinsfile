@@ -11,9 +11,9 @@ pipeline {
         maven 'maven-3.6.1'
     }
     environment {
-        unServicePom = readMavenPom file: 'utilitaire-NAM-Service/pom.xml'
+        unServicePom = readMavenPom file: 'dev/utilitaire-nam/utilitaire-NAM-Service/pom.xml'
         UN_SERVICE_IMAGE = unServicePom.getArtifactId()
-    	NOTIFICATION_TEAM = "${env.NOTIFICATION_SX5_TEAM}"        
+    	NOTIFICATION_TEAM = "${env.NOTIFICATION_SX5_TEAM}"
 	}
     stages {
     	stage ('Checkout') {
@@ -62,8 +62,8 @@ pipeline {
 	                	returnStdout: true
 	                	).trim()
                 }            
-                sh "cd ops && ansible-playbook -i ${env.ENV}/${env.ENV}.hosts utilitaire-NAM-Service/deploy-vm.yml"
-                sh "cd ops && ansible-playbook -i ${env.ENV}/${env.ENV}.hosts -e unamservice_artifact_id=${UN_SERVICE_IMAGE} -e unamservice_image_version=${VERSION} utilitaire-NAM-Service/deploy.yml"
+                sh "cd ops && ansible-playbook -i ${env.ENV}/${env.ENV}.hosts deploy-vm.yml"
+                sh "cd ops && ansible-playbook -i ${env.ENV}/${env.ENV}.hosts -e unamservice_artifact_id=${UN_SERVICE_IMAGE} -e unamservice_image_version=${VERSION} deploy.yml"
             }
         }
     }

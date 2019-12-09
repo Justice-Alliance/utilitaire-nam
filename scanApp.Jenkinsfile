@@ -29,7 +29,7 @@ pipeline {
                     allowMissing: false,
                     alwaysLinkToLastBuild: false,
                     keepAll: true,
-                    reportDir: "reports/${env.BUILD_NUMBER}/unam",
+                    reportDir: "ops/reports/${env.BUILD_NUMBER}/unam",
                     reportFiles: 'index.html',
                     reportName: 'unam non-Auth Report'
                 ]

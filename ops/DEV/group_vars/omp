@@ -1,0 +1,7 @@
+# Variables pour le serveur Openvas
+openvas_container_name: openvas
+openvas_image_version: SNAPSHOT
+openvas_base_url: omp.dev.inspq.qc.ca
+#openvas_protocol: http
+openvas_protocol: https
+openvas_url: "{{ openvas_protocol }}://{{ openvas_base_url }}:{{ openvas_external_port }}"

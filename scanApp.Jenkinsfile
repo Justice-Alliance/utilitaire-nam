@@ -12,7 +12,7 @@ pipeline {
         MVN_REPOSITORY = "${env.MVN_REPOSITORY_INSPQ}"
     	REPOSITORY = "${env.REPOSITORY_INSPQ}"
     	NOTIFICATION_TEAM = "${env.NOTIFICATION_SX5_TEAM}"
-        unamIvfile = readYaml file: "ops/${env.ENV}/group_var/unam"
+        unamIvfile = readYaml file: "ops/${env.ENV}/group_vars/unam"
         APPURL = "${unamIvfile}.unamservice_url"
     }
     stages {

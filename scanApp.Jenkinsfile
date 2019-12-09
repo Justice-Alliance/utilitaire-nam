@@ -18,14 +18,13 @@ pipeline {
     stages {
         stage ('Configurer Ansible') {
             steps {
-                sh "if [ ! -d ansible ]; then git clone https://github.com/Inspq/ansible.git && cd ansible; else cd ansible && git pull; fi; git checkout inspq-2.4.2.0-1"
-            	sh "rm -rf roles && mkdir -p roles"
-                sh "ansible-galaxy install -r requirements.yml"
+	            sh "rm -rf ops/roles"
+	            sh "cd ops && ansible-galaxy install -f -r requirements.yml"        	    
             }
         }
         stage ('Tests de sécurité applicative utilitaire-nams') {
             steps {
-                sh "ansible-playbook startAppScan.yml -i ./${env.ENV}/${env.ENV}.hosts -e app_url=${APPURL} -e build_number=${env.BUILD_NUMBER} && unzip reports/${env.BUILD_NUMBER}/app_report.zip -d reports/${env.BUILD_NUMBER}/unam" 
+                sh "cd ops && ansible-playbook startAppScan.yml -i ./${env.ENV}/${env.ENV}.hosts -e app_url=${APPURL} -e build_number=${env.BUILD_NUMBER} && unzip reports/${env.BUILD_NUMBER}/app_report.zip -d reports/${env.BUILD_NUMBER}/unam" 
                 publishHTML target: [
                     allowMissing: false,
                     alwaysLinkToLastBuild: false,

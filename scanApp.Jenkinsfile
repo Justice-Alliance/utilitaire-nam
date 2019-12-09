@@ -13,7 +13,7 @@ pipeline {
     	REPOSITORY = "${env.REPOSITORY_INSPQ}"
     	NOTIFICATION_TEAM = "${env.NOTIFICATION_SX5_TEAM}"
         unamIvfile = readYaml file: "${env.ENV}/group_var/unam"
-        APPURL = unamIvfile.unamservice_url
+        APPURL = "${unamIvfile}.unamservice_url"
     }
     stages {
         stage ('Configurer Ansible') {

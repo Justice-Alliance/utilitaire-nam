@@ -19,7 +19,6 @@ pipeline {
     	POMVERSION = projectPom.getVersion()
     	DOCKER_REPOSITORY = projectPom.getProperties().getProperty('docker.repository')
     	DOCKER_REPOSITORY_PREFIX = projectPom.getProperties().getProperty('docker.repository.prefix')
-    	ANSIBLE_VAULT_ID = '/etc/ansible/passfile'
     }
     stages {
         stage ('Préparer les variables') {

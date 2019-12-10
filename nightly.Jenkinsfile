@@ -5,7 +5,6 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '5'))
         disableConcurrentBuilds()
     }
-    triggers { pollSCM('*/30 * * * *') }
     tools {
         jdk 'openjdk-11'
         maven 'maven-3.6.1'
@@ -111,8 +110,8 @@ pipeline {
 	                	script: 'if [ "$(git describe --exact-match HEAD 2>>/dev/null || git rev-parse --abbrev-ref HEAD)" == "master" ]; then mvn -q -f dev/utilitaire-nam/pom.xml -Dexec.executable="echo" -Dexec.args=\'${project.version}\' --non-recursive exec:exec 2>/dev/null; else git describe --exact-match HEAD 2>>/dev/null || git rev-parse --abbrev-ref HEAD; fi',
 	                	returnStdout: true
 	                	).trim()
-	      			sh "docker pull arminc/clair-db && docker run -d --rm --name untilitairenamclairdb arminc/clair-db && sleep 15"
-    	    		sh "docker pull arminc/clair-local-scan && docker run -p 16060:6060 --link untilitairenamclairdb:postgres -d --rm --name utilitairenamclair arminc/clair-local-scan && sleep 5"
+	      			sh "docker pull arminc/clair-db && docker run -d --rm --name utilitairenamclairdb arminc/clair-db && sleep 15"
+    	    		sh "docker pull arminc/clair-local-scan && docker run -p 16060:6060 --link utilitairenamclairdb:postgres -d --rm --name utilitairenamclair arminc/clair-local-scan && sleep 5"
         			sh "cd ops && wget -qO clairctl https://github.com/jgsqware/clairctl/releases/download/v1.2.8/clairctl-linux-amd64 && chmod u+x clairctl"
         			try {
 	        			sh "cd ops && ./clairctl analyze ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${VERSION}"     		    
@@ -121,7 +120,7 @@ pipeline {
         			      //currentBuild.result = 'FAILURE'
         			}
 	        		sh "cd ops && mkdir -p reports && ./clairctl report ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${VERSION} && mv reports/html/analysis-${DOCKER_REPOSITORY}-${DOCKER_REPOSITORY_PREFIX}-${SVC_ARTIFACT_ID}-${VERSION}.html reports/html/analyse-image.html"
-	        		sh "docker stop utilitairenamclair untilitairenamclairdb && rm ops/clairctl"		    
+	        		sh "docker stop utilitairenamclair utilitairenamclairdb && rm ops/clairctl"		    
         		}
        		}
       	}

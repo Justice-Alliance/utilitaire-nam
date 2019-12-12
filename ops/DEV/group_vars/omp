@@ -1,5 +1,6 @@
 # Variables pour le serveur Openvas
-openvas_container_name: inspqscannerdev
+scanner_container_name: inspqscannerdev
+scanner_url_to_scan: http://slapp07d.inspq.qc.ca:15001/ui
 #openvas_image_version: SNAPSHOT
 #openvas_base_url: omp.dev.inspq.qc.ca
 #openvas_protocol: http

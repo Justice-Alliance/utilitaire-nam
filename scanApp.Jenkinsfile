@@ -12,8 +12,8 @@ pipeline {
         MVN_REPOSITORY = "${env.MVN_REPOSITORY_INSPQ}"
     	REPOSITORY = "${env.REPOSITORY_INSPQ}"
     	NOTIFICATION_TEAM = "${env.NOTIFICATION_SX5_TEAM}"
-        unamIvfile = readYaml file: "ops/${env.ENV}/group_vars/unam"
-        APPURL = "${unamIvfile.unamservice_protocol}://${unamIvfile.unamservice_base_url}"
+        //unamIvfile = readYaml file: "ops/${env.ENV}/group_vars/unam"
+        //APPURL = "${unamIvfile.unamservice_protocol}://${unamIvfile.unamservice_base_url}"
     }
     stages {
         stage ('Configurer Ansible') {
@@ -24,7 +24,8 @@ pipeline {
         }
         stage ('Tests de sécurité applicative utilitaire-nam') {
             steps {
-                sh "cd ops && ansible-playbook startAppScan.yml -i ./${env.ENV}/${env.ENV}.hosts -e app_url=${APPURL} -e build_number=${env.BUILD_NUMBER} && unzip reports/${env.BUILD_NUMBER}/app_report.zip -d reports/${env.BUILD_NUMBER}/unam" 
+                //sh "cd ops && ansible-playbook startAppScan.yml -i ./${env.ENV}/${env.ENV}.hosts -e app_url=${APPURL} -e build_number=${env.BUILD_NUMBER} && unzip reports/${env.BUILD_NUMBER}/app_report.zip -d reports/${env.BUILD_NUMBER}/unam"
+                sh "cd ops && ansible-playbook startAppScan.yml -i ./${env.ENV}/${env.ENV}.hosts -e build_number=${env.BUILD_NUMBER} && unzip reports/${env.BUILD_NUMBER}/app_report.zip -d reports/${env.BUILD_NUMBER}/unam" 
                 publishHTML target: [
                     allowMissing: false,
                     alwaysLinkToLastBuild: false,

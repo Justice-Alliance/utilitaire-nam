@@ -2,22 +2,22 @@
 - hosts: omp
   tasks:
   - name: Start scan task
-    shell: "docker exec {{ openvas_container_name }} /scan_arachni {{ app_url }} | tail -1 | cut -d \"'\" -f 2"
+    shell: "docker exec {{ scanner_container_name }} /scan_arachni {{ scanner_url_to_scan }} | tail -1 | cut -d \"'\" -f 2"
     register: out
-    when: openvas_container_name is defined
+    when: scanner_container_name is defined
 
   - name: Scan result
     debug:
      var: out
 
   - name: get scan file
-    shell: "docker cp {{ openvas_container_name }}:{{ out.stdout }} /tmp/"
-    when: openvas_container_name is defined and out.stdout is defined
+    shell: "docker cp {{ scanner_container_name }}:{{ out.stdout }} /tmp/"
+    when: scanner_container_name is defined and out.stdout is defined
 
   - name: get scan file name
     shell: "basename {{ out.stdout }}"
     register: filename
-    when: openvas_container_name is defined and out.stdout is defined
+    when: scanner_container_name is defined and out.stdout is defined
 
    # Storing in a path relative to the playbook
   - fetch:

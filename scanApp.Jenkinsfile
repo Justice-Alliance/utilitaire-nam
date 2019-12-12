@@ -6,14 +6,14 @@ pipeline {
         disableConcurrentBuilds()
     }
     parameters {
-        string (name: 'ENV', description: 'Environnement sur lequel on déploie SX5 (DEV)')
+        string (name: 'ENV', description: 'Environnement à anaylser')
     }
     environment {
         MVN_REPOSITORY = "${env.MVN_REPOSITORY_INSPQ}"
     	REPOSITORY = "${env.REPOSITORY_INSPQ}"
     	NOTIFICATION_TEAM = "${env.NOTIFICATION_SX5_TEAM}"
         unamIvfile = readYaml file: "ops/${env.ENV}/group_vars/unam"
-        APPURL = "${unamIvfile.unamservice_url}"
+        APPURL = "${unamIvfile.unamservice_protocol}://${unamIvfile.unamservice_base_url}"
     }
     stages {
         stage ('Configurer Ansible') {
@@ -22,7 +22,7 @@ pipeline {
 	            sh "cd ops && ansible-galaxy install -f -r requirements.yml"        	    
             }
         }
-        stage ('Tests de sécurité applicative utilitaire-nams') {
+        stage ('Tests de sécurité applicative utilitaire-nam') {
             steps {
                 sh "cd ops && ansible-playbook startAppScan.yml -i ./${env.ENV}/${env.ENV}.hosts -e app_url=${APPURL} -e build_number=${env.BUILD_NUMBER} && unzip reports/${env.BUILD_NUMBER}/app_report.zip -d reports/${env.BUILD_NUMBER}/unam" 
                 publishHTML target: [
@@ -56,7 +56,7 @@ pipeline {
         }
         unstable {
             mail(to: "${equipe}",
-                subject: "Scan de SX5-habilitation-services en ${env.ENV} instable: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                subject: "Scan de l'utilitaire-nam en ${env.ENV} instable: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: "${env.BUILD_URL}")
         }
     }

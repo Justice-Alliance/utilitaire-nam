@@ -87,7 +87,7 @@ pipeline {
             	    ).trim()
             	}
 
-		    	sh "UNAM_BASE_URL=${UNAM_BASE_URL} && nosetests --with-xunit --xunit-file=nosetests-unam.xml ops/tests/integration/test*.py"
+		    	sh "export UNAM_BASE_URL=${UNAM_BASE_URL} && nosetests --with-xunit --xunit-file=nosetests-unam.xml ops/tests/integration/test*.py"
             }
             post {
                 success {

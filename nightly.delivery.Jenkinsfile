@@ -5,6 +5,9 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '5'))
 		disableConcurrentBuilds()
     }
+    environment {
+    	NOTIFICATION_TEAM = "${env.NOTIFICATION_SX5_TEAM}"
+	}
     stages {
 		stage ('Construction de nuit de utilitaire-nam') {
         	// Ne construire que si la branche courante n'est pas un TAG
@@ -15,40 +18,51 @@ pipeline {
                 }
             }
 			steps {
-				milestone(ordinal: 1)
+				milestone()
 				build job: "utilitaire-nam-construction-nuit", parameters:[string(name: 'BRANCH', value: "${env.BRANCH_OR_TAG}")]
-				milestone(ordinal: 2)
+				milestone()
 			}
 		}
         stage ('Déploiement du master en DEV3') {
-        	// Ne déployer que si la branche courante est origin/master
-            when {
-                environment name: 'BRANCH_OR_TAG', value: 'origin/master'
-            }
+//        	// Ne déployer que si la branche courante est origin/master
+//            when {
+//                environment name: 'BRANCH_OR_TAG', value: 'origin/master'
+//            }
             steps {
-				milestone(ordinal: 3)
+				milestone()
 	        	build job: "utilitaire-nam-deploiement", parameters:[string(name: 'ENV', value: 'DEV3'), string(name: 'TAG', value: "${env.BRANCH_OR_TAG}")]
-				milestone(ordinal: 4)
+				milestone()
+			}
+        }
+        stage ('Lancer le balayage de sécurité applicative en DEV3') {
+//        	// Ne déployer que si la branche courante est origin/master
+//            when {
+//                environment name: 'BRANCH_OR_TAG', value: 'origin/master'
+//            }
+            steps {
+				milestone()
+	        	build job: "utilitaire-nam-scan-securite-app", parameters:[string(name: 'ENV', value: 'DEV3'), string(name: 'TAG', value: "${env.BRANCH_OR_TAG}")]
+				milestone()
 			}
         }
         stage ('Déploiement de la branche non master en DEV2') {
-        	// Ne déployer que si la branche courante n'est pas origin/master
-            when {
-            	not {
-	                environment name: 'BRANCH_OR_TAG', value: 'origin/master'
-            	    
-            	}
-            }
+//        	// Ne déployer que si la branche courante n'est pas origin/master
+//            when {
+//            	not {
+//	                environment name: 'BRANCH_OR_TAG', value: 'origin/master'
+//            	    
+//            	}
+//            }
             steps {
-				milestone(ordinal: 5)
+				milestone()
 	        	build job: "utilitaire-nam-deploiement", parameters:[string(name: 'ENV', value: 'DEV2'), string(name: 'TAG', value: "${env.BRANCH_OR_TAG}")]
-				milestone(ordinal: 6)
+				milestone()
 			}
         }
         stage ('Étiqueter utilitaire-nam') {
             steps {
-				milestone(ordinal: 7)
-            	mail (to: 'philippe.gauthier@inspq.qc.ca',
+				milestone()
+            	mail (to: "${NOTIFICATION_TEAM}",
                       subject: "Étiqueter Utilitaire-NAM", 
                       body: "La construction, le déploiement et les tests de utilitaire NAM on été réalisés avec succès. Voulez-vous étiqueter cette construction? ${env.BUILD_URL}")
                 script {
@@ -85,7 +99,8 @@ pipeline {
 	                				description: 'Numéro à assigner à la prochaine version de Utilitaire-NAM'),
 	                			string(
 	                				name: 'MESSAGE', 
-	                				description: 'Message à mettre dans le commit sur Git'),
+	                				description: 'Message à mettre dans le commit sur Git',
+	                				defaultValue: 'Nouvelle version de utilitaire NAM par Jenkins'),
 	                		]
 	                	)
 	                	VERSION_TAG = VERSION.VERSION_TAG?:''

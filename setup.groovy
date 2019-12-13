@@ -9,6 +9,7 @@ import groovy.transform.Field
 @Field final String PIPELINE_LIVRAISON_NUIT = "${REPERTOIRE_RACINE}/utilitaire-nam-livraison-nuit"
 @Field final String PIPELINE_TAG = "${REPERTOIRE_RACINE}/utilitaire-nam-etiquetage"
 @Field final String PIPELINE_LIVRAISON_TAG = "${REPERTOIRE_RACINE}/utilitaire-nam-livraison-tag"
+@Field final String PIPELINE_SCAN_APP = "${REPERTOIRE_RACINE}/utilitaire-nam-scan-securite-app"
 //@Field final String PIPELINE_MULTIBRANCH = "${REPERTOIRE_RACINE}/utilitaire-nam-construction-branches"
 
 folder("${REPERTOIRE_RACINE}") {
@@ -117,6 +118,7 @@ pipelineJob("${PIPELINE_DEPLOIEMENT}") {
     	    type('BRANCH_TAG')
     	    tagFilter('*')
     	    sortMode('DESCENDING_SMART')
+    	    defaultValue('origin/master')
     	}
         stringParam('ENV', '', 'Environnement sur lequel on déploie Utilitaire-NAM')
     }
@@ -203,6 +205,32 @@ pipelineJob("${PIPELINE_LIVRAISON_TAG}") {
                 }
             }
             scriptPath('tag.delivery.Jenkinsfile')
+        }
+    }
+}
+pipelineJob("${PIPELINE_SCAN_APP}") {
+    description ("Lancement des tests de sécurité sur l'utilitaire-nam dans un environnement")
+    parameters {
+    	gitParam('TAG'){
+    	    description('Version de utilitaire-nam à déployer')
+    	    type('BRANCH_TAG')
+    	    tagFilter('*')
+    	    sortMode('DESCENDING_SMART')
+    	    defaultValue('origin/master')
+    	}
+        stringParam('ENV', '', 'Environnement à anaylser')
+    }
+    definition {
+        cpsScm {
+            scm {
+                git {
+                	remote {
+                	    url('https://gitlab.forge.gouv.qc.ca/inspq/utilitaire-nam.git')
+                	}
+                    branch ('${TAG}')
+                }
+            }
+            scriptPath('deploy.Jenkinsfile')
         }
     }
 }

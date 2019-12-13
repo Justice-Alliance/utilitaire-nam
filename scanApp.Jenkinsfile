@@ -5,9 +5,6 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '5'))
         disableConcurrentBuilds()
     }
-    parameters {
-        string (name: 'ENV', description: 'Environnement à anaylser')
-    }
     environment {
         MVN_REPOSITORY = "${env.MVN_REPOSITORY_INSPQ}"
     	REPOSITORY = "${env.REPOSITORY_INSPQ}"

@@ -82,7 +82,7 @@ pipeline {
             	// Obtenir L'URL utilitaire NAM pour l'environnement
             	script {
             	    UNAM_BASE_URL = sh(
-            	    	script: "ansible unam -m debug -i ops/${env.ENV}/${env.ENV}.hosts -a 'var=unamservice_url' -o | awk -F'>' '{print $2}'|jq -r .unamservice_url",
+            	    	script: "ansible unam -m debug -i ops/${env.ENV}/${ENV}hosts -a 'var=unamservice_url' -o | awk -F'>' '{print \$2}'|jq -r .unamservice_url",
             	    	returnStdout: true
             	    ).trim
             	}

@@ -23,15 +23,29 @@ pipeline {
 				milestone(ordinal: 2)
 			}
 		}
+        stage ("Lancer les tests d'intégrations") {
+        	// Ne tester que si la branche courante n'est pas un TAG
+             when {
+            	expression{
+                	IS_BRANCH_OR_TAG = sh(returnStdout: true, script: 'git describe --exact-match HEAD >/dev/null 2>/dev/null && echo tag || echo branch').trim()
+                    return IS_BRANCH_OR_TAG == 'branch'
+                }
+            }
+            steps {
+				milestone(ordinal: 3)
+	        	build job: "utilitaire-nam-tests-integration", parameters:[string(name: 'ENV', value: 'LOCAL'), string(name: 'TAG', value: "${env.BRANCH_OR_TAG}")]
+				milestone(ordinal: 4)
+			}
+        }
         stage ('Déploiement de la branche en DEV3') {
 //        	// Ne déployer que si la branche courante est origin/master
 //            when {
 //                environment name: 'BRANCH_OR_TAG', value: 'origin/master'
 //            }
             steps {
-				milestone(ordinal: 3)
+				milestone(ordinal: 5)
 	        	build job: "utilitaire-nam-deploiement", parameters:[string(name: 'ENV', value: 'DEV3'), string(name: 'TAG', value: "${env.BRANCH_OR_TAG}")]
-				milestone(ordinal: 4)
+				milestone(ordinal: 6)
 			}
         }
         stage ('Lancer le balayage de sécurité applicative en DEV3') {
@@ -40,9 +54,9 @@ pipeline {
 //                environment name: 'BRANCH_OR_TAG', value: 'origin/master'
 //            }
             steps {
-				milestone(ordinal: 5)
+				milestone(ordinal: 7)
 	        	build job: "utilitaire-nam-scan-securite-app", parameters:[string(name: 'ENV', value: 'DEV3'), string(name: 'TAG', value: "${env.BRANCH_OR_TAG}")]
-				milestone(ordinal: 6)
+				milestone(ordinal: 8)
 			}
         }
         stage ('Déploiement de la branche en DEV2') {
@@ -54,14 +68,14 @@ pipeline {
 //            	}
 //            }
             steps {
-				milestone(ordinal: 7)
+				milestone(ordinal: 9)
 	        	build job: "utilitaire-nam-deploiement", parameters:[string(name: 'ENV', value: 'DEV2'), string(name: 'TAG', value: "${env.BRANCH_OR_TAG}")]
-				milestone(ordinal: 8)
+				milestone(ordinal: 10)
 			}
         }
         stage ('Étiqueter utilitaire-nam') {
             steps {
-				milestone(ordinal: 9)
+				milestone(ordinal: 11)
             	mail (to: "${NOTIFICATION_TEAM}",
                       subject: "Étiqueter Utilitaire-NAM", 
                       body: "La construction, le déploiement et les tests de utilitaire NAM on été réalisés avec succès. Voulez-vous étiqueter cette construction? ${env.BUILD_URL}")
@@ -117,7 +131,7 @@ pipeline {
 			        	}
 		        	}
 		        }
-				milestone(ordinal: 10)
+				milestone(ordinal: 12)
 			}
         }
     }

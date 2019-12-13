@@ -98,7 +98,10 @@ pipeline {
                 }
             }
         }
-        stage ('Supprimer Utilitaire-NAM-Service en LOCAL') {
+        stage ('Supprimer Utilitaire-NAM-Service si ENV est LOCAL') {
+        	when {
+                environment name: 'ENV', value: 'LOCAL'
+            }
             steps {
                 sh "docker stop untilitairenamtestsintegration"
             }

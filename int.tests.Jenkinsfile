@@ -65,7 +65,14 @@ pipeline {
                 }            
                 sh "docker pull ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${ARTIFACT_ID}:${VERSION}"
                 sh "docker run -d --rm -p 14101:8080 --name untilitairenamtestsintegration ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${ARTIFACT_ID}:${VERSION}"
-            }
+				sh '''
+                until $(curl --output /dev/null --silent --head --fail http://localhost:14101)
+                do 
+                	printf '.'
+                	sleep 5
+                done
+                '''            
+        	}
         }
         stage ('Tester Utilitaire-NAM') {
             steps {

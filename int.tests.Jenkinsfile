@@ -47,7 +47,10 @@ pipeline {
             	}
             }
         } 
-        stage ('Déployer Utilitaire-NAM-Service en LOCAL') {
+        stage ('Déployer Utilitaire-NAM-Service si ENV est LOCAL') {
+        	when {
+                environment name: 'ENV', value: 'LOCAL'
+            }
         	environment {
         		projectPom = readMavenPom file: 'dev/utilitaire-nam/pom.xml'
     			svcPom = readMavenPom file: 'dev/utilitaire-nam/utilitaire-NAM-Service/pom.xml'
@@ -76,7 +79,15 @@ pipeline {
         }
         stage ('Tester Utilitaire-NAM') {
             steps {
-		    	sh "nosetests --with-xunit --xunit-file=nosetests-unam.xml ops/tests/integration/test*.py"
+            	// Obtenir L'URL utilitaire NAM pour l'environnement
+            	script {
+            	    UNAM_BASE_URL = sh(
+            	    	script: "ansible unam -m debug -i ops/${env.ENV}/${env.ENV}.hosts -a 'var=unamservice_url' -o | awk -F'>' '{print $2}'|jq -r .unamservice_url",
+            	    	returnStdout: true
+            	    ).trim
+            	}
+
+		    	sh "UNAM_BASE_URL=${UNAM_BASE_URL} && nosetests --with-xunit --xunit-file=nosetests-unam.xml ops/tests/integration/test*.py"
             }
             post {
                 success {

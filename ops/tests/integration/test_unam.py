@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-import requests
 import unittest
 import requests
+import os
 
 class unamIntegrationTest(unittest.TestCase):
     usagersATester = [
@@ -30,7 +31,15 @@ class unamIntegrationTest(unittest.TestCase):
     description_sexe = {
         "M": "MASCULIN",
         "F": "FEMININ"
-    }    
+    }
+    def setUp(self):
+        unittest.TestCase.setUp(self)
+        try:
+            env_unam_base_url = os.environ['UNAM_BASE_URL']
+            self.unam_base_url = env_unam_base_url + "/nam"
+        except:
+            print("URL de base non spécifié: Utilisation de l'URL par défaut")
+              
     def test_generer_nam(self):
         usager = self.usagersATester[1]
         params = {

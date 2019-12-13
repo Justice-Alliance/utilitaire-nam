@@ -84,7 +84,7 @@ pipeline {
             	    UNAM_BASE_URL = sh(
             	    	script: "ansible unam -m debug -i ops/${env.ENV}/${ENV}.hosts -a 'var=unamservice_url' -o | awk -F'>' '{print \$2}'|jq -r .unamservice_url",
             	    	returnStdout: true
-            	    ).trim
+            	    ).trim()
             	}
 
 		    	sh "UNAM_BASE_URL=${UNAM_BASE_URL} && nosetests --with-xunit --xunit-file=nosetests-unam.xml ops/tests/integration/test*.py"

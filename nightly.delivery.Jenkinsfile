@@ -18,9 +18,9 @@ pipeline {
                 }
             }
 			steps {
-				milestone()
+				milestone(ordinal: 1)
 				build job: "utilitaire-nam-construction-nuit", parameters:[string(name: 'BRANCH', value: "${env.BRANCH_OR_TAG}")]
-				milestone()
+				milestone(ordinal: 2)
 			}
 		}
         stage ('Déploiement du master en DEV3') {
@@ -29,9 +29,9 @@ pipeline {
 //                environment name: 'BRANCH_OR_TAG', value: 'origin/master'
 //            }
             steps {
-				milestone()
+				milestone(ordinal: 3)
 	        	build job: "utilitaire-nam-deploiement", parameters:[string(name: 'ENV', value: 'DEV3'), string(name: 'TAG', value: "${env.BRANCH_OR_TAG}")]
-				milestone()
+				milestone(ordinal: 4)
 			}
         }
         stage ('Lancer le balayage de sécurité applicative en DEV3') {
@@ -40,9 +40,9 @@ pipeline {
 //                environment name: 'BRANCH_OR_TAG', value: 'origin/master'
 //            }
             steps {
-				milestone()
+				milestone(ordinal: 5)
 	        	build job: "utilitaire-nam-scan-securite-app", parameters:[string(name: 'ENV', value: 'DEV3'), string(name: 'TAG', value: "${env.BRANCH_OR_TAG}")]
-				milestone()
+				milestone(ordinal: 6)
 			}
         }
         stage ('Déploiement de la branche non master en DEV2') {
@@ -54,14 +54,14 @@ pipeline {
 //            	}
 //            }
             steps {
-				milestone()
+				milestone(ordinal: 7)
 	        	build job: "utilitaire-nam-deploiement", parameters:[string(name: 'ENV', value: 'DEV2'), string(name: 'TAG', value: "${env.BRANCH_OR_TAG}")]
-				milestone()
+				milestone(ordinal: 8)
 			}
         }
         stage ('Étiqueter utilitaire-nam') {
             steps {
-				milestone()
+				milestone(ordinal: 9)
             	mail (to: "${NOTIFICATION_TEAM}",
                       subject: "Étiqueter Utilitaire-NAM", 
                       body: "La construction, le déploiement et les tests de utilitaire NAM on été réalisés avec succès. Voulez-vous étiqueter cette construction? ${env.BUILD_URL}")
@@ -117,7 +117,7 @@ pipeline {
 			        	}
 		        	}
 		        }
-				milestone(ordinal: 8)
+				milestone(ordinal: 10)
 			}
         }
     }

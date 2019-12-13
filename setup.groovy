@@ -231,7 +231,7 @@ pipelineJob("${PIPELINE_SCAN_APP}") {
                     branch ('${TAG}')
                 }
             }
-            scriptPath('deploy.Jenkinsfile')
+            scriptPath('scanApp.Jenkinsfile')
         }
     }
 }

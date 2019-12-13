@@ -1,8 +1,3 @@
-# Variables pour le serveur Openvas
+# Variables pour le scan applicatif
 scanner_container_name: inspqscannerdev
 scanner_url_to_scan: http://slapp07d.inspq.qc.ca:15001/ui
-#openvas_image_version: SNAPSHOT
-#openvas_base_url: omp.dev.inspq.qc.ca
-#openvas_protocol: http
-#openvas_protocol: https
-#openvas_url: "{{ openvas_protocol }}://{{ openvas_base_url }}:{{ openvas_external_port }}"

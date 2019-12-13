@@ -10,6 +10,7 @@ import groovy.transform.Field
 @Field final String PIPELINE_TAG = "${REPERTOIRE_RACINE}/utilitaire-nam-etiquetage"
 @Field final String PIPELINE_LIVRAISON_TAG = "${REPERTOIRE_RACINE}/utilitaire-nam-livraison-tag"
 @Field final String PIPELINE_SCAN_APP = "${REPERTOIRE_RACINE}/utilitaire-nam-scan-securite-app"
+@Field final String PIPELINE_TESTS_INTEGRATION = "${REPERTOIRE_RACINE}/utilitaire-nam-tests-integration"
 //@Field final String PIPELINE_MULTIBRANCH = "${REPERTOIRE_RACINE}/utilitaire-nam-construction-branches"
 
 folder("${REPERTOIRE_RACINE}") {
@@ -231,6 +232,33 @@ pipelineJob("${PIPELINE_SCAN_APP}") {
                 }
             }
             scriptPath('deploy.Jenkinsfile')
+        }
+    }
+}
+pipelineJob("${PIPELINE_TESTS_INTEGRATION}") {
+    description ("Tests d'intégration de Utilitaire-NAM")
+    parameters {
+    	gitParam('TAG'){
+    	    description('Version des tests utilitaire-nam')
+    	    type('BRANCH_TAG')
+    	    tagFilter('*')
+    	    sortMode('DESCENDING_SMART')
+    	    defaultValue('origin/master')
+    	}
+        stringParam('ENV', '', 'Environnement sur lequel on test Utilitaire-NAM')
+    }
+    definition {
+        cpsScm {
+            scm {
+                git {
+                	remote {
+                	    url('https://gitlab.forge.gouv.qc.ca/inspq/utilitaire-nam.git')
+                	}
+                    branch ('${TAG}')
+                }
+            }
+            
+            scriptPath('int.tests.Jenkinsfile')
         }
     }
 }

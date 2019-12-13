@@ -112,3 +112,5 @@ buildNumber.properties
 **/.attach_pid*
 /Running
 roles/
+nosetests*.xml
+*.pyc

@@ -55,6 +55,7 @@ pipeline {
 	                	returnStdout: true
 	                	).trim()
                 }            
+                sh "cd ops && ansible-galaxy install -r requirements.yml"
                 sh "cd ops && ansible-playbook -i LOCAL/LOCAL.hosts -e unamservice_artifact_id=${UN_SERVICE_IMAGE} -e unamservice_image_version=${VERSION} deploy.yml"
             }
         }

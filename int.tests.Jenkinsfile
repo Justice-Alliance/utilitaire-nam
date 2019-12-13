@@ -48,6 +48,14 @@ pipeline {
             }
         } 
         stage ('Déployer Utilitaire-NAM-Service en LOCAL') {
+        	environment {
+        		projectPom = readMavenPom file: 'dev/utilitaire-nam/pom.xml'
+    			svcPom = readMavenPom file: 'dev/utilitaire-nam/utilitaire-NAM-Service/pom.xml'
+		    	ARTIFACT_ID = svcPom.getArtifactId()
+    			POMVERSION = projectPom.getVersion()
+    			DOCKER_REPOSITORY = projectPom.getProperties().getProperty('docker.repository')
+    			DOCKER_REPOSITORY_PREFIX = projectPom.getProperties().getProperty('docker.repository.prefix')
+			}
             steps {
                 script {
 	                VERSION = sh(
@@ -55,8 +63,8 @@ pipeline {
 	                	returnStdout: true
 	                	).trim()
                 }            
-                sh "cd ops && ansible-galaxy install -r requirements.yml"
-                sh "cd ops && ansible-playbook -i LOCAL/LOCAL.hosts -e unamservice_artifact_id=${UN_SERVICE_IMAGE} -e unamservice_image_version=${VERSION} deploy.yml"
+                sh "docker pull ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${ARTIFACT_ID}:${VERSION}"
+                sh "docker run -d --rm -p 14101:8080 --name untilitairenamtestsintegration ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${ARTIFACT_ID}:${VERSION}"
             }
         }
         stage ('Tester Utilitaire-NAM') {
@@ -74,7 +82,7 @@ pipeline {
         }
         stage ('Supprimer Utilitaire-NAM-Service en LOCAL') {
             steps {
-                sh "docker stop unamservicelocal && docker rm unamservicelocal"
+                sh "docker stop untilitairenamtestsintegration"
             }
         }
     }

@@ -23,7 +23,7 @@ pipeline {
 				milestone(ordinal: 2)
 			}
 		}
-        stage ("Lancer les tests d'intégrations") {
+        stage ("Lancer les tests d'intégrations en LOCAL") {
         	// Ne tester que si la branche courante n'est pas un TAG
              when {
             	expression{
@@ -48,15 +48,22 @@ pipeline {
 				milestone(ordinal: 6)
 			}
         }
+        stage ("Lancer les tests d'intégrations en DEV3") {
+            steps {
+				milestone(ordinal: 7)
+	        	build job: "utilitaire-nam-tests-integration", parameters:[string(name: 'ENV', value: 'DEV3'), string(name: 'TAG', value: "${env.BRANCH_OR_TAG}")]
+				milestone(ordinal: 8)
+			}
+        }
         stage ('Lancer le balayage de sécurité applicative en DEV3') {
 //        	// Ne déployer que si la branche courante est origin/master
 //            when {
 //                environment name: 'BRANCH_OR_TAG', value: 'origin/master'
 //            }
             steps {
-				milestone(ordinal: 7)
+				milestone(ordinal: 9)
 	        	build job: "utilitaire-nam-scan-securite-app", parameters:[string(name: 'ENV', value: 'DEV3'), string(name: 'TAG', value: "${env.BRANCH_OR_TAG}")]
-				milestone(ordinal: 8)
+				milestone(ordinal: 10)
 			}
         }
         stage ('Déploiement de la branche en DEV2') {
@@ -68,14 +75,21 @@ pipeline {
 //            	}
 //            }
             steps {
-				milestone(ordinal: 9)
+				milestone(ordinal: 11)
 	        	build job: "utilitaire-nam-deploiement", parameters:[string(name: 'ENV', value: 'DEV2'), string(name: 'TAG', value: "${env.BRANCH_OR_TAG}")]
-				milestone(ordinal: 10)
+				milestone(ordinal: 12)
+			}
+        }
+        stage ("Lancer les tests d'intégrations en DEV2") {
+            steps {
+				milestone(ordinal: 13)
+	        	build job: "utilitaire-nam-tests-integration", parameters:[string(name: 'ENV', value: 'DEV3'), string(name: 'TAG', value: "${env.BRANCH_OR_TAG}")]
+				milestone(ordinal: 14)
 			}
         }
         stage ('Étiqueter utilitaire-nam') {
             steps {
-				milestone(ordinal: 11)
+				milestone(ordinal: 15)
             	mail (to: "${NOTIFICATION_TEAM}",
                       subject: "Étiqueter Utilitaire-NAM", 
                       body: "La construction, le déploiement et les tests de utilitaire NAM on été réalisés avec succès. Voulez-vous étiqueter cette construction? ${env.BUILD_URL}")
@@ -131,7 +145,7 @@ pipeline {
 			        	}
 		        	}
 		        }
-				milestone(ordinal: 12)
+				milestone(ordinal: 16)
 			}
         }
     }

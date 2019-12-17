@@ -5,6 +5,11 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '5'))
 		disableConcurrentBuilds()
     }
+    environment {
+        MVN_REPOSITORY = "${env.MVN_REPOSITORY_INSPQ}"
+    	REPOSITORY = "${env.REPOSITORY_INSPQ}"
+    	NOTIFICATION_TEAM = "${env.NOTIFICATION_SX5_TEAM}"
+    }    
     stages {
     	stage ('Checkout') {
 			steps {
@@ -18,9 +23,9 @@ pipeline {
         stage ('Déploiement en PP') {
             steps {
 				milestone(ordinal: 1)
-            	mail (to: 'philippe.gauthier@inspq.qc.ca',
+            	mail (to: "${NOTIFICATION_TEAM}",
                       subject: "Déploiement de Utilitaire-NAM en PP", 
-                      body: "Une nouvelle version de utilitaire NAM est maintenant disponible. Déployer en pré-production? ${env.BUILD_URL}")
+                      body: "Une nouvelle version de utilitaire NAM est maintenant disponible. Déployer en pré-production? ${env.JOB_URL}")
 				script {
 					def DEPLOY_PP
 					try {
@@ -41,9 +46,9 @@ pipeline {
                 	if ( "${DEPLOY_PP}" == "oui" ) {
 					
 		        		build job: "utilitaire-nam-deploiement", parameters:[string(name: 'ENV', value: 'PP'), string(name: 'TAG', value: "${TAG}")]
-		            	mail (to: 'philippe.gauthier@inspq.qc.ca',
+		            	mail (to: "${NOTIFICATION_TEAM}",
 		                      subject: "Déploiement de Utilitaire-NAM en PROD", 
-		                      body: "La nouvelle version de utilitaire NAM a été déployée en pré-production avec succès. Déployer en production? ${env.BUILD_URL}")
+		                      body: "La nouvelle version de utilitaire NAM a été déployée en pré-production avec succès. Déployer en production? ${env.JOB_URL}")
 				        	}
 		        	else {
 		        	    currentBuild.getRawBuild().getExecutor().interrupt(Result.SUCCESS)
@@ -76,6 +81,9 @@ pipeline {
                 	if ( "${DEPLOY_PROD}" == "oui" ) {
 					
 		        		build job: "utilitaire-nam-deploiement", parameters:[string(name: 'ENV', value: 'PROD'), string(name: 'TAG', value: "${TAG}")]
+		            	mail (to: "${NOTIFICATION_TEAM}",
+		                      subject: "Déploiement de Utilitaire-NAM en PROD", 
+		                      body: "La nouvelle version de utilitaire NAM a été déployée en production avec succès: ${env.JOB_URL}")
 		        	}
 		        	else {
 		        	    currentBuild.getRawBuild().getExecutor().interrupt(Result.SUCCESS)

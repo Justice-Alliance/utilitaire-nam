@@ -92,7 +92,7 @@ pipeline {
 				milestone(ordinal: 15)
             	mail (to: "${NOTIFICATION_TEAM}",
                       subject: "Étiqueter Utilitaire-NAM", 
-                      body: "La construction, le déploiement et les tests de utilitaire NAM on été réalisés avec succès. Voulez-vous étiqueter cette construction? ${env.BUILD_URL}")
+                      body: "La construction, le déploiement et les tests de utilitaire NAM on été réalisés avec succès. Voulez-vous étiqueter cette construction? ${env.JOB_URL}")
                 script {
                 	def VERSION
 		            def VERSION_TAG

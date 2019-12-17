@@ -35,13 +35,13 @@ pipeline {
 		                		message: 'Voulez-vous déployer la version ${TAG} de utilitaire NAM en PP ?',
 		                		parameters: [ 
 		                			[$class: 'ChoiceParameterDefinition', 
-		                			choices: [ 'oui','non' ].join('\n'), 
+		                			choices: [ 'oui','non','annuler' ].join('\n'), 
 		                			name: 'tag'] 
 		                		]
 		                	)
 		                } 
 		            } catch (err) {
-                	    DEPLOY_PP = "non"      
+                	    DEPLOY_PP = "annuler"      
                 	}
                 	if ( "${DEPLOY_PP}" == "oui" ) {
 					
@@ -50,7 +50,7 @@ pipeline {
 		                      subject: "Déploiement de Utilitaire-NAM en PROD", 
 		                      body: "La nouvelle version de utilitaire NAM a été déployée en pré-production avec succès. Déployer en production? ${env.JOB_URL}")
 				        	}
-		        	else {
+		        	else if ( "${DEPLOY_PP}" == "annuler") {
 		        	    currentBuild.getRawBuild().getExecutor().interrupt(Result.SUCCESS)
 		        	}
 
@@ -70,13 +70,13 @@ pipeline {
 		                		message: 'Voulez-vous déployer la version ${TAG} de utilitaire NAM en PROD ?',
 		                		parameters: [ 
 		                			[$class: 'ChoiceParameterDefinition', 
-		                			choices: [ 'oui','non' ].join('\n'), 
+		                			choices: [ 'oui','non','annuler' ].join('\n'), 
 		                			name: 'tag'] 
 		                		]
 		                	)
 		                } 
 		            } catch (err) {
-                	    DEPLOY_PROD = "non"      
+                	    DEPLOY_PROD = "annuler"      
                 	}
                 	if ( "${DEPLOY_PROD}" == "oui" ) {
 					
@@ -85,7 +85,7 @@ pipeline {
 		                      subject: "Déploiement de Utilitaire-NAM en PROD", 
 		                      body: "La nouvelle version de utilitaire NAM a été déployée en production avec succès: ${env.JOB_URL}")
 		        	}
-		        	else {
+		        	else if ( "${DEPLOY_PROD}" == "annuler") {
 		        	    currentBuild.getRawBuild().getExecutor().interrupt(Result.SUCCESS)
 		        	}
 

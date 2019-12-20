@@ -101,7 +101,6 @@
 					</execution>
 				</executions>
 				<configuration>
-					<dockerfile>ops/Dockerfile</dockerfile>
 					<repository>${docker.repository}/${docker.repository.prefix}/${project.artifactId}</repository>
 					<tag>${project.version}</tag>
 					<buildArgs>

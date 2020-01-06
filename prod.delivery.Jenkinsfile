@@ -1,4 +1,6 @@
 #!/usr/bin/env groovy
+DEPLOY_PP = "non"
+DEPLOY_PROD = "non"
 pipeline {
     agent any
     options {
@@ -27,7 +29,6 @@ pipeline {
                       subject: "Déploiement de Utilitaire-NAM en PP", 
                       body: "Une nouvelle version de utilitaire NAM est maintenant disponible. Déployer en pré-production? ${env.JOB_URL}")
 				script {
-					def DEPLOY_PP
 					try {
 		            	timeout (time: 24, unit: "HOURS" ){
 							DEPLOY_PP = input(
@@ -58,11 +59,23 @@ pipeline {
 				milestone(ordinal: 2)
 			}
         }
-        stage ('Déploiement en PROD') {
+        stage ("Lancer les tests d'intégrations en PP") {
+            when {
+	        	expression {
+	        		return DEPLOY_PP == "oui"
+	        	}
+            }
             steps {
 				milestone(ordinal: 3)
+	        	build job: "utilitaire-nam-tests-integration", parameters:[string(name: 'ENV', value: 'PP'), string(name: 'TAG', value: "${TAG}")]
+				milestone(ordinal: 4)
+			}
+        }
+        stage ('Déploiement en PROD') {
+            steps {
+				milestone(ordinal: 5)
 				script {
-					def DEPLOY_PROD
+					
 					try {
 		            	timeout (time: 24, unit: "HOURS" ){
 							DEPLOY_PROD = input(
@@ -90,7 +103,19 @@ pipeline {
 		        	}
 
 		        }
-				milestone(ordinal: 4)
+				milestone(ordinal: 6)
+			}
+        }
+        stage ("Lancer les tests d'intégrations en PROD") {
+            when {
+	        	expression {
+	        		return DEPLOY_PROD == "oui"
+	        	}
+            }
+            steps {
+				milestone(ordinal: 7)
+	        	build job: "utilitaire-nam-tests-integration", parameters:[string(name: 'ENV', value: 'PROD'), string(name: 'TAG', value: "${TAG}")]
+				milestone(ordinal: 8)
 			}
         }
 	}

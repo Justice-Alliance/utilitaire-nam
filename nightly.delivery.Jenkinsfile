@@ -1,4 +1,10 @@
 #!/usr/bin/env groovy
+TAG_CHOICE = "non"
+DEPLOY_DEV = "non"
+VERSION = ""
+VERSION_TAG = ""
+VERSION_NEXT = ""
+VERSION_MESSAGE = ""
 pipeline {
     agent any
     options {
@@ -146,6 +152,63 @@ pipeline {
 		        	}
 		        }
 				milestone(ordinal: 16)
+			}
+        }
+        stage ('Déploiement en DEV') {
+            when {
+	        	expression {
+	        		return TAG_CHOICE == "oui"
+	        	}
+
+            }
+            steps {
+				milestone(ordinal: 17)
+            	mail (to: "${NOTIFICATION_TEAM}",
+                      subject: "Déploiement de utilitaire NAM en DEV", 
+                      body: "La nouvelle version ${VERSION_TAG} de utilitaire NAM est maintenant disponible. Déployer en DEV? ${env.JOB_URL}")
+				script {
+					sh "git fetch --all && git pull origin master"
+					TAG = sh(returnStdout: true, script: 'git describe --abbrev=0').trim()
+					
+					try {
+		            	timeout (time: 4, unit: "HOURS" ){
+							DEPLOY_DEV = input(
+		                		id: 'tag_choice',
+		                		message: 'Voulez-vous déployer la version ${VERSION_TAG} de utilitaire NAM en DEV?',
+		                		parameters: [ 
+		                			[$class: 'ChoiceParameterDefinition', 
+		                			choices: [ 'oui','non' ].join('\n'), 
+		                			name: 'tag'] 
+		                		]
+		                	)
+		                } 
+		            } catch (err) {
+                	    DEPLOY_DEV = "non"      
+                	}
+                	if ( "${DEPLOY_DEV}" == "oui" ) {
+					
+			        	build job: "utilitaire-nam-deploiement", parameters:[string(name: 'ENV', value: 'DEV'), string(name: 'TAG', value: "${TAG}")]
+		            	mail (to: "${NOTIFICATION_TEAM}",
+		                      subject: "Déploiement de utilitaire NAM", 
+		                      body: "La nouvelle version de utilitaire NAM a été déployée en DEV avec succès.")
+				        	}
+		        	else {
+		        	    currentBuild.getRawBuild().getExecutor().interrupt(Result.SUCCESS)
+		        	}
+		        }
+				milestone(ordinal: 18)
+			}
+        }
+        stage ("Lancer les tests d'intégrations en DEV") {
+            when {
+	        	expression {
+	        		return DEPLOY_DEV == "oui"
+	        	}
+            }
+            steps {
+				milestone(ordinal: 19)
+	        	build job: "utilitaire-nam-tests-integration", parameters:[string(name: 'ENV', value: 'DEV'), string(name: 'TAG', value: "${VERSION_TAG}")]
+				milestone(ordinal: 20)
 			}
         }
     }

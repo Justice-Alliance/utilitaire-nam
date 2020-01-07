@@ -150,6 +150,8 @@ pipeline {
         always {
             script {
                 equipe = "${NOTIFICATION_TEAM}"
+                sh "docker stop utilitairenamclair utilitairenamclairdb 2>/dev/null || echo clair supprime"
+                sh "rm -f ops/clairctl"	
             }
         }
         success {

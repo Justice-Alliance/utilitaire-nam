@@ -112,12 +112,12 @@ pipeline {
 	                	).trim()
 	       	   		sh "docker pull arminc/clair-db && docker pull arminc/clair-local-scan"
     	    		sh '''
-	                until $(curl --output /dev/null --silent --fail http://localhost:16065/v1/namespaces)
+	                until $(curl --output /dev/null --silent --fail http://localhost:16060/v1/namespaces)
 	                do 
 	      				docker inspect utilitairenamclairdb 2>/dev/null >/dev/null && echo utilitairenamclairdb est demarre || docker run -d --rm --name utilitairenamclairdb arminc/clair-db
 	                	printf '.'
 	                	sleep 5
-	    	    		docker inspect utilitairenamclair 2>/dev/null >/dev/null && echo utilitairenamclair est demarre || docker run -p 16065:6060 --link utilitairenamclairdb:postgres -d --rm --name utilitairenamclair arminc/clair-local-scan
+	    	    		docker inspect utilitairenamclair 2>/dev/null >/dev/null && echo utilitairenamclair est demarre || docker run -p 16060:6060 --link utilitairenamclairdb:postgres -d --rm --name utilitairenamclair arminc/clair-local-scan
 	    	    		sleep 5
 	                done
 	                '''      

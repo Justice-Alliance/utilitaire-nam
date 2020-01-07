@@ -108,7 +108,7 @@ pipeline {
 	                	).trim()
 	       	   		sh "docker pull arminc/clair-db && docker pull arminc/clair-local-scan"
     	    		sh '''
-	                until $(curl --output /dev/null --silent --fail http://localhost:16065/v1/namespaces)
+	                until $(curl --output /dev/null --silent --fail http://localhost:16060/v1/namespaces)
 	                do 
 	      				docker inspect utilitairenamclairdb 2>/dev/null >/dev/null && echo utilitairenamclairdb est demarre || docker run -d --rm --name utilitairenamclairdb arminc/clair-db
 	                	printf '.'
@@ -154,6 +154,8 @@ pipeline {
         always {
             script {
                 equipe = "${NOTIFICATION_TEAM}"
+                sh "docker stop utilitairenamclair utilitairenamclairdb 2>/dev/null || echo clair supprime"
+                sh "rm -f ops/clairctl"	
             }
         }
         success {

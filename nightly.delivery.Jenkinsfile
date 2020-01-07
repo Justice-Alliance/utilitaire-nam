@@ -100,11 +100,6 @@ pipeline {
                       subject: "Étiqueter Utilitaire-NAM", 
                       body: "La construction, le déploiement et les tests de utilitaire NAM on été réalisés avec succès. Voulez-vous étiqueter cette construction? ${env.JOB_URL}")
                 script {
-                	def VERSION
-		            def VERSION_TAG
-		            def VERSION_NEXT
-		            def VERSION_MESSAGE
-		            def TAG_CHOICE
                 	try {
 	                	timeout (time: 24, unit: "HOURS" ){
 		                	TAG_CHOICE = input(

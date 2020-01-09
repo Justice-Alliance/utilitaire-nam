@@ -23,14 +23,9 @@
 				<artifactId>vaadin-maven-plugin</artifactId>
 				<version>${vaadin.plugin.version}</version>
 
-				<!--configuration>
-					<extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
-					<webappDirectory>${basedir}/src/main/resources/VAADIN</webappDirectory>
-					<draftCompile>false</draftCompile>
-					<compileReport>false</compileReport>
-					<style>OBF</style>
-					<strict>true</strict>
-				</configuration-->
+				<!--configuration> <extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs> <webappDirectory>${basedir}/src/main/resources/VAADIN</webappDirectory> 
+					<draftCompile>false</draftCompile> <compileReport>false</compileReport> <style>OBF</style> 
+					<strict>true</strict> </configuration -->
 
 				<executions>
 					<execution>
@@ -110,7 +105,7 @@
 					</buildArgs>
 				</configuration>
 			</plugin>
-   		</plugins>
+		</plugins>
 	</build>
 
 	<dependencies>
@@ -139,6 +134,39 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
+		</dependency>
+		<!-- Micormeter core dependecy -->
+
+		<dependency>
+
+			<groupId>io.micrometer</groupId>
+
+			<artifactId>micrometer-core</artifactId>
+
+		</dependency>
+
+		<!-- Micrometer Prometheus registry -->
+
+		<dependency>
+
+			<groupId>io.micrometer</groupId>
+
+			<artifactId>micrometer-registry-prometheus</artifactId>
+
+		</dependency>
+		<!-- Micormeter core dependecy -->
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-core</artifactId>
+			<version>${micrometer.version}</version>
+		</dependency>
+
+		<!-- Micrometer Prometheus registry -->
+
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-prometheus</artifactId>
+			<version>${micrometer.version}</version>
 		</dependency>
 	</dependencies>
 

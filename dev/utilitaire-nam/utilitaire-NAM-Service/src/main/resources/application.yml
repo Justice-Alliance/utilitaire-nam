@@ -6,8 +6,6 @@ management:
     port: 28081
     address: 0.0.0.0
   endpoint:
-    shutdown:
-      enabled: true
     metrics:
       enabled: true
     prometheus:
@@ -19,4 +17,4 @@ management:
   endpoints:
     web:
       exposure:
-        include: "*"
+        include: health, prometheus, metrics

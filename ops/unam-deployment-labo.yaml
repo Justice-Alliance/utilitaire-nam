@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: unam
-        image: nexus3.inspq.qc.ca:5000/inspq/utilitaire-nam-service:0.8.2-SNAPSHOT
+        image: nexus3.inspq.qc.ca:5000/inspq/utilitaire-nam-service:latest
         ports:
         - containerPort: 8080
 

@@ -100,7 +100,7 @@
 					<tag>${project.version}</tag>
 					<buildArgs>
 						<JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
-						<APP_VERSION>${project.version}.jar</APP_VERSION>
+						<APP_VERSION>${project.version}</APP_VERSION>
 						<APP_HOME>/opt/${project.artifactId}</APP_HOME>
 					</buildArgs>
 				</configuration>

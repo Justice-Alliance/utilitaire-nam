@@ -116,12 +116,13 @@ Voici un exemple d'appel avec l'outil curl:
 
 Pour générer un numéro d'assurance Maladie, le service doit être utilisé avec le verbe GET, l'URI /nam/generer et les paramètres suivants sous forme de paramètre de requête (query params).
 
-Paramètre		Description
-nom				Nom de famille de l'usager pour lequel générer le NAM
-prenom			Prénom de l'usager
-sexe			Code de sexe de l'usager
-datenaissance	Date de naissance de l'usager en format AAAA-MM-JJ
-province		Code de province du NAM à générer
+| Paramètre     | Description                                             |
+|---------------|---------------------------------------------------------|
+| nom           | Nom de famille de l'usager pour lequel générer le NAM   |
+| prenom        | Prénom de l'usager                                      |
+| sexe          | Code de sexe de l'usager                                |
+| datenaissance | Date de naissance de l'usager en format AAAA-MM-JJ      |
+| province      | Code de province du NAM à générer                       |
 
 Le service retourne un liste de NAM valide pour les paramètres fournis en format JSON.
 
@@ -139,14 +140,16 @@ Voici un exemple d'appel avec l'outil curl:
 
 Pour obtenir les informations sur un numéro d'assurance Maladie, le service doit être utilisé avec le verbe GET, l'URI /nam/info et les paramètres suivants sous forme de paramètre de requête (query params).
 
-Paramètre	Description
-nam			Numéro d'assurance maladie pour lequel obtenir les infromations
+| Paramètre | Description                                                    |
+|-----------|----------------------------------------------------------------|
+| nam       | Numéro d'assurance maladie pour lequel obtenir les infromations|
 
 Le service retourne les informations suivante à propos du NAM en format JSON:
 
-Champ			Description
-dateNaissance	Date de naissance de l'usager
-sexe			Sexe de l'usager. Les valeurs possibles sont MASCULIN ou FEMININ
+| Champ         | Description                                                      |
+|---------------|------------------------------------------------------------------|
+| dateNaissance | Date de naissance de l'usager                                    |
+| sexe          | Sexe de l'usager. Les valeurs possibles sont MASCULIN ou FEMININ |
 
 Pour obtenir les informations sur un NAM, utiliser une requête du verbe GET ayant le format suivant:
 
@@ -205,29 +208,31 @@ Codes de sexes
 
 Voici les codes de sexes disponible:
 
-Code	Sexe
-M		Masculin
-F		Féminin
+| Code | Sexe     |
+|------|----------|
+| M    | Masculin |
+| F    | Féminin  |
 
 Codes des provinces
 ===================
 
 Voici la liste des codes de provinces:
 
-Code	Province
-AB		Alberta
-BC		Colombie Britannique
-PE		Île-du-Prince-Édourad
-MB		Manitoba
-NB		Nouveau-Brunswick
-NS		Nouvelle-Écosse
-NU		Nunavut
-ON		Ontario
-QC		Québec
-SK		Saskatchewan
-NL		Terre-Neuve-et-Labrador
-NT		Territoires-du-Nord-Ouest
-YK		Yukon
+| Code | Province                  |
+|------|---------------------------|
+| AB   | Alberta                   |
+| BC   | Colombie Britannique      |
+| PE   | Île-du-Prince-Édourad     |
+| MB   | Manitoba                  |
+| NB   | Nouveau-Brunswick         |
+| NS   | Nouvelle-Écosse           |
+| NU   | Nunavut                   |
+| ON   | Ontario                   |
+| QC   | Québec                    |
+| SK   | Saskatchewan              |
+| NL   | Terre-Neuve-et-Labrador   |
+| NT   | Territoires-du-Nord-Ouest |
+| YK   | Yukon                     |
 
 Développement
 =============

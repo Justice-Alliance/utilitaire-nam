@@ -24,9 +24,9 @@ Utilitaire NAM est, comme le nom l'indique, un outil permettant de manipuler les
 
 Il a été conçu pour être utilisé par les applications en offrant un API REST ayant les fonctionnalités suivantes:
 
-1.  Valider un numéro d'assurance maladie pour une des province Canadienne.
-2.  Générer un numéro d'assurance maladie fictif pour une des provinces Canadienne.
-3.  Donner les informations à propos d'un numéro d'assurance maladie pour une des province Canadienne.
+1.  Valider un numéro d'assurance maladie pour une des provinces Canadiennes.
+2.  Générer un numéro d'assurance maladie fictif pour une des provinces Canadiennes.
+3.  Donner les informations à propos d'un numéro d'assurance maladie pour une des provinces Canadiennes.
 
 L'outil inclus également un interface utilisateur Web.
 
@@ -34,7 +34,7 @@ Le code source de l'application est disponible sur la Forge Gouvernementale dans
 
 L'URL de base d'utilitaire NAM en production est [https://unam.santepublique.rtss.qc.ca.](https://unam.santepublique.rtss.qc.ca)
 
-L'application a été déployé pour assurer un haute disponibilité du service. Les services web peuvent donc être utilisé par les applications ayant une cote de 4 en disponibilité.
+L'application a été déployé pour assurer un haute disponibilité du service. Les services web peuvent donc être utilisés par les applications qui ont des besoins élevés en disponibilité.
 
 Pour la confidentialité, le protocole TLS est utilisé pour chiffrer les communications avec le service et aucune donnée n'est stockée par utilitaire NAM.
 
@@ -43,13 +43,13 @@ Intégration et déploiement en continue
 
 Utilitaire NAM est géré en mode dev/ops. Ce projet est utilisé comme cobail pour introduire les meilleurs pratiques dans la gestion d'un produit en DEV/OPS.
 
-La gestion du cycle de vie d'utilitaire NAM se fait par des pipelines dans Jenkins. Les trois principaux pipelines sont les suivant:
+La gestion du cycle de vie d'utilitaire NAM se fait par des pipelines dans Jenkins. Les trois principaux pipelines sont les suivants:
 
 ## Pipeline utilitaire-nam-livraison
 
 Ce Pipeline s'exécuter lorsqu'un commit est fait dans le projet.
 
-Il fait la construction, l'exécution des tests unitaires, l'exécution des tests du domaine (Cucumber) et le déploiement en DEV3
+Il fait la construction, l'exécution des tests unitaires, l'exécution des tests du domaine (Cucumber) et le déploiement en DEV3.
 
 [https://jenkins.dev.inspq.qc.ca/job/utilitaire-nam/job/utilitaire-nam-livraison/](https://jenkins.dev.inspq.qc.ca/job/utilitaire-nam/job/utilitaire-nam-livraison/)
 
@@ -57,9 +57,9 @@ Il fait la construction, l'exécution des tests unitaires, l'exécution des test
 
 Ce pipeline s'exécute à tous les soirs.
 
-En plus des opérations du pipeline de livraison précédent, il fais les tests de sécurités de l'image, l'analyse statique de code, l'analyse SonarQube, le déploiement dans les environnements DEV3, DEV2, les tests d'intégrations et offre la possibilité de faire un étiquetage (tag) de la version.
+En plus des opérations du pipeline de livraison précédent, il fait le balayage de sécurités de l'image, l'analyse statique de code, l'analyse SonarQube, le déploiement dans les environnements DEV3, DEV2, les tests d'intégrations et offre la possibilité de faire un étiquetage (tag) de la version.
 
-Si une nouvel étiquette est créé, le pipeline demande au pilote s'il doit déployer dans l'environnement DEV. Si oui l'application est déployé en DEV et les tests d'intégration sont lancés.
+Si une nouvelle étiquette est créé, le pipeline demande au pilote s'il doit déployer dans l'environnement DEV. Si oui l'application est déployé en DEV et les tests d'intégrations sont lancés.
 
 [https://jenkins.dev.inspq.qc.ca/job/utilitaire-nam/job/utilitaire-nam-livraison-nuit/](https://jenkins.dev.inspq.qc.ca/job/utilitaire-nam/job/utilitaire-nam-livraison-nuit/)
 
@@ -67,7 +67,7 @@ Si une nouvel étiquette est créé, le pipeline demande au pilote s'il doit dé
 
 Ce pipeline s'exécute lorsqu'un nouvel étiquetage (tag) de l'application est fait.
 
-Il déploie l'application dans les environnements PP et PROD et exécute les tests d'intégration. L'application n'est déployé, dans chacun des environnements, que si le pilote confirme à partir de l'interface utilisateur de Jenkins.
+Il déploie l'application dans les environnements PP et PROD et exécute les tests d'intégrations. L'application n'est déployée, dans chacun des environnements, que si le pilote confirme à partir de l'interface utilisateur de Jenkins.
 
 [https://jenkins.inspq.qc.ca/job/utilitaire-nam/job/utilitaire-nam-livraison-prod/](https://jenkins.inspq.qc.ca/job/utilitaire-nam/job/utilitaire-nam-livraison-prod/)
 
@@ -80,7 +80,7 @@ Utilitaire NAM peut-être utilisé de 3 manières:
 *   API JAVA en artefact Maven,
 *   interface utilisateur Web.
 
-L'utilisation du service Web est privilégié car elle minimise les dépendances entre l'application développée et le cycle d'évolution d'utilitaire NAM.
+L'utilisation du service Web est privilégiée car elle minimise les dépendances entre l'application développée et le cycle d'évolution d'utilitaire NAM.
 
 Service Web
 -----------
@@ -89,7 +89,7 @@ Voici les trois cas d'utilisation de l'application:
 
 ### Valider un numéro d'assurance maladie.
 
-Pour valider un numéro d'assurance Maladie, le service doit être utilisé avec le verbe GET, l'URI /nam/valider et les paramètres suivants sous forme de paramètre de requête (query params).
+Pour valider un numéro d'assurance Maladie, le service doit être utilisé avec le verbe GET, l'URI /nam/valider et les paramètres suivants sous forme de paramètres de requête (query params).
 
 Paramètre	Description
 nam			Numéro d'assurance maladie à valider
@@ -114,7 +114,7 @@ Voici un exemple d'appel avec l'outil curl:
 
 ### Générer un numéro d'assurance maladie
 
-Pour générer un numéro d'assurance Maladie, le service doit être utilisé avec le verbe GET, l'URI /nam/generer et les paramètres suivants sous forme de paramètre de requête (query params).
+Pour générer un numéro d'assurance Maladie, le service doit être utilisé avec le verbe GET, l'URI /nam/generer et les paramètres suivants sous forme de paramètres de requête (query params).
 
 | Paramètre     | Description                                             |
 |---------------|---------------------------------------------------------|
@@ -138,7 +138,7 @@ Voici un exemple d'appel avec l'outil curl:
 
 ### Obtenir les informations sur un NAM
 
-Pour obtenir les informations sur un numéro d'assurance Maladie, le service doit être utilisé avec le verbe GET, l'URI /nam/info et les paramètres suivants sous forme de paramètre de requête (query params).
+Pour obtenir les informations sur un numéro d'assurance Maladie, le service doit être utilisé avec le verbe GET, l'URI /nam/info et les paramètres suivants sous forme de paramètres de requête (query params).
 
 | Paramètre | Description                                                    |
 |-----------|----------------------------------------------------------------|

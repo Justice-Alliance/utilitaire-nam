@@ -4,19 +4,19 @@ kind: Deployment
 metadata:
   name: unam-deployment
   labels:
-    app: unam
+    app: unam-service
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: unam
+      app: unam-service
   template:
     metadata:
       labels:
-        app: unam
+        app: unam-service
     spec:
       containers:
-      - name: unam
+      - name: unam-service
         image: nexus3.inspq.qc.ca:5000/inspq/utilitaire-nam-service:latest
         ports:
         - containerPort: 8080
@@ -26,13 +26,22 @@ apiVersion: v1
 kind: Service
 metadata:
   name: unam-service
+  labels:
+    serviceapp: actuator
+  annotations:
+    prometheus.io/scrape: 'true'
 spec:
   selector:
-    app: unam
+    app: unam-service
   ports:
-    - protocol: TCP
-      port: 14050
+    - name: web
+      protocol: TCP
+      port: 14101
       targetPort: 8080
+    - name: actuator
+      protocol: TCP
+      port: 27082
+      targetPort: 28081
 ---
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
@@ -48,4 +57,19 @@ spec:
       - path: /
         backend:
           serviceName: unam-service
-          servicePort: 14050
+          servicePort: 14101
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: actuator
+  labels:
+    release: prometheuslabo
+spec:
+  selector:
+    matchLabels:
+      serviceapp: actuator
+  endpoints:
+  - port: actuator
+    path: '/actuator/prometheus'
+    interval: 15s

@@ -97,10 +97,11 @@ province	Province qui a émis le numéro d'assurance maladie.
 
 La réponse retourné par le service est:
 
-Réponse		Description
-true		Le NAM est valide
-false		Le NAM n'est pas valide
-code 400	Message d'erreur lorsque les paramètres ne sont pas valides.
+| Réponse | Description                                                 |
+|---------|-------------------------------------------------------------|
+| true	  | Le NAM est valide                                           |
+| false	  | Le NAM n'est pas valide                                     |
+| code 400|	Message d'erreur lorsque les paramètres ne sont pas valides.|
 
 Pour valider un NAM, utiliser une requête du verbe GET ayant le format suivant:
 

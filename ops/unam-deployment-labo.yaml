@@ -40,6 +40,8 @@ metadata:
     serviceapp: actuator
   annotations:
     prometheus.io/scrape: 'true'
+    prometheus.io/path: "/actuator/prometheus"
+    prometheus.io/port: "27082"
 spec:
   selector:
     app: unam-service
@@ -52,6 +54,15 @@ spec:
       protocol: TCP
       port: 27082
       targetPort: 28081
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  namespace: unam
+  name: unam-service
+  labels:
+    account: unam
+    
 ---
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
@@ -76,7 +87,7 @@ metadata:
   namespace: unam
   name: actuator
   labels:
-    release: prometheuslabo
+    release: istio
 spec:
   selector:
     matchLabels:
@@ -85,3 +96,44 @@ spec:
   - port: actuator
     path: '/actuator/prometheus'
     interval: 15s
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  namespace: unam
+  name: unam-gateway
+spec:
+  selector:
+    istio: ingressgateway # use istio default controller
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - '*'
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  namespace: unam
+  name: unam-virtual-service
+spec:
+  hosts:
+  - '*'
+  gateways:
+  - unam-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /nam/valider
+    - uri:
+        prefix: /nam/genrer
+    - uri:
+        prefix: /nam/info
+
+    route:
+    - destination:
+        host: unam-service
+        port:
+          number: 14101

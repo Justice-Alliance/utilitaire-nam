@@ -85,9 +85,13 @@ pipeline {
             	    	script: "ansible unam -m debug -i ops/${env.ENV}/${ENV}.hosts -a 'var=unamservice_url' -o | awk -F'>' '{print \$2}'|jq -r .unamservice_url|tail -1",
             	    	returnStdout: true
             	    ).trim()
-            	}
-
-		    	sh "export UNAM_BASE_URL=${UNAM_BASE_URL} && nosetests --with-xunit --xunit-file=nosetests-unam.xml ops/tests/integration/test*.py"
+            	
+			    	try {
+				    	sh "export UNAM_BASE_URL=${UNAM_BASE_URL} && nosetests --with-xunit --xunit-file=nosetests-unam.xml ops/tests/integration/test*.py"
+	        		} catch (err) {
+	        			unstable("Échec dans les tests d'intégration")
+	        		}
+				}
             }
             post {
                 success {

@@ -60,7 +60,7 @@ public class Personne {
 	private String transformerNom(String texte) {
 		try {
 			StringBuffer sb = new StringBuffer(texte.toUpperCase());
-			sb = replaceAll(sb, "STE-|STE |SAINT-|SAINT |SAINTE-|SAINTE ", "ST");
+			sb = replaceAll(sb, "STE-|STE |SAINT-|SAINT |SAINTE-|SAINTE |SAINTS-|SAINTS |SAINTES-|SAINTES ", "ST");
 			return sb.toString();
 		}
 		catch (NullPointerException e) {

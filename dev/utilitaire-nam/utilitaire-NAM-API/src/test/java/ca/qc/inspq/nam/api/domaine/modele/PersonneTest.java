@@ -35,12 +35,24 @@ public class PersonneTest {
 	private static final String NOM_SAINTE_TIRET_NORMALISE = "STFOY";
 	private static final String NOM_SAINTE_ESPACE = "Sainte Léa";
 	private static final String NOM_SAINTE_ESPACE_NORMALISE = "STLEA";
+	private static final String NOM_SAINTS_TIRET = "Saints-Martyr";
+	private static final String NOM_SAINTS_TIRET_NORMALISE = "STMARTYR";
+	private static final String NOM_SAINTS_ESPACE = "Saints Papes";
+	private static final String NOM_SAINTS_ESPACE_NORMALISE = "STPAPES";
+	private static final String NOM_SAINTES_TIRET = "Saintes-Dames";
+	private static final String NOM_SAINTES_TIRET_NORMALISE = "STDAMES";
+	private static final String NOM_SAINTES_ESPACE = "Saintes soeurs";
+	private static final String NOM_SAINTES_ESPACE_NORMALISE = "STSOEURS";
 	private static final String NOM_COMMENCANT_PAR_STE = "Stellard";
 	private static final String NOM_COMMENCANT_PAR_STE_NORMALISE = "STELLARD";
 	private static final String NOM_COMMENCANT_PAR_SAINT = "Saintdoux";
 	private static final String NOM_COMMENCANT_PAR_SAINT_NORMALISE = "SAINTDOUX";
 	private static final String NOM_COMMENCANT_PAR_SAINTE = "Saintetique";
 	private static final String NOM_COMMENCANT_PAR_SAINTE_NORMALISE = "SAINTETIQUE";
+	private static final String NOM_COMMENCANT_PAR_SAINTS = "Saintsort";
+	private static final String NOM_COMMENCANT_PAR_SAINTS_NORMALISE = "SAINTSORT";
+	private static final String NOM_COMMENCANT_PAR_SAINTES = "Saintesoie";
+	private static final String NOM_COMMENCANT_PAR_SAINTES_NORMALISE = "SAINTESOIE";
 	
 	private static final int ANNEE = 1978;
 	private static final int MOIS = 5;
@@ -109,6 +121,30 @@ public class PersonneTest {
 	}
 	
 	@Test
+	public void quandJobtiensLeNomNormaliseDunePersonneDontLeNomCommenceParSaintsSuiviDunTiret_alorsLeNomNormaliseContientSTSansTiret() {
+		var personne = new Personne(PRENOM, NOM_SAINTS_TIRET, DATE_NAISSANCE, Sexe.MASCULIN);
+		assertThat(personne.getNomNormalise()).isNotNull().isEqualTo(NOM_SAINTS_TIRET_NORMALISE);
+	}
+	
+	@Test
+	public void quandJobtiensLeNomNormaliseDunePersonneDontLeNomCommenceParSaintsSuiviDunEspace_alorsLeNomNormaliseContientSTSansEspace() {
+		var personne = new Personne(PRENOM, NOM_SAINTS_ESPACE, DATE_NAISSANCE, Sexe.MASCULIN);
+		assertThat(personne.getNomNormalise()).isNotNull().isEqualTo(NOM_SAINTS_ESPACE_NORMALISE);
+	}
+	
+	@Test
+	public void quandJobtiensLeNomNormaliseDunePersonneDontLeNomCommenceParSaintesSuiviDunTiret_alorsLeNomNormaliseContientSTSansTiret() {
+		var personne = new Personne(PRENOM, NOM_SAINTES_TIRET, DATE_NAISSANCE, Sexe.MASCULIN);
+		assertThat(personne.getNomNormalise()).isNotNull().isEqualTo(NOM_SAINTES_TIRET_NORMALISE);
+	}
+	
+	@Test
+	public void quandJobtiensLeNomNormaliseDunePersonneDontLeNomCommenceParSaintesSuiviDunEspace_alorsLeNomNormaliseContientSTSansEspace() {
+		var personne = new Personne(PRENOM, NOM_SAINTES_ESPACE, DATE_NAISSANCE, Sexe.MASCULIN);
+		assertThat(personne.getNomNormalise()).isNotNull().isEqualTo(NOM_SAINTES_ESPACE_NORMALISE);
+	}
+	
+	@Test
 	public void quandJobtiensLeNomNormaliseDunePersonneDontLeNomCommenceParSte_alorsLeNomNormaliseCommenceParSTE() {
 		var personne = new Personne(PRENOM, NOM_COMMENCANT_PAR_STE, DATE_NAISSANCE, Sexe.MASCULIN);
 		assertThat(personne.getNomNormalise()).isNotNull().isEqualTo(NOM_COMMENCANT_PAR_STE_NORMALISE);
@@ -124,5 +160,17 @@ public class PersonneTest {
 	public void quandJobtiensLeNomNormaliseDunePersonneDontLeNomCommenceParSainte_alorsLeNomNormaliseCommenceParSAI() {
 		var personne = new Personne(PRENOM, NOM_COMMENCANT_PAR_SAINTE, DATE_NAISSANCE, Sexe.MASCULIN);
 		assertThat(personne.getNomNormalise()).isNotNull().isEqualTo(NOM_COMMENCANT_PAR_SAINTE_NORMALISE);
+	}
+	
+	@Test
+	public void quandJobtiensLeNomNormaliseDunePersonneDontLeNomCommenceParSaints_alorsLeNomNormaliseCommenceParSAI() {
+		var personne = new Personne(PRENOM, NOM_COMMENCANT_PAR_SAINTS, DATE_NAISSANCE, Sexe.MASCULIN);
+		assertThat(personne.getNomNormalise()).isNotNull().isEqualTo(NOM_COMMENCANT_PAR_SAINTS_NORMALISE);
+	}
+	
+	@Test
+	public void quandJobtisnLeNomNormaliseDunePersonneDontLeNomCommenceParSaintes_alorsLeNomNormaliseCommenceParSAI() {
+		var personne = new Personne(PRENOM, NOM_COMMENCANT_PAR_SAINTES, DATE_NAISSANCE, Sexe.MASCULIN);
+		assertThat(personne.getNomNormalise()).isNotNull().isEqualTo(NOM_COMMENCANT_PAR_SAINTES_NORMALISE);
 	}
 }

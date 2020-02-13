@@ -59,9 +59,9 @@ public class Personne {
 	
 	private String transformerNom(String texte) {
 		try {
-			String texteTransforme = texte.toUpperCase().replace("STE ", "ST").replace("STE-", "ST").replace("SAINT ", "ST").replace("SAINT-", "ST")
-					.replace("SAINTE ", "ST").replace("SAINTE-", "ST");
-			return texteTransforme;
+			StringBuffer sb = new StringBuffer(texte.toUpperCase());
+			sb = replaceAll(sb, "STE-|STE |SAINT-|SAINT |SAINTE-|SAINTE ", "ST");
+			return sb.toString();
 		}
 		catch (NullPointerException e) {
 			return null;

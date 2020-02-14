@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>ca.qc.inspq</groupId>
 		<artifactId>utilitaire-nam</artifactId>
-		<version>1.0.0</version>
+		<version>1.0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>utilitaire-nam-api</artifactId>
 

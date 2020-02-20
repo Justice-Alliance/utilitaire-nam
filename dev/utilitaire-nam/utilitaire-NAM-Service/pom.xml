@@ -168,6 +168,12 @@
 			<artifactId>micrometer-registry-prometheus</artifactId>
 			<version>${micrometer.version}</version>
 		</dependency>
+
+		<dependency>
+			<groupId>io.opentracing.contrib</groupId>
+			<artifactId>opentracing-spring-jaeger-web-starter</artifactId>
+			<version>2.0.3</version>
+		</dependency>
 	</dependencies>
 
 	<dependencyManagement>

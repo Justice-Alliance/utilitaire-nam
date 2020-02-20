@@ -136,25 +136,6 @@
 			<artifactId>commons-lang3</artifactId>
 		</dependency>
 		<!-- Micormeter core dependecy -->
-
-		<dependency>
-
-			<groupId>io.micrometer</groupId>
-
-			<artifactId>micrometer-core</artifactId>
-
-		</dependency>
-
-		<!-- Micrometer Prometheus registry -->
-
-		<dependency>
-
-			<groupId>io.micrometer</groupId>
-
-			<artifactId>micrometer-registry-prometheus</artifactId>
-
-		</dependency>
-		<!-- Micormeter core dependecy -->
 		<dependency>
 			<groupId>io.micrometer</groupId>
 			<artifactId>micrometer-core</artifactId>

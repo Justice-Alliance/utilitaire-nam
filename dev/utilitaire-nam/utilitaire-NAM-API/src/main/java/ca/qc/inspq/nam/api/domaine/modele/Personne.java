@@ -24,7 +24,8 @@ public class Personne {
 	}
 	
 	public String getNomNormalise() {
-		return normaliserRAMQ(nom);
+		String nomTransforme = transformerNom(nom);
+		return normaliserRAMQ(nomTransforme);
 	}	
 	
 	private String normaliserRAMQ(String text) {
@@ -40,7 +41,7 @@ public class Personne {
         sb = replaceAll(sb, "[ç]", "c");
         sb = replaceAll(sb, "[ñ]", "n");
         sb = replaceAll(sb, "[^0-9a-z%]", "");
-        return sb.toString().toUpperCase().replace("SAINTE", "ST").replace("SAINT", "ST");
+        return sb.toString().toUpperCase();
     }
 	
 	private StringBuffer replaceAll(StringBuffer sb, String patron, String remplacant) {
@@ -55,4 +56,15 @@ public class Personne {
 
         return sbOut;
     }
+	
+	private String transformerNom(String texte) {
+		try {
+			StringBuffer sb = new StringBuffer(texte.toUpperCase());
+			sb = replaceAll(sb, "STE-|STE |SAINT-|SAINT |SAINTE-|SAINTE |SAINTS-|SAINTS |SAINTES-|SAINTES ", "ST");
+			return sb.toString();
+		}
+		catch (NullPointerException e) {
+			return null;
+		}
+	}
 }

@@ -80,7 +80,7 @@
 								-Dfile.encoding=UTF8</argLine>
 						</configuration>
 					</execution>
-					<execution>
+					<!-- execution>
 						<id>services-acceptance-tests</id>
 						<goals>
 							<goal>test</goal>
@@ -89,11 +89,10 @@
 							<includes>
 								<include>**/RunCucumberTest.java</include>
 							</includes>
-							<argLine>-Dcucumber.options="--tags ~@IgnorePourServices --tags
-								~@Ignore" -Dacceptance-test-depth=behavior-services
+							<argLine>-Dcucumber.filter.tags=~@IgnorePourServices -Dcucumber.filter.tags=~@Ignore -Dacceptance-test-depth=behavior-services
 								-Dfile.encoding=UTF8</argLine>
 						</configuration>
-					</execution>
+					</execution-->
 				</executions>
 			</plugin>
 			<plugin>

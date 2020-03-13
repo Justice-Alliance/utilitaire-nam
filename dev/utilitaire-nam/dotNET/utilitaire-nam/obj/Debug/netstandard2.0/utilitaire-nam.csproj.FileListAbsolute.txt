@@ -1,0 +1,14 @@
+C:\Code\UtilitaireNam\utilitaire-nam\utilitaire-nam\obj\Debug\netstandard2.0\utilitaire-nam.AssemblyInfoInputs.cache
+C:\Code\UtilitaireNam\utilitaire-nam\utilitaire-nam\obj\Debug\netstandard2.0\utilitaire-nam.AssemblyInfo.cs
+C:\Code\UtilitaireNam\utilitaire-nam\utilitaire-nam\bin\Debug\netstandard2.0\utilitaire-nam.deps.json
+C:\Code\UtilitaireNam\utilitaire-nam\utilitaire-nam\bin\Debug\netstandard2.0\utilitaire-nam.dll
+C:\Code\UtilitaireNam\utilitaire-nam\utilitaire-nam\bin\Debug\netstandard2.0\utilitaire-nam.pdb
+C:\Code\UtilitaireNam\utilitaire-nam\utilitaire-nam\obj\Debug\netstandard2.0\utilitaire-nam.dll
+C:\Code\UtilitaireNam\utilitaire-nam\utilitaire-nam\obj\Debug\netstandard2.0\utilitaire-nam.pdb
+C:\Code\utilitaire-nam\dev\utilitaire-nam\dotNET\utilitaire-nam\bin\Debug\netstandard2.0\utilitaire-nam.deps.json
+C:\Code\utilitaire-nam\dev\utilitaire-nam\dotNET\utilitaire-nam\bin\Debug\netstandard2.0\utilitaire-nam.dll
+C:\Code\utilitaire-nam\dev\utilitaire-nam\dotNET\utilitaire-nam\bin\Debug\netstandard2.0\utilitaire-nam.pdb
+C:\Code\utilitaire-nam\dev\utilitaire-nam\dotNET\utilitaire-nam\obj\Debug\netstandard2.0\utilitaire-nam.AssemblyInfoInputs.cache
+C:\Code\utilitaire-nam\dev\utilitaire-nam\dotNET\utilitaire-nam\obj\Debug\netstandard2.0\utilitaire-nam.AssemblyInfo.cs
+C:\Code\utilitaire-nam\dev\utilitaire-nam\dotNET\utilitaire-nam\obj\Debug\netstandard2.0\utilitaire-nam.dll
+C:\Code\utilitaire-nam\dev\utilitaire-nam\dotNET\utilitaire-nam\obj\Debug\netstandard2.0\utilitaire-nam.pdb

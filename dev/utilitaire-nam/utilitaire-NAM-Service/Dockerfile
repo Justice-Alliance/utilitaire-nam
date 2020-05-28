@@ -20,4 +20,6 @@ ADD docker-entrypoint.sh ${APP_HOME}/docker-entrypoint.sh
 RUN chmod a+x ${APP_HOME}/docker-entrypoint.sh
 EXPOSE ${SERVER_PORT} ${MANAGEMENT_SERVER_PORT}
 
+HEALTHCHECK --interval=5s --timeout=3s CMD curl --silent http://localhost:${MANAGEMENT_SERVER_PORT}/actuator/health | grep '{"status":"UP"}'
+
 ENTRYPOINT ${APP_HOME}/docker-entrypoint.sh

@@ -93,5 +93,4 @@ class unamIntegrationTest(unittest.TestCase):
             "nam": usager["nam"]
         }
         rep = requests.get(url=self.unam_base_url+self.info_uri, params=params)
-        resultat = rep.json()
-        self.assertEqual(resultat["message"], "Le NAM est invalide", "Erreur obtenir les info: le nam " + usager["nam"] + " est valide")
+        self.assertEqual(rep.status_code, 400, "Le code de retour pour le endpoint ifo avec un nam invalide devrait être 400: {}".format(str(rep.status_code)))

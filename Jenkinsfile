@@ -62,17 +62,17 @@ pipeline {
                             // Annuler les modifications faites au fichier pom par la première étape
                             sh "git checkout -- **/pom.xml"
                             
-                    }  catch(error) {
-                                        if (currentBuild.result == 'FAILURE') {
-                                            retry(2) {
+                    }   catch(error) {
+                                        retry(2) {
+                                                    input "Retry job"
                                                     build "${env.BUILD_NUMBER}"
-                                            }
-                                        }                                   
-                        }       
+                                        }
+                        }                                   
+                               
                 }                        	
                       
             }
-           
+        }  
 
             post {
                 success {

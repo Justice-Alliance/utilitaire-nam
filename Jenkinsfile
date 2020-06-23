@@ -69,7 +69,7 @@ pipeline {
                                             }
                                         }
                                         else {
-                                            echo "${env.BUILD_NUMBER} is suucesfull"
+                                            echo "${env.BUILD_NUMBER}"
                                         }
                         }
                 }                        	

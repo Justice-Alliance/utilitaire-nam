@@ -54,7 +54,7 @@ pipeline {
 	                 // 1. option de nouvelle tentative pour les étapes ayant échoué 
                     try {
 
-                            build "Build ID: ${env.BUILD_ID}"
+                            build "${env.BUILD_NUMBER}"
                             // Configurer le numéro de version pour utiliser le nom de la branche si on est pas sur master
                             sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${VERSION} -f dev/utilitaire-nam/pom.xml"
                             sh "mvn clean install -Dprivate-repository=${MVN_REPOSITORY} -f dev/utilitaire-nam/pom.xml"
@@ -63,10 +63,13 @@ pipeline {
                             sh "git checkout -- **/pom.xml"
                             
                     }  catch(error) {
-                                        echo "First build failed, try again if allow!"
-                                        retry(2) {
-                                                    input "Retry the job"
-                                                    build "Build ID: ${env.BUILD_ID}"
+                                        if failure (("First build failed, try again if allow!")) {
+                                            retry(2) {
+                                                    build "${env.BUILD_NUMBER}"
+                                            }
+                                        }
+                                        else {
+                                            echo "${env.BUILD_NUMBER} is suucesfull"
                                         }
                         }
                 }                        	

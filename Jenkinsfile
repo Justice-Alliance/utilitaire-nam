@@ -50,10 +50,8 @@ pipeline {
 	                	script: 'if [ "$(git describe --exact-match HEAD 2>>/dev/null || git rev-parse --abbrev-ref HEAD)" == "master" ]; then mvn -f dev/utilitaire-nam/pom.xml -q -Dexec.executable="echo" -Dexec.args=\'${project.version}\' --non-recursive exec:exec 2>/dev/null; else git describe --exact-match HEAD 2>>/dev/null || git rev-parse --abbrev-ref HEAD; fi',
 	                	returnStdout: true
 	                	).trim()
-                }                        	
-            
-                      
-                    // 1. option de nouvelle tentative pour les étapes ayant échoué 
+	                	
+	                 // 1. option de nouvelle tentative pour les étapes ayant échoué 
                     try {
 
                             build "Build ID: ${env.BUILD_ID}"
@@ -64,13 +62,15 @@ pipeline {
                             // Annuler les modifications faites au fichier pom par la première étape
                             sh "git checkout -- **/pom.xml"
                             
-                    }   catch(error) {
+                    }  catch(error) {
                                         echo "First build failed, try again if allow!"
                                         retry(2) {
-                                        input "Retry the job"
-                                        build "Build ID: ${env.BUILD_ID}"
+                                                    input "Retry the job"
+                                                    build "Build ID: ${env.BUILD_ID}"
                                         }
                         }
+                }                        	
+                      
             } 
 
             post {

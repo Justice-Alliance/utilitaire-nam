@@ -70,18 +70,24 @@ pipeline {
                                         }
                                         else {
                                             echo "${env.BUILD_NUMBER}"
-                                        }
+                                            post {
+                                                   success {
+                                                            archive '**/target/*.jar'
+                                                            junit '**/target/surefire-reports/TEST-*.xml'
+                                                    }
+                                            }
                         }
                 }                        	
                       
-            } 
-
-            post {
-                success {
-                    archive '**/target/*.jar'
-                    junit '**/target/surefire-reports/TEST-*.xml'
-                }
             }
+           
+
+        //    post {
+        //       success {
+        //            archive '**/target/*.jar'
+        //            junit '**/target/surefire-reports/TEST-*.xml'
+        //        }
+        //    }
         }
         stage ("Publier le résultats des tests et la documentation Cucumber API") {
         	steps {

@@ -66,16 +66,27 @@ pipeline {
                             
                             
                         }   catch(error) {
-                                            retry(2) {
-                                                        input "Retry job"
-                                                        false
+                                            timeout(time:120, unit:'SECONDS'){
+                                                retry(2) {
+                                                    // Configurer le numéro de version pour utiliser le nom de la branche si on est pas sur master
+                                                    sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${VERSION} -f dev/utilitaire-nam/pom.xml"
+                                                    sh "mvn clean install -Dprivate-repository=${MVN_REPOSITORY} -f dev/utilitaire-nam/pom.xml"
+                                                    sh "mvn deploy -Dmaven.install.skip=true -DskipTests -Dprivate-repository=${MVN_REPOSITORY} -Ddockerfile.skip=false -f dev/utilitaire-nam/pom.xml"
+                                                    // Annuler les modifications faites au fichier pom par la première étape
+                                                    sh "git checkout -- **/pom.xml" 
+
+                                                }
                                             }
+                                           
+
+                                               
+                            }
                         }
                     }                                   
                                
                 }                        	
                       
-            }
+            
           
 
             post {

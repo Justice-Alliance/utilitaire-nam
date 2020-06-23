@@ -62,13 +62,13 @@ pipeline {
                     
                     waitUntil{
                         try {
-                            build "${env.BUILD_NUMBER}"
+                            build "${env.JOB_NAME}"
                             
                             
                         }   catch(error) {
                                             retry(2) {
                                                         input "Retry job"
-                                                        build "${env.BUILD_NUMBER}"
+                                                        false
                                             }
                         }
                     }                                   

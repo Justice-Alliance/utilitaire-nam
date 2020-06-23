@@ -63,7 +63,7 @@ pipeline {
                             sh "git checkout -- **/pom.xml"
                             
                     }  catch(error) {
-                                        if failure (("First build failed, try again if allow!")) {
+                                        if (currentBuild.result = 'FAILURE') {
                                             retry(2) {
                                                     build "${env.BUILD_NUMBER}"
                                             }

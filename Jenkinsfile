@@ -52,7 +52,8 @@ pipeline {
 	                	).trim()
 	                	
 	                 // 1. option de nouvelle tentative pour les étapes ayant échoué 
-                    try {
+	               waitUntil {
+                        try {
 
                             build "${env.BUILD_NUMBER}"
                             // Configurer le numéro de version pour utiliser le nom de la branche si on est pas sur master
@@ -62,16 +63,17 @@ pipeline {
                             // Annuler les modifications faites au fichier pom par la première étape
                             sh "git checkout -- **/pom.xml"
                             
-                    }   catch(error) {
+                        }       catch(error) {
                                         retry(2) {
                                                     input "Retry job"
-                                                    build "${env.BUILD_NUMBER}"
+                                                    false
                                         }
-                        }                                   
+                                }                                   
                                
-                }                        	
+                    }                        	
                       
-            }
+                }
+            }    
           
 
             post {

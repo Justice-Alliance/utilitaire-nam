@@ -45,30 +45,18 @@ pipeline {
         } 
         stage ('Construire et publier la version étiquetée de Utilitaire-NAM') {
             steps {
-                try{
-                    sh "mvn clean install -Dprivate-repository=${MVN_REPOSITORY} -f dev/utilitaire-nam/pom.xml"
-                    sh "mvn deploy -Dmaven.install.skip=true -DskipTests -Dprivate-repository=${MVN_REPOSITORY} -Ddockerfile.skip=false -f dev/utilitaire-nam/pom.xml"
-                    sh "git add -- **/pom.xml"
-                    sh "git commit -m '${MESSAGE}'"
-                    sh "git pull"
-                    sh "git push"
-                    sh "git tag -a ${VERSION_TAG} -m '${MESSAGE}'"
-                    sh "git push origin ${VERSION_TAG}"
-                }catch(error){
-                    timeout(time:120, unit:'SECONDS'){
-                        retry(1) {
-                            sh "mvn clean install -Dprivate-repository=${MVN_REPOSITORY} -f dev/utilitaire-nam/pom.xml"
-                            sh "mvn deploy -Dmaven.install.skip=true -DskipTests -Dprivate-repository=${MVN_REPOSITORY} -Ddockerfile.skip=false -f dev/utilitaire-nam/pom.xml"
-                            sh "git add -- **/pom.xml"
-                            sh "git commit -m '${MESSAGE}'"
-                            sh "git pull"
-                            sh "git push"
-                            sh "git tag -a ${VERSION_TAG} -m '${MESSAGE}'"
-                            sh "git push origin ${VERSION_TAG}"
-                        }
-                    }    
-                }
+
+                sh "mvn clean install -Dprivate-repository=${MVN_REPOSITORY} -f dev/utilitaire-nam/pom.xml"
+                sh "mvn deploy -Dmaven.install.skip=true -DskipTests -Dprivate-repository=${MVN_REPOSITORY} -Ddockerfile.skip=false -f dev/utilitaire-nam/pom.xml"
+                sh "git add -- **/pom.xml"
+                sh "git commit -m '${MESSAGE}'"
+                sh "git pull"
+                sh "git push"
+                sh "git tag -a ${VERSION_TAG} -m '${MESSAGE}'"
+                sh "git push origin ${VERSION_TAG}"
+            
             }
+        
         	post {
                 success {
                     archive '**/target/*.jar'

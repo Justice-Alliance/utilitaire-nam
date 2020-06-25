@@ -44,45 +44,36 @@ pipeline {
             }
         } 
         stage ('Construire utilitaire-nam') {
-            steps {
-                try {
-                    script {
-
+            steps{
+                script {
+                    try{
                         VERSION = sh(
-	                	script: 'if [ "$(git describe --exact-match HEAD 2>>/dev/null || git rev-parse --abbrev-ref HEAD)" == "master" ]; then mvn -f dev/utilitaire-nam/pom.xml -q -Dexec.executable="echo" -Dexec.args=\'${project.version}\' --non-recursive exec:exec 2>/dev/null; else git describe --exact-match HEAD 2>>/dev/null || git rev-parse --abbrev-ref HEAD; fi',
-	                	returnStdout: true
-	                	).trim()
+	                    script: 'if [ "$(git describe --exact-match HEAD 2>>/dev/null || git rev-parse --abbrev-ref HEAD)" == "master" ]; then mvn -f dev/utilitaire-nam/pom.xml -q -Dexec.executable="echo" -Dexec.args=\'${project.version}\' --non-recursive exec:exec 2>/dev/null; else git describe --exact-match HEAD 2>>/dev/null || git rev-parse --abbrev-ref HEAD; fi',
+	                    returnStdout: true
+	                    ).trim()
                          
-	                	// Configurer le numéro de version pour utiliser le nom de la branche si on est pas sur master
+	                    // Configurer le numéro de version pour utiliser le nom de la branche si on est pas sur master
                         sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${VERSION} -f dev/utilitaire-nam/pom.xml"
                         sh "mvn clean install -Dprivate-repository=${MVN_REPOSITORY} -f dev/utilitaire-nam/pom.xml"
                         sh "mvn deploy -Dmaven.install.skip=true -DskipTests -Dprivate-repository=${MVN_REPOSITORY} -Ddockerfile.skip=false -f dev/utilitaire-nam/pom.xml"
                         // Annuler les modifications faites au fichier pom par la première étape
                         sh "git checkout -- **/pom.xml"
                     
-                    }
-                            
-                } catch(error) {
-                    timeout(time:120, unit:'SECONDS'){
-                        retry(2) {
-                            // Configurer le numéro de version pour utiliser le nom de la branche si on est pas sur master
-                            sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${VERSION} -f dev/utilitaire-nam/pom.xml"
-                            sh "mvn clean install -Dprivate-repository=${MVN_REPOSITORY} -f dev/utilitaire-nam/pom.xml"
-                            sh "mvn deploy -Dmaven.install.skip=true -DskipTests -Dprivate-repository=${MVN_REPOSITORY} -Ddockerfile.skip=false -f dev/utilitaire-nam/pom.xml"
-                            // Annuler les modifications faites au fichier pom par la première étape
-                            sh "git checkout -- **/pom.xml" 
+                    }catch(error) {
+                        timeout(time:120, unit:'SECONDS'){
+                            retry(2) {
+                                // Configurer le numéro de version pour utiliser le nom de la branche si on est pas sur master
+                                sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${VERSION} -f dev/utilitaire-nam/pom.xml"
+                                sh "mvn clean install -Dprivate-repository=${MVN_REPOSITORY} -f dev/utilitaire-nam/pom.xml"
+                                sh "mvn deploy -Dmaven.install.skip=true -DskipTests -Dprivate-repository=${MVN_REPOSITORY} -Ddockerfile.skip=false -f dev/utilitaire-nam/pom.xml"
+                                // Annuler les modifications faites au fichier pom par la première étape
+                                sh "git checkout -- **/pom.xml" 
 
+                            }
                         }
                     }
-                                           
-
-                }
-                        
-                                                         
-                                       	
-                      
-            
-          
+                }                               	
+                    
             }
             post {
                 success {

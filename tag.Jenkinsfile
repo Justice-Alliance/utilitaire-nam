@@ -158,7 +158,7 @@ pipeline {
                             }
                         }
 
-                        if (currentBuild.result = "FAILURE"){
+                        if (currentBuild.result() == "FAILURE"){
                             unstable("Vulnérabilités identifées dans l'image")
         			      //currentBuild.result = 'FAILURE'
                         }           

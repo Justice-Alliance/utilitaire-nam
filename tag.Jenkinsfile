@@ -39,22 +39,51 @@ pipeline {
         }
         stage ('Faire le checkout de la branche utilitaire nam a étiqueter et mettre à jour la version') {
             steps {
-				sh "git checkout ${BRANCH_NAME} && git pull"
-                sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${VERSION_TAG} -f dev/utilitaire-nam/pom.xml"
+                script{
+                    try{
+                        sh "git checkout ${BRANCH_NAME} && git pull"
+                        sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${VERSION_TAG} -f dev/utilitaire-nam/pom.xml"
+                    }catch(error){
+                        timeout(time:120, unit:'SECONDS'){
+                            retry(1){
+                                sh "git checkout ${BRANCH_NAME} && git pull"
+                                sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${VERSION_TAG} -f dev/utilitaire-nam/pom.xml"
+                            }
+                        }    
+                    }
+                }
+				
             }
         } 
         stage ('Construire et publier la version étiquetée de Utilitaire-NAM') {
             steps {
-
-                sh "mvn clean install -Dprivate-repository=${MVN_REPOSITORY} -f dev/utilitaire-nam/pom.xml"
-                sh "mvn deploy -Dmaven.install.skip=true -DskipTests -Dprivate-repository=${MVN_REPOSITORY} -Ddockerfile.skip=false -f dev/utilitaire-nam/pom.xml"
-                sh "git add -- **/pom.xml"
-                sh "git commit -m '${MESSAGE}'"
-                sh "git pull"
-                sh "git push"
-                sh "git tag -a ${VERSION_TAG} -m '${MESSAGE}'"
-                sh "git push origin ${VERSION_TAG}"
+                script{
+                    try{
+                        sh "mvn clean install -Dprivate-repository=${MVN_REPOSITORY} -f dev/utilitaire-nam/pom.xml"
+                        sh "mvn deploy -Dmaven.install.skip=true -DskipTests -Dprivate-repository=${MVN_REPOSITORY} -Ddockerfile.skip=false -f dev/utilitaire-nam/pom.xml"
+                        sh "git add -- **/pom.xml"
+                        sh "git commit -m '${MESSAGE}'"
+                        sh "git pull"
+                        sh "git push"
+                        sh "git tag -a ${VERSION_TAG} -m '${MESSAGE}'"
+                        sh "git push origin ${VERSION_TAG}"
+                    }catch(error){
+                        timeout(time:120, unit:'SECONDS'){
+                            retry(1){
+                                sh "mvn clean install -Dprivate-repository=${MVN_REPOSITORY} -f dev/utilitaire-nam/pom.xml"
+                                sh "mvn deploy -Dmaven.install.skip=true -DskipTests -Dprivate-repository=${MVN_REPOSITORY} -Ddockerfile.skip=false -f dev/utilitaire-nam/pom.xml"
+                                sh "git add -- **/pom.xml"
+                                sh "git commit -m '${MESSAGE}'"
+                                sh "git pull"
+                                sh "git push"
+                                sh "git tag -a ${VERSION_TAG} -m '${MESSAGE}'"
+                                sh "git push origin ${VERSION_TAG}"
+                            }
+                        }
+                    }
+                        
             
+                }
             }
         
         	post {
@@ -78,7 +107,18 @@ pipeline {
         } 
 		stage ("Tests de securité") {
             steps {
-                sh "cd dev/utilitaire-nam && mvn validate -Psecurity"
+                script{
+                    try{
+                        sh "cd dev/utilitaire-nam && mvn validate -Psecurity"
+                    }catch(err){
+                        timeout(time:120, unit:'SECONDS'){
+                            retry(1){
+                                sh "cd dev/utilitaire-nam && mvn validate -Psecurity"
+                            }
+                        }
+                    }
+                }
+                
             }
         }
         stage ("Publier le résultats des tests de l'anaylse statique et des librairies") {
@@ -95,9 +135,20 @@ pipeline {
         }        
         stage ('Tests SonarQube') {
         	steps {
-            	script { 
-                	withSonarQubeEnv('SonarQube') { 
-                   		sh "cd dev/utilitaire-nam && mvn sonar:sonar"
+            	script {
+                    try{
+                        withSonarQubeEnv('SonarQube') { 
+                            sh "cd dev/utilitaire-nam && mvn sonar:sonar"
+                        }
+                    }catch(error){
+                        timeout(time:120, unit:'SECONDS'){
+                            retry(1){
+                                withSonarQubeEnv('SonarQube') { 
+                   		            sh "cd dev/utilitaire-nam && mvn sonar:sonar"
+                                }
+                            }    
+                        }
+                	
                 	}
                 }
             }
@@ -147,8 +198,8 @@ pipeline {
                         }
 
                             if (currentBuild.result() == "FAILURE"){
-                              unstable("Vulnérabilités identifées dans l'image")
-        			      //currentBuild.result = 'FAILURE'
+                                unstable("Vulnérabilités identifées dans l'image")
+        			        //currentBuild.result = 'FAILURE'
                             }           
                     }
                 }    

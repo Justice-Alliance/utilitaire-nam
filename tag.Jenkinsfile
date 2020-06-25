@@ -45,6 +45,7 @@ pipeline {
         } 
         stage ('Construire et publier la version étiquetée de Utilitaire-NAM') {
             steps {
+
                 sh "mvn clean install -Dprivate-repository=${MVN_REPOSITORY} -f dev/utilitaire-nam/pom.xml"
                 sh "mvn deploy -Dmaven.install.skip=true -DskipTests -Dprivate-repository=${MVN_REPOSITORY} -Ddockerfile.skip=false -f dev/utilitaire-nam/pom.xml"
                 sh "git add -- **/pom.xml"
@@ -53,7 +54,9 @@ pipeline {
                 sh "git push"
                 sh "git tag -a ${VERSION_TAG} -m '${MESSAGE}'"
                 sh "git push origin ${VERSION_TAG}"
+            
             }
+        
         	post {
                 success {
                     archive '**/target/*.jar'
@@ -101,32 +104,57 @@ pipeline {
         }
        	stage("Balayage sécurité image"){
        		steps {
-	       	   	script {
-	                VERSION = sh(
+	       	   	script{
+                    try{
+                        VERSION = sh(
 	                	script: 'if [ "$(git describe --exact-match HEAD 2>>/dev/null || git rev-parse --abbrev-ref HEAD)" == "master" ]; then mvn -q -f dev/utilitaire-nam/pom.xml -Dexec.executable="echo" -Dexec.args=\'${project.version}\' --non-recursive exec:exec 2>/dev/null; else git describe --exact-match HEAD 2>>/dev/null || git rev-parse --abbrev-ref HEAD; fi',
 	                	returnStdout: true
 	                	).trim()
-	       	   		sh "docker pull arminc/clair-db && docker pull arminc/clair-local-scan"
-    	    		sh '''
-	                until $(curl --output /dev/null --silent --fail http://localhost:16060/v1/namespaces)
-	                do 
+	       	   		    sh "docker pull arminc/clair-db && docker pull arminc/clair-local-scan"
+    	    		    sh '''
+	                    until $(curl --output /dev/null --silent --fail http://localhost:16060/v1/namespaces)
+	                    do 
 	      				docker inspect utilitairenamclairdb 2>/dev/null >/dev/null && echo utilitairenamclairdb est demarre || docker run -d --rm --name utilitairenamclairdb arminc/clair-db
 	                	printf '.'
 	                	sleep 5
 	    	    		docker inspect utilitairenamclair 2>/dev/null >/dev/null && echo utilitairenamclair est demarre || docker run -p 16060:6060 --link utilitairenamclairdb:postgres -d --rm --name utilitairenamclair arminc/clair-local-scan
 	    	    		sleep 5
-	                done
-	                '''      
-        			sh "cd ops && wget -qO clairctl https://github.com/jgsqware/clairctl/releases/download/v1.2.8/clairctl-linux-amd64 && chmod u+x clairctl"
-        			try {
-	        			sh "cd ops && ./clairctl analyze ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${VERSION} --filters High,Critical,Defcon1"     		    
-        			} catch (err) {
-        			      unstable("Vulnérabilités identifées dans l'image")
-        			      //currentBuild.result = 'FAILURE'
-        			}
-	        		sh "cd ops && mkdir -p reports && ./clairctl report ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${VERSION} && mv reports/html/analysis-${DOCKER_REPOSITORY}-${DOCKER_REPOSITORY_PREFIX}-${SVC_ARTIFACT_ID}-${VERSION}.html reports/html/analyse-image.html"
-	        		sh "docker stop utilitairenamclair utilitairenamclairdb && rm ops/clairctl"		    
-        		}
+	                    done
+	                    '''      
+        			    sh "cd ops && wget -qO clairctl https://github.com/jgsqware/clairctl/releases/download/v1.2.8/clairctl-linux-amd64 && chmod u+x clairctl"
+        			    sh "cd ops && ./clairctl analyze ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${VERSION} --filters High,Critical,Defcon1"     		    
+        			}catch (err) {
+                        timeout(time:120, unit:'SECONDS'){
+                            retry(1){
+                                VERSION = sh(
+	                	        script: 'if [ "$(git describe --exact-match HEAD 2>>/dev/null || git rev-parse --abbrev-ref HEAD)" == "master" ]; then mvn -q -f dev/utilitaire-nam/pom.xml -Dexec.executable="echo" -Dexec.args=\'${project.version}\' --non-recursive exec:exec 2>/dev/null; else git describe --exact-match HEAD 2>>/dev/null || git rev-parse --abbrev-ref HEAD; fi',
+	                	        returnStdout: true
+	                	        ).trim()
+	       	   		            sh "docker pull arminc/clair-db && docker pull arminc/clair-local-scan"
+    	    		            sh '''
+	                            until $(curl --output /dev/null --silent --fail http://localhost:16060/v1/namespaces)
+	                            do 
+	      				        docker inspect utilitairenamclairdb 2>/dev/null >/dev/null && echo utilitairenamclairdb est demarre || docker run -d --rm --name utilitairenamclairdb arminc/clair-db
+	                	        printf '.'
+	                	        sleep 5
+	    	    		        docker inspect utilitairenamclair 2>/dev/null >/dev/null && echo utilitairenamclair est demarre || docker run -p 16060:6060 --link utilitairenamclairdb:postgres -d --rm --name utilitairenamclair arminc/clair-local-scan
+	    	    		        sleep 5
+	                            done
+	                            '''      
+        			            sh "cd ops && wget -qO clairctl https://github.com/jgsqware/clairctl/releases/download/v1.2.8/clairctl-linux-amd64 && chmod u+x clairctl"
+        			            sh "cd ops && ./clairctl analyze ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${VERSION} --filters High,Critical,Defcon1"     		    
+                            }
+                        }
+
+                            if (currentBuild.result() == "FAILURE"){
+                                unstable("Vulnérabilités identifées dans l'image")
+        			        //currentBuild.result = 'FAILURE'
+                            }           
+                    }
+                }    
+	        	sh "cd ops && mkdir -p reports && ./clairctl report ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${VERSION} && mv reports/html/analysis-${DOCKER_REPOSITORY}-${DOCKER_REPOSITORY_PREFIX}-${SVC_ARTIFACT_ID}-${VERSION}.html reports/html/analyse-image.html"
+	        	sh "docker stop utilitairenamclair utilitairenamclairdb && rm ops/clairctl"		    
+        		
        		}
       	}
         stage ("Publier le résultats des tests de balayage de l'image") {

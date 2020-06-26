@@ -35,14 +35,28 @@ pipeline {
         stage ('Faire le checkout de la branche utilitaire nam') {
             steps {
             	script {
-            		REMOTE = sh(
+                    try{
+                        REMOTE = sh(
             			script: 'git remote',
 	                	returnStdout: true
 	                	).trim()
-					sh "git checkout ${BRANCH_NAME} && git pull ${REMOTE} ${BRANCH_NAME}"
+					    sh "git checkout ${BRANCH_NAME} && git pull ${REMOTE} ${BRANCH_NAME}"
+                    }catch(error){
+                        timeout(time:120, unit:"SECONDS"){
+                            retry(1){
+                                REMOTE = sh(
+            			        script: 'git remote',
+	                	        returnStdout: true
+	                	        ).trim()
+					            sh "git checkout ${BRANCH_NAME} && git pull ${REMOTE} ${BRANCH_NAME}"
+                            }
+                        }
+                    }
+            		
             	}
             }
         } 
+        
         stage ('Construire utilitaire-nam') {
             steps{
                 script {

@@ -15,21 +15,6 @@ pipeline {
     	REPOSITORY = "${env.REPOSITORY_INSPQ}"
     	NOTIFICATION_TEAM = "${env.NOTIFICATION_SX5_TEAM}"
     }
-    stage (' Recherche des mise a jour de plugins Maven ') {
-        steps {
-            script{ 
-                VERSION = sh(
-                script: 'mvn -f dev/utilitaire-nam/pom.xml',
-                returnStdout: true
-                ).trim()
-                sh "mvn versions:set -DgenerateBackupPoms=false -DartifactId=$module -DnewVersion=$newVersion -DupdateMatchingVersions=true"
-                sh "mvn versions:set versions:commit -DnewVersion=$newVersion"
-                sh 'mvn versions:display-dependency-updates'
-                sh 'mvn versions:use-releases'
-                sh 'mvn versions:use-latest-releases'
-            }
-        }
-    }
     stages ('Préparer les variables') {
     	steps {
             script {
@@ -43,6 +28,21 @@ pipeline {
 	                	returnStdout: true
 	                	).trim()  
                 	sh "rm BRANCH"
+                }
+            }
+        }
+        stage (' Recherche des mise a jour de plugins Maven ') {
+            steps {
+                script{ 
+                    VERSION = sh(
+                    script: 'mvn -f dev/utilitaire-nam/pom.xml',
+                    returnStdout: true
+                    ).trim()
+                    sh "mvn versions:set -DgenerateBackupPoms=false -DartifactId=$module -DnewVersion=$newVersion -DupdateMatchingVersions=true"
+                    sh "mvn versions:set versions:commit -DnewVersion=$newVersion"
+                    sh 'mvn versions:display-dependency-updates'
+                    sh 'mvn versions:use-releases'
+                    sh 'mvn versions:use-latest-releases'
                 }
             }
         }

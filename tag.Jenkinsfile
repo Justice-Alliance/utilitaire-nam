@@ -20,6 +20,21 @@ pipeline {
     	DOCKER_REPOSITORY = projectPom.getProperties().getProperty('docker.repository')
     	DOCKER_REPOSITORY_PREFIX = projectPom.getProperties().getProperty('docker.repository.prefix')
     }
+    stage (' Recherche des mise a jour de plugins Maven ') {
+        steps {
+            script{ 
+                VERSION = sh(
+                script: "for module in $(grep "\<module\>" dev/utilitaire-nam/pom.xml | sed 's/<\/module>//g' | sed 's/.*<module>//g' | sed 's/.*\///g'); do" 
+                returnStdout: true
+                ).trim()
+                sh "mvn versions:set -DgenerateBackupPoms=false -DartifactId=$module -DnewVersion=$newVersion -DupdateMatchingVersions=true"
+                sh "mvn versions:set versions:commit -DnewVersion=$newVersion"
+                sh 'mvn versions:display-dependency-updates'
+                sh 'mvn versions:use-releases'
+                sh 'mvn versions:use-latest-releases'
+            }
+        }
+    }
     stages {
         stage ('Préparer les variables') {
    			steps {
@@ -37,6 +52,7 @@ pipeline {
                 }
             }
         }
+        
         stage ('Faire le checkout de la branche utilitaire nam a étiqueter et mettre à jour la version') {
             steps {
                 script{

@@ -34,9 +34,8 @@ pipeline {
         }
         stage (' Recherche des mise a jour de plugins Maven ') {
             steps {
-                    sh 'mvn versions:display-dependency-updates'
-                    sh 'mvn versions:use-releases'
-                    sh 'mvn versions:use-latest-releases'
+                    sh 'mvn versions:update-parent -DprocessAllModules=true -f pom.xml -f dev/utilitaire-nam/pom.xml'
+                    sh 'mvn versions:use-latest-versions -DprocessAllModules=true -f pom.xml -f dev/utilitaire-nam/pom.xml '
             }
         }
         stage ('Faire le checkout de la branche utilitaire nam') {

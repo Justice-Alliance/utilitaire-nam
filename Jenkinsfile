@@ -36,7 +36,9 @@ pipeline {
             steps {
                     sh 'mvn versions:update-parent -DprocessAllModules=true -f  dev/utilitaire-nam/pom.xml'
                     sh 'mvn versions:use-latest-versions -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
-            }
+                    git add  --pom.xml**/pom.xml
+                    git commit -m "Mise a jour dependances maven" || echo "Aucune dependances mise a jour"
+                    git push origin patch-2
         }
         stage ('Faire le checkout de la branche utilitaire nam') {
             steps {

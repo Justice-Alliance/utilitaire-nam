@@ -19,7 +19,7 @@ pipeline {
         steps {
             script{ 
                 VERSION = sh(
-                script: "for module in [ "$  (grep "\<module\>" dev/utilitaire-nam/pom.xml | sed 's/<\/module>//g' | sed 's/.*<module>//g' | sed 's/.*\///g')" ]; do"
+                script: 'mvn -f dev/utilitaire-nam/pom.xml'
                 returnStdout: true
                 ).trim()
                 sh "mvn versions:set -DgenerateBackupPoms=false -DartifactId=$module -DnewVersion=$newVersion -DupdateMatchingVersions=true"

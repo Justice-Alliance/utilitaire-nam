@@ -34,7 +34,6 @@ pipeline {
         }
         stage (' Recherche des mise a jour de plugins Maven ') {
             steps {
-                script{ 
                     sh "mvn versions:set -DgenerateBackupPoms=false -DartifactId=$module -DnewVersion=$newVersion -DupdateMatchingVersions=true"
                     sh "mvn versions:set versions:commit -DnewVersion=$newVersion"
                     sh 'mvn versions:display-dependency-updates'

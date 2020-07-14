@@ -15,23 +15,24 @@ pipeline {
     	REPOSITORY = "${env.REPOSITORY_INSPQ}"
     	NOTIFICATION_TEAM = "${env.NOTIFICATION_SX5_TEAM}"
     }
-    stages ('Préparer les variables') {
-        steps {
-            script {
-                sh "echo ${BRANCH} > BRANCH"
-	            BRANCH_ORIGIN = sh(
-	                script: "cut -d / -f 1 BRANCH",
-	                returnStdout: true
-	          	    ).trim()   
-	            BRANCH_NAME = sh(
-             	    script: "cut -d / -f 2 BRANCH",
-             	    returnStdout: true
-	                ).trim()  
-                sh "rm BRANCH"
+    stages {
+        stage ('Préparer les variables') {
+   			steps {
+                script {
+                	sh "echo ${BRANCH} > BRANCH"
+	                BRANCH_ORIGIN = sh(
+	                	script: "cut -d / -f 1 BRANCH",
+	                	returnStdout: true
+	                	).trim()   
+	                BRANCH_NAME = sh(
+	                	script: "cut -d / -f 2 BRANCH",
+	                	returnStdout: true
+	                	).trim()  
+                	sh "rm BRANCH"
+                }
             }
         }
-    }
-    stage (' Recherche des mise a jour de plugins Maven ') {
+        stage (' Recherche des mise a jour de plugins Maven ') {
             steps {
                 script{ 
                     sh "mvn versions:set -DgenerateBackupPoms=false -DartifactId=$module -DnewVersion=$newVersion -DupdateMatchingVersions=true"
@@ -41,10 +42,10 @@ pipeline {
                     sh 'mvn versions:use-latest-releases'
                 }
             }
-    }
-    stage ('Faire le checkout de la branche utilitaire nam') {
-        steps {
-        	script {
+        }
+        stage ('Faire le checkout de la branche utilitaire nam') {
+            steps {
+            	script {
                     try{
                         REMOTE = sh(
             			script: 'git remote',
@@ -58,16 +59,15 @@ pipeline {
             			        script: 'git remote',
 	                	        returnStdout: true
 	                	        ).trim()
-					            sh "git checkout ${BRANCH_NAME} && git pull ${REMOTE} ${BRANCH_NAME}"
-                            }
+					            sh "git checkout ${BRANCH_NAME} && git pull ${REMOTE} ${BRANCH_NAME}"                            }
                         }
                     }
             		
+            	}
             }
-        }
-    } 
+        } 
         
-    stage ('Construire utilitaire-nam') {
+        stage ('Construire utilitaire-nam') {
             steps{
                 script {
                     try{
@@ -145,3 +145,4 @@ pipeline {
                 body: "${env.BUILD_URL}")
         }
     }
+}

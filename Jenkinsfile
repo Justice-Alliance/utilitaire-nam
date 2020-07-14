@@ -15,10 +15,24 @@ pipeline {
     	REPOSITORY = "${env.REPOSITORY_INSPQ}"
     	NOTIFICATION_TEAM = "${env.NOTIFICATION_SX5_TEAM}"
     }
-    stages {
-        stage ('Préparer les variables') {
-   			steps {
-                script {
+    stage (' Recherche des mise a jour de plugins Maven ') {
+        steps {
+            script{ 
+                VERSION = sh(
+                script: "for module in $(grep "\<module\>" dev/utilitaire-nam/pom.xml | sed 's/<\/module>//g' | sed 's/.*<module>//g' | sed 's/.*\///g'); do" 
+                returnStdout: true
+                ).trim()
+                sh "mvn versions:set -DgenerateBackupPoms=false -DartifactId=$module -DnewVersion=$newVersion -DupdateMatchingVersions=true"
+                sh "mvn versions:set versions:commit -DnewVersion=$newVersion"
+                sh 'mvn versions:display-dependency-updates'
+                sh 'mvn versions:use-releases'
+                sh 'mvn versions:use-latest-releases'
+            }
+        }
+    }
+    stages ('Préparer les variables') {
+    	steps {
+            script {
                 	sh "echo ${BRANCH} > BRANCH"
 	                BRANCH_ORIGIN = sh(
 	                	script: "cut -d / -f 1 BRANCH",
@@ -135,4 +149,3 @@ pipeline {
                 body: "${env.BUILD_URL}")
         }
     }
-}

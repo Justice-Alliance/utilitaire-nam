@@ -36,7 +36,7 @@ pipeline {
             steps {
                     sh 'mvn versions:update-parent -DprocessAllModules=true -f  dev/utilitaire-nam/pom.xml'
                     sh 'mvn versions:use-latest-versions -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
-                    sh 'git add -- pom.xml /dev/utilitaire-nam/pom.xml'
+                    sh 'git add --pom.xml **/pom.xml'
                     sh 'git commit -m "Mise a jour dependances maven" || echo "Aucune dependances mise a jour"'
                     sh 'git push origin patch-2'
                  }

@@ -19,7 +19,7 @@ pipeline {
         steps {
             script{ 
                 VERSION = sh(
-                script: 'mvn -f dev/utilitaire-nam/pom.xml'
+                script: 'mvn -f dev/utilitaire-nam/pom.xml',
                 returnStdout: true
                 ).trim()
                 sh "mvn versions:set -DgenerateBackupPoms=false -DartifactId=$module -DnewVersion=$newVersion -DupdateMatchingVersions=true"

@@ -39,7 +39,6 @@ pipeline {
                     sh 'mvn versions:display-dependency-updates'
                     sh 'mvn versions:use-releases'
                     sh 'mvn versions:use-latest-releases'
-                }
             }
         }
         stage ('Faire le checkout de la branche utilitaire nam') {

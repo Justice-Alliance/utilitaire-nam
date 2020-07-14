@@ -39,6 +39,7 @@ pipeline {
                     sh 'git add  --pom.xml src'
                     sh 'git commit -m "Mise a jour dependances maven" || echo "Aucune dependances mise a jour"'
                     sh 'git push origin patch-2'
+                 }
         }
         stage ('Faire le checkout de la branche utilitaire nam') {
             steps {

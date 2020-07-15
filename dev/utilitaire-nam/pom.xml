@@ -6,7 +6,7 @@
 
 	<groupId>ca.qc.inspq</groupId>
 	<artifactId>utilitaire-nam</artifactId>
-	<version>patch-2_v1.1-SNAPSHOT</version>
+	<version>0.7.1-SNAPSHOT</version>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>

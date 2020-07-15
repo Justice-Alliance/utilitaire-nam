@@ -5,7 +5,6 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '5'))
         disableConcurrentBuilds()
     }
-    triggers { pollSCM('*/30 * * * *') }
     tools {
         jdk 'openjdk-11'
         maven 'maven-3.6.1'
@@ -32,18 +31,6 @@ pipeline {
                 }
             }
         }
-        stage (' Recherche des mise a jour de plugins Maven ') {
-            steps {
-                    sh 'mvn versions:display-dependency-updates -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
-                    sh 'mvn versions:display-plugin-updates -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
-                    sh 'mvn versions:update-parent -DprocessAllModules=true -f  dev/utilitaire-nam/pom.xml'
-                    sh 'mvn -N versions:update-child-modules -DprocessAllModules=true -f  dev/utilitaire-nam/pom.xml '
-                    sh 'mvn versions:use-latest-versions -Dexcludes=com.vaadin:* -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
-                    sh 'git add -- **/pom.xml'
-                    sh 'git commit -m "Mise a jour dependances maven" || echo "Aucune dependances mise a jour"'
-                  
-                 }
-        }
         stage ('Faire le checkout de la branche utilitaire nam') {
             steps {
             	script {
@@ -67,8 +54,23 @@ pipeline {
             	}
             }
         } 
+        stage ('Mise à jour des dépendances Maven ') {
+            steps {
+            	sh 'mvn versions:display-dependency-updates -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
+				sh 'mvn versions:display-plugin-updates -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
+				sh 'mvn versions:update-parent -DprocessAllModules=true -f  dev/utilitaire-nam/pom.xml'
+				sh 'mvn -N versions:update-child-modules -DprocessAllModules=true -f  dev/utilitaire-nam/pom.xml '
+				sh 'mvn versions:use-latest-versions -Dexcludes=com.vaadin:* -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
+			}
+        }
         
         stage ('Construire utilitaire-nam') {
+			environment {
+		    	projectPom = readMavenPom file: 'dev/utilitaire-nam/pom.xml'
+		    	svcPom = readMavenPom file: 'dev/utilitaire-nam/utilitaire-NAM-Service/pom.xml'
+			    SVC_ARTIFACT_ID = svcPom.getArtifactId()
+		    	POMVERSION = projectPom.getVersion()
+		    }        
             steps{
                 script {
                     try{
@@ -82,18 +84,19 @@ pipeline {
                         sh "mvn clean install -Dprivate-repository=${MVN_REPOSITORY} -f dev/utilitaire-nam/pom.xml"
                         sh "mvn deploy -Dmaven.install.skip=true -DskipTests -Dprivate-repository=${MVN_REPOSITORY} -Ddockerfile.skip=false -f dev/utilitaire-nam/pom.xml"
                         // Annuler les modifications faites au fichier pom par la première étape
-                        sh "git checkout -- **/pom.xml"
+                        sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${POMVERSION} -f dev/utilitaire-nam/pom.xml"
                     
                     }catch(error) {
                         timeout(time:120, unit:'SECONDS'){
                             retry(2) {
+                                // Annuler les modifications faites au fichier pom par la mise à jour des librairies
+                                sh "git checkout -- **/pom.xml" 
                                 // Configurer le numéro de version pour utiliser le nom de la branche si on est pas sur master
                                 sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${VERSION} -f dev/utilitaire-nam/pom.xml"
                                 sh "mvn clean install -Dprivate-repository=${MVN_REPOSITORY} -f dev/utilitaire-nam/pom.xml"
                                 sh "mvn deploy -Dmaven.install.skip=true -DskipTests -Dprivate-repository=${MVN_REPOSITORY} -Ddockerfile.skip=false -f dev/utilitaire-nam/pom.xml"
-                                // Annuler les modifications faites au fichier pom par la première étape
-                                sh "git checkout -- **/pom.xml" 
-
+		                        // Annuler les modifications faites au fichier pom par la première étape
+		                        sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${POMVERSION} -f dev/utilitaire-nam/pom.xml"
                             }
                         }
                     }
@@ -119,6 +122,12 @@ pipeline {
 	          	]        	    
         	}
         }        
+        stage ('Valider (commit) le fichier pom avec les mises à jour des dépendances Maven') {
+            steps {
+				sh 'git add -- **/pom.xml'
+				sh 'git commit -m "Mise à jour dépendances maven" && git push || echo "Aucune dependances mise a jour"'
+			}
+        }
     }
     post {
         always {

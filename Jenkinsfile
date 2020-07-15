@@ -60,8 +60,9 @@ pipeline {
 				sh 'mvn versions:display-plugin-updates -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
 				sh 'mvn versions:update-parent -DprocessAllModules=true -f  dev/utilitaire-nam/pom.xml'
 				sh 'mvn -N versions:update-child-modules -DprocessAllModules=true -f  dev/utilitaire-nam/pom.xml '
-				//sh 'mvn versions:use-latest-versions -Dexcludes=com.vaadin:* -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
-				sh 'mvn versions:use-latest-versions -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
+				sh 'mvn versions:use-latest-versions -Dexcludes=com.vaadin:* -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
+				// Test qui fait planter la compilation pour tester le revert
+				//sh 'mvn versions:use-latest-versions -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
 			}
         }
         

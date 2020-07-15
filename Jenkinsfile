@@ -34,9 +34,12 @@ pipeline {
         }
         stage (' Recherche des mise a jour de plugins Maven ') {
             steps {
+                    sh 'mvn versions:display-dependency-updates -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
+                    sh 'mvn versions:display-plugin-updates -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
                     sh 'mvn versions:update-parent -DprocessAllModules=true -f  dev/utilitaire-nam/pom.xml'
-                    sh 'mvn versions:use-latest-versions -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
-                    sh 'git add --pom.xml **/pom.xml'
+                    sh 'mvn -N versions:update-child-modules -DprocessAllModules=true -f  dev/utilitaire-nam/pom.xml '
+                    sh 'mvn versions:use-latest-versions -Dexcludes=com.vaadin:* -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
+                    sh 'git add -- **/pom.xml'
                     sh 'git commit -m "Mise a jour dependances maven" || echo "Aucune dependances mise a jour"'
                     sh 'git push origin patch-2'
                  }

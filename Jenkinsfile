@@ -41,6 +41,7 @@ pipeline {
                     sh 'mvn versions:use-latest-versions -Dexcludes=com.vaadin:* -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
                     sh 'git add -- **/pom.xml'
                     sh 'git commit -m "Mise a jour dependances maven" || echo "Aucune dependances mise a jour"'
+                    sh 'git pull origin patch-2'
                     sh 'git push origin patch-2'
                  }
         }

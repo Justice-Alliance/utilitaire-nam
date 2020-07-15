@@ -22,17 +22,16 @@ pipeline {
     }
     stage (' Recherche des mise a jour de plugins Maven ') {
         steps {
-            script{ 
-                VERSION = sh(
-                script: "for module in $(grep "\<module\>" dev/utilitaire-nam/pom.xml | sed 's/<\/module>//g' | sed 's/.*<module>//g' | sed 's/.*\///g'); do" 
-                returnStdout: true
-                ).trim()
-                sh "mvn versions:set -DgenerateBackupPoms=false -DartifactId=$module -DnewVersion=$newVersion -DupdateMatchingVersions=true"
-                sh "mvn versions:set versions:commit -DnewVersion=$newVersion"
-                sh 'mvn versions:display-dependency-updates'
-                sh 'mvn versions:use-releases'
-                sh 'mvn versions:use-latest-releases'
-            }
+           
+                    sh 'mvn versions:display-dependency-updates -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
+                    sh 'mvn versions:display-plugin-updates -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
+                    sh 'mvn versions:update-parent -DprocessAllModules=true -f  dev/utilitaire-nam/pom.xml'
+                    sh 'mvn -N versions:update-child-modules -DprocessAllModules=true -f  dev/utilitaire-nam/pom.xml '
+                    sh 'mvn versions:use-latest-versions -Dexcludes=com.vaadin:* -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
+                    sh 'git add -- **/pom.xml'
+                    sh 'git commit -m "Mise a jour dependances maven" || echo "Aucune dependances mise a jour"'
+                    sh 'git pull'
+                    sh 'git push'
         }
     }
     stages {

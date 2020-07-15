@@ -69,7 +69,16 @@ pipeline {
                 }
 				
             }
-        } 
+        }
+        stage ('Mise à jour des dépendances Maven ') {
+            steps {
+            	sh 'mvn versions:display-dependency-updates -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
+				sh 'mvn versions:display-plugin-updates -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
+				sh 'mvn versions:update-parent -DprocessAllModules=true -f  dev/utilitaire-nam/pom.xml'
+				sh 'mvn -N versions:update-child-modules -DprocessAllModules=true -f  dev/utilitaire-nam/pom.xml '
+				sh 'mvn versions:use-latest-versions -Dexcludes=com.vaadin:* -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
+			}
+        }
         stage ('Construire et publier la version étiquetée de Utilitaire-NAM') {
             steps {
                 script{
@@ -119,7 +128,13 @@ pipeline {
 	            reportName: 'Documentation et résultats des tests BDD'
 	          	]        	    
         	}
-        } 
+        }
+        stage ('Valider (commit) le fichier pom avec les mises à jour des dépendances Maven') {
+            steps {
+				sh 'git add -- **/pom.xml'
+				sh 'git commit -m "Mise à jour dépendances maven" && git push || echo "Aucune dependances mise a jour"'
+			}
+        }
 		stage ("Tests de securité") {
             steps {
                 script{

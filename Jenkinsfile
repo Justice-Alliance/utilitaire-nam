@@ -56,12 +56,19 @@ pipeline {
         } 
         stage ('Mise à jour des dépendances Maven ') {
             steps {
-            	sh 'mvn versions:display-dependency-updates -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
-				sh 'mvn versions:display-plugin-updates -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
-				sh 'mvn versions:update-parent -DprocessAllModules=true -f  dev/utilitaire-nam/pom.xml'
-				sh 'mvn -N versions:update-child-modules -DprocessAllModules=true -f  dev/utilitaire-nam/pom.xml '
-				sh 'mvn versions:use-latest-versions -Dexcludes=com.vaadin:* -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
-			}
+                script {
+                    try {
+            	        sh 'mvn versions:display-dependency-updates -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
+				        sh 'mvn versions:display-plugin-updates -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
+				        sh 'mvn versions:update-parent -DprocessAllModules=true -f  dev/utilitaire-nam/pom.xml'
+				        sh 'mvn -N versions:update-child-modules -DprocessAllModules=true -f  dev/utilitaire-nam/pom.xml '
+				        sh 'mvn versions:use-latest-versions -Dexcludes=com.vaadin:* -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
+			        } catch (error) {
+			            unstable("[ERROR]: ${STAGE_NAME} failed!")
+			            stageResult."{STAGE_NAME}" = "UNSTABLE"
+			          }
+			     }     
+            }
         }
         
         stage ('Construire utilitaire-nam') {
@@ -147,11 +154,6 @@ pipeline {
         failure {
             mail(to: "${equipe}",
                 subject: "Échec de la construction de utilitaire-nam : ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                body: "${env.BUILD_URL}")
-        }
-        failure {
-            mail(to: "${equipe}",
-                subject: "Échec de la mise à jour des dépendances Maven  : ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: "${env.BUILD_URL}")
         }
         unstable {

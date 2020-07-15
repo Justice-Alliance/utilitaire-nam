@@ -149,6 +149,11 @@ pipeline {
                 subject: "Échec de la construction de utilitaire-nam : ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: "${env.BUILD_URL}")
         }
+        failure {
+            mail(to: "${equipe}",
+                subject: "Échec de la mise à jour des dépendances Maven  : ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: "${env.BUILD_URL}")
+        }
         unstable {
             mail(to : "${equipe}",
                 subject: "Construction de utilitaire-nam instable : ${env.JOB_NAME} #${env.BUILD_NUMBER}",

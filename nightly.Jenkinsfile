@@ -17,6 +17,7 @@ pipeline {
 		svcPom = readMavenPom file: 'dev/utilitaire-nam/utilitaire-NAM-Service/pom.xml'
 		SVC_ARTIFACT_ID = svcPom.getArtifactId()
 		POMVERSION = projectPom.getVersion()
+    	REPOSITORY_PREFIX = "inspq"
     }
     stages {
         stage ('Préparer les variables') {
@@ -153,6 +154,15 @@ pipeline {
             }
         }
        	stage("Balayage sécurité image"){
+		    environment {
+		    	projectPom = readMavenPom file: 'dev/utilitaire-nam/pom.xml'
+		    	svcPom = readMavenPom file: 'dev/utilitaire-nam/utilitaire-NAM-Service/pom.xml'
+			    SVC_ARTIFACT_ID = svcPom.getArtifactId()
+		    	POMVERSION = projectPom.getVersion()
+		        SVC_IMAGE = "${REPOSITORY}/${REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${POMVERSION}"
+		        SVC_RAPPORT = "analysis-${REPOSITORY}-${REPOSITORY_PREFIX}-${SVC_ARTIFACT_ID}-${POMVERSION}.html"
+		        
+		    }
        		steps {
 	       	   	script {
 	                VERSION = sh(
@@ -172,12 +182,12 @@ pipeline {
 	                '''      
         			sh "cd ops && wget -qO clairctl https://github.com/jgsqware/clairctl/releases/download/v1.2.8/clairctl-linux-amd64 && chmod u+x clairctl"
         			try {
-	        			sh "cd ops && ./clairctl analyze ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${VERSION} --filters High,Critical,Defcon1"     		    
+	        			sh "cd ops && ./clairctl analyze ${SVC_IMAGE} --filters High,Critical,Defcon1"     		    
         			} catch (err) {
         			      unstable("Vulnérabilités identifées dans l'image")
         			      //currentBuild.result = 'FAILURE'
         			}
-	        		sh "cd ops && mkdir -p reports && ./clairctl report ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${VERSION} && mv reports/html/analysis-${DOCKER_REPOSITORY}-${DOCKER_REPOSITORY_PREFIX}-${SVC_ARTIFACT_ID}-${VERSION}.html reports/html/analyse-image.html"
+	        		sh "cd ops && mkdir -p reports && ./clairctl report ${SVC_IMAGE} && mv reports/html/${SVC_RAPPORT} reports/html/analyse-image.html"
 	        		sh "docker stop utilitairenamclair utilitairenamclairdb && rm ops/clairctl"		    
         		}
        		}

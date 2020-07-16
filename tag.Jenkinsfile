@@ -193,16 +193,10 @@ pipeline {
 	                            done
 	                            '''    
 	                            sh "cd ops && wget -qO clairctl https://github.com/jgsqware/clairctl/releases/download/v1.2.8/clairctl-linux-amd64 && chmod u+x clairctl"
+	                            sh "cd ops && ./clairctl analyze ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${VERSION} --filters High,Critical,Defcon1" 
 	                       }
 	                   }
 	                }    
-	                try{
-                        sh "cd ops && ./clairctl analyze ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${VERSION} --filters High,Critical,Defcon1" 
-        			} catch(error){
-        			    unstable("[ERROR]: ${STAGE_NAME} failed!")
-			            stageResult."{STAGE_NAME}" = "UNSTABLE"
-			            emailext body: ' ${JOB_NAME} ${BUILD_NUMBER} a échoué! Vulnerabilite dans cette image ! Vous devez faire quelque chose à ce sujet. https://jenkins.dev.inspq.qc.ca/job/utilitaire-nam/job/utilitaire-nam-etiquetage/${BUILD_NUMBER}/console', subject: 'FAILURE', to: "${NOTIFICATION_TEAM}"
-			        }
 			        
 	        	    sh "cd ops && mkdir -p reports && ./clairctl report ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${VERSION} && mv reports/html/analysis-${DOCKER_REPOSITORY}-${DOCKER_REPOSITORY_PREFIX}-${SVC_ARTIFACT_ID}-${VERSION}.html reports/html/analyse-image.html"
 	        	    sh "docker stop utilitairenamclair utilitairenamclairdb && rm ops/clairctl"

@@ -211,15 +211,15 @@ pipeline {
 	                   }
 	               }    
 	                try{
-        			            sh "cd ops && ./clairctl analyze ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${VERSION} --filters High,Critical,Defcon1"
+        			     sh "cd ops && ./clairctl analyze ${DOCKER_IMAGE} --filters High,Critical,Defcon1" 
         			} catch(error){
         			    unstable("[ERROR]: ${STAGE_NAME} failed!")
 			            stageResult."{STAGE_NAME}" = "UNSTABLE"
 			            emailext body: ' ${JOB_NAME} ${BUILD_NUMBER} a échoué! Vulnerabilite dans cette image ! Vous devez faire quelque chose à ce sujet. https://jenkins.dev.inspq.qc.ca/job/utilitaire-nam/job/utilitaire-nam-etiquetage/${BUILD_NUMBER}/console', subject: 'FAILURE', to: "${NOTIFICATION_TEAM}"
 			        }
 			        
-	        	    sh "cd ops && mkdir -p reports && ./clairctl report ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${VERSION} && mv reports/html/analysis-${DOCKER_REPOSITORY}-${DOCKER_REPOSITORY_PREFIX}-${SVC_ARTIFACT_ID}-${VERSION}.html reports/html/analyse-image.html"
-	        	    sh "docker stop utilitairenamclair utilitairenamclairdb && rm ops/clairctl"	
+	        	    sh "cd ops && mkdir -p reports && ./clairctl report ${DOCKER_IMAGE} && mv reports/html/${CLAIR_REPORT_FILE} reports/html/analyse-image.html"
+	        		sh "docker stop sadufaclair sadufaclairdb && rm ops/clairctl"
 	            }
 	        }
 	    }

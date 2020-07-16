@@ -132,6 +132,7 @@ pipeline {
 			            unstable("[ERROR]: ${STAGE_NAME} failed!")
 			            stageResult."{STAGE_NAME}" = "UNSTABLE"
 			            emailext body: ' ${JOB_NAME} ${BUILD_NUMBER} a échoué! Vous devez faire quelque chose à ce sujet. https://jenkins.dev.inspq.qc.ca/job/utilitaire-nam/job/${BUILD_NUMBER}/console', subject: 'FAILURE', to: "${NOTIFICATION_TEAM}"
+		            }
 			    }
 			}
         }

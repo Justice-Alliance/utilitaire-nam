@@ -20,20 +20,6 @@ pipeline {
     	DOCKER_REPOSITORY = projectPom.getProperties().getProperty('docker.repository')
     	DOCKER_REPOSITORY_PREFIX = projectPom.getProperties().getProperty('docker.repository.prefix')
     }
-    stage (' Recherche des mise a jour de plugins Maven ') {
-        steps {
-           
-                    sh 'mvn versions:display-dependency-updates -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
-                    sh 'mvn versions:display-plugin-updates -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
-                    sh 'mvn versions:update-parent -DprocessAllModules=true -f  dev/utilitaire-nam/pom.xml'
-                    sh 'mvn -N versions:update-child-modules -DprocessAllModules=true -f  dev/utilitaire-nam/pom.xml '
-                    sh 'mvn versions:use-latest-versions -Dexcludes=com.vaadin:* -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
-                    sh 'git add -- **/pom.xml'
-                    sh 'git commit -m "Mise a jour dependances maven" || echo "Aucune dependances mise a jour"'
-                    sh 'git pull'
-                    sh 'git push'
-        }
-    }
     stages {
         stage ('Préparer les variables') {
    			steps {

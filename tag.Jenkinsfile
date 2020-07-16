@@ -108,20 +108,6 @@ pipeline {
 	          	]        	    
         	}
         }
-        stage ('Valider (commit) le fichier pom avec les mises à jour des dépendances Maven') {
-            steps {
-                script {
-                    try {
-	    			    sh 'git add -- **/pom.xml'
-		    	    	sh 'git commit -m "Mise à jour dépendances maven" && git push || echo "Aucune dependances mise a jour"'
-		    	    } catch(error) {
-		        	    unstable("[ERROR]: ${STAGE_NAME} failed!")
-			            stageResult."{STAGE_NAME}" = "UNSTABLE"
-			            emailext body: ' ${JOB_NAME} ${BUILD_NUMBER} a échoué! Vous devez faire quelque chose à ce sujet.https://jenkins.dev.inspq.qc.ca/job/utilitaire-nam/job/utilitaire-nam-etiquetage/${BUILD_NUMBER}/console', subject: 'FAILURE', to: "${NOTIFICATION_TEAM}"
-			        }
-			    }
-            }
-        }
 		stage ("Tests de securité") {
             steps {
                 script{
@@ -209,17 +195,17 @@ pipeline {
 	                            sh "cd ops && wget -qO clairctl https://github.com/jgsqware/clairctl/releases/download/v1.2.8/clairctl-linux-amd64 && chmod u+x clairctl"
 	                       }
 	                   }
-	               }    
+	                }    
 	                try{
-        			     sh "cd ops && ./clairctl analyze ${DOCKER_IMAGE} --filters High,Critical,Defcon1" 
+                        sh "cd ops && ./clairctl analyze ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${VERSION} --filters High,Critical,Defcon1" 
         			} catch(error){
         			    unstable("[ERROR]: ${STAGE_NAME} failed!")
 			            stageResult."{STAGE_NAME}" = "UNSTABLE"
 			            emailext body: ' ${JOB_NAME} ${BUILD_NUMBER} a échoué! Vulnerabilite dans cette image ! Vous devez faire quelque chose à ce sujet. https://jenkins.dev.inspq.qc.ca/job/utilitaire-nam/job/utilitaire-nam-etiquetage/${BUILD_NUMBER}/console', subject: 'FAILURE', to: "${NOTIFICATION_TEAM}"
 			        }
 			        
-	        	    sh "cd ops && mkdir -p reports && ./clairctl report ${DOCKER_IMAGE} && mv reports/html/${CLAIR_REPORT_FILE} reports/html/analyse-image.html"
-	        		sh "docker stop sadufaclair sadufaclairdb && rm ops/clairctl"
+	        	    sh "cd ops && mkdir -p reports && ./clairctl report ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${VERSION} && mv reports/html/analysis-${DOCKER_REPOSITORY}-${DOCKER_REPOSITORY_PREFIX}-${SVC_ARTIFACT_ID}-${VERSION}.html reports/html/analyse-image.html"
+	        	    sh "docker stop utilitairenamclair utilitairenamclairdb && rm ops/clairctl"
 	            }
 	        }
 	    }
@@ -234,6 +220,20 @@ pipeline {
 	            reportName: "résultats du test de balayage de l'image"
 	          	]        	    
         	}
+        }
+        stage ('Valider (commit) le fichier pom avec les mises à jour des dépendances Maven') {
+            steps {
+                script {
+                    try {
+	    			    sh 'git add -- **/pom.xml'
+		    	    	sh 'git commit -m "Mise à jour dépendances maven" && git push || echo "Aucune dependances mise a jour"'
+		    	    } catch(error) {
+		        	    unstable("[ERROR]: ${STAGE_NAME} failed!")
+			            stageResult."{STAGE_NAME}" = "UNSTABLE"
+			            emailext body: ' ${JOB_NAME} ${BUILD_NUMBER} a échoué! Vous devez faire quelque chose à ce sujet.https://jenkins.dev.inspq.qc.ca/job/utilitaire-nam/job/utilitaire-nam-etiquetage/${BUILD_NUMBER}/console', subject: 'FAILURE', to: "${NOTIFICATION_TEAM}"
+			        }
+			    }
+            }
         }
         stage ('Pousser les mises à jour des fichiers pom.xml pour le nouveau SNAPSHOT'){
             steps {

@@ -15,7 +15,7 @@ pipeline {
     	NOTIFICATION_TEAM = "${env.NOTIFICATION_SX5_TEAM}"
     	projectPom = readMavenPom file: 'dev/utilitaire-nam/pom.xml'
     	svcPom = readMavenPom file: 'dev/utilitaire-nam/utilitaire-NAM-Service/pom.xml'
-	    SVC_ARTIFACT_ID = svcPom.getArtifactId()
+ SVC_ARTIFACT_ID = svcPom.getArtifactId()
     	POMVERSION = projectPom.getVersion()
     	DOCKER_REPOSITORY = projectPom.getProperties().getProperty('docker.repository')
     	DOCKER_REPOSITORY_PREFIX = projectPom.getProperties().getProperty('docker.repository.prefix')

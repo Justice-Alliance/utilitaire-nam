@@ -6,7 +6,7 @@
 
 	<groupId>ca.qc.inspq</groupId>
 	<artifactId>utilitaire-nam</artifactId>
-	<version>vers1</version>
+	<version>tag_1.1</version>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>

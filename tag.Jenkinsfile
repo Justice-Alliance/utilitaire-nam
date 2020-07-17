@@ -126,9 +126,10 @@ pipeline {
 			            emailext body: "${JOB_NAME} ${BUILD_NUMBER} a échoué! Vous devez faire quelque chose à ce sujet.https://jenkins.dev.inspq.qc.ca/job/utilitaire-nam/job/utilitaire-nam-etiquetage/${BUILD_NUMBER}/console", 
                             subject: 'FAILURE', 
                             to: "${NOTIFICATION_TEAM}"
-			    }
+			        }
+                }
             }
-        }
+        }  
 		stage ("Tests de securité") {
             steps {
                 script{

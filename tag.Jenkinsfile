@@ -108,6 +108,20 @@ pipeline {
 	          	]        	    
         	}
         }
+        stage ('Valider (commit) le fichier pom avec les mises à jour des dépendances Maven') {
+            steps {
+                script {
+                    try {
+	    			    sh 'git add -- **/pom.xml'
+		    	    	sh 'git commit -m "Mise à jour dépendances maven" && git push || echo "Aucune dependances mise a jour"'
+		    	    } catch(error) {
+		        	    unstable("[ERROR]: ${STAGE_NAME} failed!")
+			            stageResult."{STAGE_NAME}" = "UNSTABLE"
+			            emailext body: ' ${JOB_NAME} ${BUILD_NUMBER} a échoué! Vous devez faire quelque chose à ce sujet.https://jenkins.dev.inspq.qc.ca/job/utilitaire-nam/job/utilitaire-nam-etiquetage/${BUILD_NUMBER}/console', subject: 'FAILURE', to: "${NOTIFICATION_TEAM}"
+			        }
+			    }
+            }
+        }
 		stage ("Tests de securité") {
             steps {
                 script{
@@ -214,20 +228,6 @@ pipeline {
 	            reportName: "résultats du test de balayage de l'image"
 	          	]        	    
         	}
-        }
-        stage ('Valider (commit) le fichier pom avec les mises à jour des dépendances Maven') {
-            steps {
-                script {
-                    try {
-	    			    sh 'git add -- **/pom.xml'
-		    	    	sh 'git commit -m "Mise à jour dépendances maven" && git push || echo "Aucune dependances mise a jour"'
-		    	    } catch(error) {
-		        	    unstable("[ERROR]: ${STAGE_NAME} failed!")
-			            stageResult."{STAGE_NAME}" = "UNSTABLE"
-			            emailext body: ' ${JOB_NAME} ${BUILD_NUMBER} a échoué! Vous devez faire quelque chose à ce sujet.https://jenkins.dev.inspq.qc.ca/job/utilitaire-nam/job/utilitaire-nam-etiquetage/${BUILD_NUMBER}/console', subject: 'FAILURE', to: "${NOTIFICATION_TEAM}"
-			        }
-			    }
-            }
         }
         stage ('Pousser les mises à jour des fichiers pom.xml pour le nouveau SNAPSHOT'){
             steps {

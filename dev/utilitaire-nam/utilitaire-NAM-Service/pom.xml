@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>ca.qc.inspq</groupId>
 		<artifactId>utilitaire-nam</artifactId>
-		<version>patch-2</version>
+		<version>patch2.1</version>
 	</parent>
 
 	<artifactId>utilitaire-nam-service</artifactId>

@@ -18,8 +18,6 @@ pipeline {
 		SVC_ARTIFACT_ID = svcPom.getArtifactId()
 		POMVERSION = projectPom.getVersion()
     	REPOSITORY_PREFIX = "inspq"
-        DOCKER_REPOSITORY = projectPom.getProperties().getProperty('docker.repository')
-    	DOCKER_REPOSITORY_PREFIX = projectPom.getProperties().getProperty('docker.repository.prefix')
     }
     stages {
         stage ('Préparer les variables') {
@@ -60,31 +58,17 @@ pipeline {
             		
             	}
             }
-        }
-        stage ('Etiquetage et mise a jour de la version') {
-            steps{
-                script{
-                    try{
-                        sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${VERSION_TAG} -f dev/utilitaire-nam/pom.xml"
-                    }catch(error){
-                        timeout(time:60, unit:'SECONDS'){
-                            retry(1){
-                                sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${VERSION_TAG} -f dev/utilitaire-nam/pom.xml"
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        } 
         stage ('Mise à jour des dépendances Maven ') {
             steps {
-                sh 'mvn versions:display-dependency-updates -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
-			    sh 'mvn versions:display-plugin-updates -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
-				sh 'mvn versions:update-parent -DprocessAllModules=true -f  dev/utilitaire-nam/pom.xml'
-				sh 'mvn -N versions:update-child-modules -DprocessAllModules=true -f  dev/utilitaire-nam/pom.xml'
-				sh 'mvn versions:use-latest-versions -Dexcludes=com.vaadin:* -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
-			}
-		}
+                   sh 'mvn versions:display-dependency-updates -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
+			       sh 'mvn versions:display-plugin-updates -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
+				   sh 'mvn versions:update-parent -DprocessAllModules=true -f  dev/utilitaire-nam/pom.xml'
+				   sh 'mvn -N versions:update-child-modules -DprocessAllModules=true -f  dev/utilitaire-nam/pom.xml '
+				   sh 'mvn versions:use-latest-versions -Dexcludes=com.vaadin:* -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
+            }
+        }
+        
         stage ('Construire utilitaire-nam') {
 			environment {
 		    	projectPom = readMavenPom file: 'dev/utilitaire-nam/pom.xml'
@@ -105,7 +89,7 @@ pipeline {
                         sh "mvn clean install -Dprivate-repository=${MVN_REPOSITORY} -f dev/utilitaire-nam/pom.xml"
                         sh "mvn deploy -Dmaven.install.skip=true -DskipTests -Dprivate-repository=${MVN_REPOSITORY} -Ddockerfile.skip=false -f dev/utilitaire-nam/pom.xml"
                         // Annuler les modifications faites au fichier pom par la première étape
-                        //sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${POMVERSION} -f dev/utilitaire-nam/pom.xml"
+                        sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${POMVERSION} -f dev/utilitaire-nam/pom.xml"
                     
                     }catch(error) {
                         timeout(time:120, unit:'SECONDS'){
@@ -124,49 +108,14 @@ pipeline {
                 }                               	
                     
             }
-                post {
+            post {
                 success {
                      archive '**/target/*.jar'
                      junit '**/target/surefire-reports/TEST-*.xml'
                 }
             }
         }
-        stage ('Construire et publier la version étiquetée de Utilitaire-NAM') {
-            steps {
-                script{
-                    try{
-                        sh "mvn clean install -Dprivate-repository=${MVN_REPOSITORY} -f dev/utilitaire-nam/pom.xml"
-                        sh "mvn deploy -Dmaven.install.skip=true -DskipTests -Dprivate-repository=${MVN_REPOSITORY} -Ddockerfile.skip=false -f dev/utilitaire-nam/pom.xml"
-                        sh "git add -- **/pom.xml"
-                        sh "git pull"
-                        sh "git push"
-                        sh "git tag -a ${VERSION_TAG} -m '${MESSAGE}'"
-                        sh "git push origin ${VERSION_TAG}"
-                    }catch(error){
-                        timeout(time:120, unit:'SECONDS'){
-                            retry(1){
-                                sh "mvn clean install -Dprivate-repository=${MVN_REPOSITORY} -f dev/utilitaire-nam/pom.xml"
-                                sh "mvn deploy -Dmaven.install.skip=true -DskipTests -Dprivate-repository=${MVN_REPOSITORY} -Ddockerfile.skip=false -f dev/utilitaire-nam/pom.xml"
-                                sh "git add -- **/pom.xml"
-                                sh "git pull"
-                                sh "git push"
-                                sh "git tag -a ${VERSION_TAG} -m '${MESSAGE}'"
-                                sh "git push origin ${VERSION_TAG}"
-                            }
-                        }
-                    }
-                        
-                }
-            }
-        
-        	post {
-                success {
-                    archive '**/target/*.jar'
-                    junit '**/target/surefire-reports/TEST-*.xml'
-                }
-            }
-        }
-        stage ("Publier le résultats des tests et la documentation Cucumber") {
+        stage ("Publier le résultats des tests et la documentation Cucumber API") {
         	steps {
 	            publishHTML target: [
 	            	allowMissing: false,
@@ -178,35 +127,9 @@ pipeline {
 	          	]        	    
         	}
         }
-        stage ('Valider (commit) le fichier pom avec les mises à jour des dépendances Maven') {
+        stage ('Exécuter les tests de sécurité') {
             steps {
-                script {
-                    try {
-	    			    sh 'git add -- **/pom.xml'
-		    	    	sh 'git commit -m "Mise à jour dépendances maven" && git push || echo "Aucune dependances mise a jour"'
-		    	    } catch(error) {
-		        	    unstable("[ERROR]: ${STAGE_NAME} failed! Échec de validation des MàJ de dépendances Maven")
-			            stageResult."${STAGE_NAME}" = "UNSTABLE"
-			            emailext body: "${JOB_NAME} ${BUILD_NUMBER} a échoué! Vous devez faire quelque chose à ce sujet.https://jenkins.dev.inspq.qc.ca/job/utilitaire-nam/job/utilitaire-nam-etiquetage/${BUILD_NUMBER}/console", 
-                            subject: 'FAILURE', 
-                            to: "${NOTIFICATION_TEAM}"
-			        }
-                }
-            }
-        }  
-		stage ("Tests de securité") {
-            steps {
-                script{
-                    try{
-                        sh "cd dev/utilitaire-nam && mvn validate -Psecurity"
-                    }catch(err){
-                        timeout(time:120, unit:'SECONDS'){
-                            retry(1){
-                                sh "cd dev/utilitaire-nam && mvn validate -Psecurity"
-                            }
-                        }
-                    }
-                }
+                sh "cd dev/utilitaire-nam && mvn validate -Psecurity"
             }
         }
         stage ("Publier le résultats des tests de l'anaylse statique et des librairies") {
@@ -220,87 +143,83 @@ pipeline {
 	            reportName: 'résultats des sécurités des librairies'
 	          	]        	    
         	}
-        }        
+        }
         stage ('Tests SonarQube') {
         	steps {
-            	script {
-                    try{
-                        withSonarQubeEnv('SonarQube') { 
-                            sh "cd dev/utilitaire-nam && mvn sonar:sonar"
-                        }
-                    }catch(error){
-                        timeout(time:120, unit:'SECONDS'){
-                            retry(1){
-                                withSonarQubeEnv('SonarQube') { 
-                   		            sh "cd dev/utilitaire-nam && mvn sonar:sonar"
-                                }
-                            }    
-                        }
+            	script { 
+                	withSonarQubeEnv('SonarQube') { 
+                   		sh "cd dev/utilitaire-nam && mvn sonar:sonar"
                 	}
                 }
             }
         }
-        stage("Balayage sécurité image"){
-            environment {
+       	stage("Balayage sécurité image"){
+		    environment {
 		    	projectPom = readMavenPom file: 'dev/utilitaire-nam/pom.xml'
 		    	svcPom = readMavenPom file: 'dev/utilitaire-nam/utilitaire-NAM-Service/pom.xml'
 			    SVC_ARTIFACT_ID = svcPom.getArtifactId()
 		    	POMVERSION = projectPom.getVersion()
 		        SVC_IMAGE = "${REPOSITORY}/${REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${POMVERSION}"
-		        SVC_RAPPORT = "analysis-${REPOSITORY}-${REPOSITORY_PREFIX}-${SVC_ARTIFACT_ID}-${POMVERSION}.html" 
-            }
+		        SVC_RAPPORT = "analysis-${REPOSITORY}-${REPOSITORY_PREFIX}-${SVC_ARTIFACT_ID}-${POMVERSION}.html"    
+		    }
        		steps {
-	       	   	script{
-                    try{
-                        VERSION = sh(
+	       	   	script {
+	                VERSION = sh(
 	                	script: 'if [ "$(git describe --exact-match HEAD 2>>/dev/null || git rev-parse --abbrev-ref HEAD)" == "master" ]; then mvn -q -f dev/utilitaire-nam/pom.xml -Dexec.executable="echo" -Dexec.args=\'${project.version}\' --non-recursive exec:exec 2>/dev/null; else git describe --exact-match HEAD 2>>/dev/null || git rev-parse --abbrev-ref HEAD; fi',
 	                	returnStdout: true
 	                	).trim()
-	       	   		    sh "docker pull arminc/clair-db && docker pull arminc/clair-local-scan"
-    	    		    sh '''
-	                    until $(curl --output /dev/null --silent --fail http://localhost:16060/v1/namespaces)
-	                    do 
+	       	   		sh "docker pull arminc/clair-db && docker pull arminc/clair-local-scan"
+    	    		sh '''
+	                until $(curl --output /dev/null --silent --fail http://localhost:16060/v1/namespaces)
+	                do 
 	      				docker inspect utilitairenamclairdb 2>/dev/null >/dev/null && echo utilitairenamclairdb est demarre || docker run -d --rm --name utilitairenamclairdb arminc/clair-db
 	                	printf '.'
 	                	sleep 5
 	    	    		docker inspect utilitairenamclair 2>/dev/null >/dev/null && echo utilitairenamclair est demarre || docker run -p 16060:6060 --link utilitairenamclairdb:postgres -d --rm --name utilitairenamclair arminc/clair-local-scan
 	    	    		sleep 5
-	                    done
-	                    '''      
-        			    sh "cd ops && wget -qO clairctl https://github.com/jgsqware/clairctl/releases/download/v1.2.8/clairctl-linux-amd64 && chmod u+x clairctl"
-        			    sh "cd ops && ./clairctl analyze ${SVC_IMAGE} --filters High,Critical,Defcon1"
-        			    sh "cd ops && ./clairctl analyze ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${VERSION} --filters High,Critical,Defcon1"
-        			    sh "cd ops && mkdir -p reports && ./clairctl report ${SVC_IMAGE} && mv reports/html/${SVC_RAPPORT} && ./clairctl report ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${VERSION} && mv reports/html/analysis-${DOCKER_REPOSITORY}-${DOCKER_REPOSITORY_PREFIX}-${SVC_ARTIFACT_ID}-${VERSION}.html reports/html/analyse-image.html"
-	        	        sh "docker stop utilitairenamclair utilitairenamclairdb && rm ops/clairctl"
-                    }catch(error){
-                        timeout(time:60, unit:'SECONDS'){
-                            retry(1){
-                                VERSION = sh(
-	                	        script: 'if [ "$(git describe --exact-match HEAD 2>>/dev/null || git rev-parse --abbrev-ref HEAD)" == "master" ]; then mvn -q -f dev/utilitaire-nam/pom.xml -Dexec.executable="echo" -Dexec.args=\'${project.version}\' --non-recursive exec:exec 2>/dev/null; else git describe --exact-match HEAD 2>>/dev/null || git rev-parse --abbrev-ref HEAD; fi',
-	                	        returnStdout: true
-	                	        ).trim()
-	       	   		            sh "docker pull arminc/clair-db && docker pull arminc/clair-local-scan"
-    	    		            sh '''
-	                            until $(curl --output /dev/null --silent --fail http://localhost:16060/v1/namespaces)
-	                            do 
-	      				        docker inspect utilitairenamclairdb 2>/dev/null >/dev/null && echo utilitairenamclairdb est demarre || docker run -d --rm --name utilitairenamclairdb arminc/clair-db
-	                	        printf '.'
-	                	        sleep 5
-	    	    		        docker inspect utilitairenamclair 2>/dev/null >/dev/null && echo utilitairenamclair est demarre || docker run -p 16060:6060 --link utilitairenamclairdb:postgres -d --rm --name utilitairenamclair arminc/clair-local-scan
-	    	    		        sleep 5
-	                            done
-	                            '''      
-        			            sh "cd ops && wget -qO clairctl https://github.com/jgsqware/clairctl/releases/download/v1.2.8/clairctl-linux-amd64 && chmod u+x clairctl"
-        			            sh "cd ops && ./clairctl analyze ${SVC_IMAGE} --filters High,Critical,Defcon1"
-        			            sh "cd ops && ./clairctl analyze ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${VERSION} --filters High,Critical,Defcon1"
-        			            sh "cd ops && mkdir -p reports && ./clairctl report ${SVC_IMAGE} && mv reports/html/${SVC_RAPPORT} && ./clairctl report ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${VERSION} && mv reports/html/analysis-${DOCKER_REPOSITORY}-${DOCKER_REPOSITORY_PREFIX}-${SVC_ARTIFACT_ID}-${VERSION}.html reports/html/analyse-image.html"
-	        	                sh "docker stop utilitairenamclair utilitairenamclairdb && rm ops/clairctl"
-                            }
-                        }
-                    }
+	                done
+	                '''      
+        			sh "cd ops && wget -qO clairctl https://github.com/jgsqware/clairctl/releases/download/v1.2.8/clairctl-linux-amd64 && chmod u+x clairctl"
+        			try {
+	        			sh "cd ops && ./clairctl analyze ${SVC_IMAGE} --filters High,Critical,Defcon1"     		    
+        			} catch (err) {
+        			      unstable("Vulnérabilités identifées dans l'image")
+        			      //currentBuild.result = 'FAILURE'
+        			}
+	        		sh "cd ops && mkdir -p reports && ./clairctl report ${SVC_IMAGE} && mv reports/html/${SVC_RAPPORT} reports/html/analyse-image.html"
+	        		sh "docker stop utilitairenamclair utilitairenamclairdb && rm ops/clairctl"		    
+        		}
+       		}
+      	}
+        stage ("Construire et publier la version étiquetée de Utilitaire-NAM") {
+            when {
+                buildingTag()
+            }
+            steps {
+                script {
+                    sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${VERSION_TAG} -f dev/utilitaire-nam/pom.xml"
+                    sh "mvn clean install -Dprivate-repository=${MVN_REPOSITORY} -f dev/utilitaire-nam/pom.xml"
+                    sh "mvn deploy -Dmaven.install.skip=true -DskipTests -Dprivate-repository=${MVN_REPOSITORY} -Ddockerfile.skip=false -f dev/utilitaire-nam/pom.xml"
+                    sh "git add -- **/pom.xml"
+                    sh "git commit -m '${MESSAGE}'"
+                    sh "git pull"
+                    sh "git push"
+                    sh "git tag -a ${VERSION_TAG} -m '${MESSAGE}'"
+                    sh "git push origin ${VERSION_TAG}"
                 }
             }
-        }                                
+        }
+        stage ("Balayage de securite image"){
+            when {
+                buildingTag()
+            }
+            steps {
+                script {
+                    sh "cd ops && mkdir -p reports && ./clairctl report ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${VERSION} && mv reports/html/analysis-${DOCKER_REPOSITORY}-${DOCKER_REPOSITORY_PREFIX}-${SVC_ARTIFACT_ID}-${VERSION}.html reports/html/analyse-image.html"
+	        	    sh "docker stop utilitairenamclair utilitairenamclairdb && rm ops/clairctl"
+                }
+            }
+        }
         stage ("Publier le résultats des tests de balayage de l'image") {
         	steps {
 	            publishHTML target: [
@@ -313,15 +232,23 @@ pipeline {
 	          	]        	    
         	}
         }
-        stage ('Pousser les mises à jour des fichiers pom.xml pour le nouveau SNAPSHOT'){
+        stage ('Valider (commit) le fichier pom avec les mises à jour des dépendances Maven') {
             steps {
-                sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${POMVERSION} -f dev/utilitaire-nam/pom.xml"
-            	sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${VERSION_NEXT}-SNAPSHOT -f dev/utilitaire-nam/pom.xml"
-        	   	sh "git add -- **/pom.xml"
-    	    	sh 'git commit -m "Mise à jour dépendances maven et Nouvelle version des fichiers pom.xml par Jenkins" && git push || echo "Aucune dependances mise a jour"'
-	    	}  
-    	}  
-	}
+                script {
+                    try {
+                        // Annuler les modifications faites au fichier pom par la première étape
+                        sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${POMVERSION} -f dev/utilitaire-nam/pom.xml"
+				        sh 'git add -- **/pom.xml'
+				        sh 'git commit -m "Mise à jour dépendances maven" && git push || echo "Aucune dependances mise a jour"'
+				    } catch (error) {
+			            unstable("[ERROR]: ${STAGE_NAME} failed!")
+			            stageResult."{STAGE_NAME}" = "UNSTABLE"
+			            emailext body: ' ${JOB_NAME} ${BUILD_NUMBER} a échoué! Vous devez faire quelque chose à ce sujet. https://jenkins.dev.inspq.qc.ca/job/utilitaire-nam/job/${BUILD_NUMBER}/console', subject: 'FAILURE', to: "${NOTIFICATION_TEAM}"
+		            }
+			    }
+			}
+        }
+    }    
     post {
         always {
             script {
@@ -334,19 +261,19 @@ pipeline {
             script {
                 if (currentBuild.getPreviousBuild() == null || (currentBuild.getPreviousBuild() != null && currentBuild.getPreviousBuild().getResult().toString() != "SUCCESS")) {
                     mail(to: "${equipe}", 
-                        subject: "Construction et Étiquetage de utilitaire-nam réalisée avec succès: ${env.JOB_NAME} #${env.BUILD_NUMBER}", 
+                        subject: "Construction de utilitaire-nam et etiquetage réalisée avec succès: ${env.JOB_NAME} #${env.BUILD_NUMBER}", 
                         body: "${env.BUILD_URL}")
                 }
             }
         }
         failure {
             mail(to: "${equipe}",
-                subject: "Échec de la construction et Étiquetage de utilitaire-nam : ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                subject: "Échec de la construction et etiquetage de utilitaire-nam : ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: "${env.BUILD_URL}")
         }
         unstable {
             mail(to : "${equipe}",
-                subject: "Construction et Étiquetage de utilitaire-nam instable : ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                subject: "Construction de utilitaire-nam et etiquetage instable : ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: "${env.BUILD_URL}")
         }
     }

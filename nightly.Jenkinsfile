@@ -61,14 +61,13 @@ pipeline {
         } 
         stage ('Mise à jour des dépendances Maven ') {
             steps {
-                   sh 'mvn versions:display-dependency-updates -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
-			       sh 'mvn versions:display-plugin-updates -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
-				   sh 'mvn versions:update-parent -DprocessAllModules=true -f  dev/utilitaire-nam/pom.xml'
-				   sh 'mvn -N versions:update-child-modules -DprocessAllModules=true -f  dev/utilitaire-nam/pom.xml '
-				   sh 'mvn versions:use-latest-versions -Dexcludes=com.vaadin:* -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
-            }
-        }
-        
+                    	sh 'mvn versions:display-dependency-updates -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
+				        sh 'mvn versions:display-plugin-updates -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
+				        sh 'mvn versions:update-parent -DprocessAllModules=true -f  dev/utilitaire-nam/pom.xml'
+				        sh 'mvn -N versions:update-child-modules -DprocessAllModules=true -f  dev/utilitaire-nam/pom.xml'
+				        sh 'mvn versions:use-latest-versions -Dexcludes=com.vaadin:* -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
+			    }
+			}
         stage ('Construire utilitaire-nam') {
 			environment {
 		    	projectPom = readMavenPom file: 'dev/utilitaire-nam/pom.xml'
@@ -83,7 +82,6 @@ pipeline {
 	                    script: 'if [ "$(git describe --exact-match HEAD 2>>/dev/null || git rev-parse --abbrev-ref HEAD)" == "master" ]; then mvn -f dev/utilitaire-nam/pom.xml -q -Dexec.executable="echo" -Dexec.args=\'${project.version}\' --non-recursive exec:exec 2>/dev/null; else git describe --exact-match HEAD 2>>/dev/null || git rev-parse --abbrev-ref HEAD; fi',
 	                    returnStdout: true
 	                    ).trim()
-                         
 	                    // Configurer le numéro de version pour utiliser le nom de la branche si on est pas sur master
                         sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${VERSION} -f dev/utilitaire-nam/pom.xml"
                         sh "mvn clean install -Dprivate-repository=${MVN_REPOSITORY} -f dev/utilitaire-nam/pom.xml"
@@ -94,8 +92,6 @@ pipeline {
                     }catch(error) {
                         timeout(time:120, unit:'SECONDS'){
                             retry(2) {
-                                // Annuler les modifications faites au fichier pom par la mise à jour des librairies
-                                sh "git checkout -- **/pom.xml" 
                                 // Configurer le numéro de version pour utiliser le nom de la branche si on est pas sur master
                                 sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${VERSION} -f dev/utilitaire-nam/pom.xml"
                                 sh "mvn clean install -Dprivate-repository=${MVN_REPOSITORY} -f dev/utilitaire-nam/pom.xml"
@@ -181,12 +177,7 @@ pipeline {
 	                done
 	                '''      
         			sh "cd ops && wget -qO clairctl https://github.com/jgsqware/clairctl/releases/download/v1.2.8/clairctl-linux-amd64 && chmod u+x clairctl"
-        			try {
-	        			sh "cd ops && ./clairctl analyze ${SVC_IMAGE} --filters High,Critical,Defcon1"     		    
-        			} catch (err) {
-        			      unstable("Vulnérabilités identifées dans l'image")
-        			      //currentBuild.result = 'FAILURE'
-        			}
+	        		sh "cd ops && ./clairctl analyze ${SVC_IMAGE} --filters High,Critical,Defcon1"     		    
 	        		sh "cd ops && mkdir -p reports && ./clairctl report ${SVC_IMAGE} && mv reports/html/${SVC_RAPPORT} reports/html/analyse-image.html"
 	        		sh "docker stop utilitairenamclair utilitairenamclairdb && rm ops/clairctl"		    
         		}
@@ -208,8 +199,6 @@ pipeline {
             steps {
                 script {
                     try {
-                        // Annuler les modifications faites au fichier pom par la première étape
-                        sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${POMVERSION} -f dev/utilitaire-nam/pom.xml"
 				        sh 'git add -- **/pom.xml'
 				        sh 'git commit -m "Mise à jour dépendances maven" && git push || echo "Aucune dependances mise a jour"'
 				    } catch (error) {

@@ -61,13 +61,14 @@ pipeline {
         } 
         stage ('Mise à jour des dépendances Maven ') {
             steps {
-                    	sh 'mvn versions:display-dependency-updates -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
-				        sh 'mvn versions:display-plugin-updates -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
-				        sh 'mvn versions:update-parent -DprocessAllModules=true -f  dev/utilitaire-nam/pom.xml'
-				        sh 'mvn -N versions:update-child-modules -DprocessAllModules=true -f  dev/utilitaire-nam/pom.xml'
-				        sh 'mvn versions:use-latest-versions -Dexcludes=com.vaadin:* -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
-			    }
-			}
+                   sh 'mvn versions:display-dependency-updates -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
+			       sh 'mvn versions:display-plugin-updates -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
+				   sh 'mvn versions:update-parent -DprocessAllModules=true -f  dev/utilitaire-nam/pom.xml'
+				   sh 'mvn -N versions:update-child-modules -DprocessAllModules=true -f  dev/utilitaire-nam/pom.xml '
+				   sh 'mvn versions:use-latest-versions -Dexcludes=com.vaadin:* -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
+            }
+        }
+        
         stage ('Construire utilitaire-nam') {
 			environment {
 		    	projectPom = readMavenPom file: 'dev/utilitaire-nam/pom.xml'
@@ -82,6 +83,7 @@ pipeline {
 	                    script: 'if [ "$(git describe --exact-match HEAD 2>>/dev/null || git rev-parse --abbrev-ref HEAD)" == "master" ]; then mvn -f dev/utilitaire-nam/pom.xml -q -Dexec.executable="echo" -Dexec.args=\'${project.version}\' --non-recursive exec:exec 2>/dev/null; else git describe --exact-match HEAD 2>>/dev/null || git rev-parse --abbrev-ref HEAD; fi',
 	                    returnStdout: true
 	                    ).trim()
+                         
 	                    // Configurer le numéro de version pour utiliser le nom de la branche si on est pas sur master
                         sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${VERSION} -f dev/utilitaire-nam/pom.xml"
                         sh "mvn clean install -Dprivate-repository=${MVN_REPOSITORY} -f dev/utilitaire-nam/pom.xml"
@@ -92,6 +94,8 @@ pipeline {
                     }catch(error) {
                         timeout(time:120, unit:'SECONDS'){
                             retry(2) {
+                                // Annuler les modifications faites au fichier pom par la mise à jour des librairies
+                                sh "git checkout -- **/pom.xml" 
                                 // Configurer le numéro de version pour utiliser le nom de la branche si on est pas sur master
                                 sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${VERSION} -f dev/utilitaire-nam/pom.xml"
                                 sh "mvn clean install -Dprivate-repository=${MVN_REPOSITORY} -f dev/utilitaire-nam/pom.xml"
@@ -156,8 +160,7 @@ pipeline {
 			    SVC_ARTIFACT_ID = svcPom.getArtifactId()
 		    	POMVERSION = projectPom.getVersion()
 		        SVC_IMAGE = "${REPOSITORY}/${REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${POMVERSION}"
-		        SVC_RAPPORT = "analysis-${REPOSITORY}-${REPOSITORY_PREFIX}-${SVC_ARTIFACT_ID}-${POMVERSION}.html"
-		        
+		        SVC_RAPPORT = "analysis-${REPOSITORY}-${REPOSITORY_PREFIX}-${SVC_ARTIFACT_ID}-${POMVERSION}.html"    
 		    }
        		steps {
 	       	   	script {
@@ -177,12 +180,46 @@ pipeline {
 	                done
 	                '''      
         			sh "cd ops && wget -qO clairctl https://github.com/jgsqware/clairctl/releases/download/v1.2.8/clairctl-linux-amd64 && chmod u+x clairctl"
-	        		sh "cd ops && ./clairctl analyze ${SVC_IMAGE} --filters High,Critical,Defcon1"     		    
+        			try {
+	        			sh "cd ops && ./clairctl analyze ${SVC_IMAGE} --filters High,Critical,Defcon1"     		    
+        			} catch (err) {
+        			      unstable("Vulnérabilités identifées dans l'image")
+        			      //currentBuild.result = 'FAILURE'
+        			}
 	        		sh "cd ops && mkdir -p reports && ./clairctl report ${SVC_IMAGE} && mv reports/html/${SVC_RAPPORT} reports/html/analyse-image.html"
 	        		sh "docker stop utilitairenamclair utilitairenamclairdb && rm ops/clairctl"		    
         		}
        		}
       	}
+        stage ("Construire et publier la version étiquetée de Utilitaire-NAM") {
+            when {
+                buildingTag()
+            }
+            steps {
+                script {
+                    sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${VERSION_TAG} -f dev/utilitaire-nam/pom.xml"
+                    sh "mvn clean install -Dprivate-repository=${MVN_REPOSITORY} -f dev/utilitaire-nam/pom.xml"
+                    sh "mvn deploy -Dmaven.install.skip=true -DskipTests -Dprivate-repository=${MVN_REPOSITORY} -Ddockerfile.skip=false -f dev/utilitaire-nam/pom.xml"
+                    sh "git add -- **/pom.xml"
+                    sh "git commit -m '${MESSAGE}'"
+                    sh "git pull"
+                    sh "git push"
+                    sh "git tag -a ${VERSION_TAG} -m '${MESSAGE}'"
+                    sh "git push origin ${VERSION_TAG}"
+                }
+            }
+        }
+        stage ("Balayage de securite image"){
+            when {
+                buildingTag()
+            }
+            steps {
+                script {
+                    sh "cd ops && mkdir -p reports && ./clairctl report ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${VERSION} && mv reports/html/analysis-${DOCKER_REPOSITORY}-${DOCKER_REPOSITORY_PREFIX}-${SVC_ARTIFACT_ID}-${VERSION}.html reports/html/analyse-image.html"
+	        	    sh "docker stop utilitairenamclair utilitairenamclairdb && rm ops/clairctl"
+                }
+            }
+        }
         stage ("Publier le résultats des tests de balayage de l'image") {
         	steps {
 	            publishHTML target: [
@@ -199,6 +236,8 @@ pipeline {
             steps {
                 script {
                     try {
+                        // Annuler les modifications faites au fichier pom par la première étape
+                        sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${POMVERSION} -f dev/utilitaire-nam/pom.xml"
 				        sh 'git add -- **/pom.xml'
 				        sh 'git commit -m "Mise à jour dépendances maven" && git push || echo "Aucune dependances mise a jour"'
 				    } catch (error) {
@@ -222,19 +261,19 @@ pipeline {
             script {
                 if (currentBuild.getPreviousBuild() == null || (currentBuild.getPreviousBuild() != null && currentBuild.getPreviousBuild().getResult().toString() != "SUCCESS")) {
                     mail(to: "${equipe}", 
-                        subject: "Construction de utilitaire-nam réalisée avec succès: ${env.JOB_NAME} #${env.BUILD_NUMBER}", 
+                        subject: "Construction de utilitaire-nam et etiquetage réalisée avec succès: ${env.JOB_NAME} #${env.BUILD_NUMBER}", 
                         body: "${env.BUILD_URL}")
                 }
             }
         }
         failure {
             mail(to: "${equipe}",
-                subject: "Échec de la construction de utilitaire-nam : ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                subject: "Échec de la construction et etiquetage de utilitaire-nam : ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: "${env.BUILD_URL}")
         }
         unstable {
             mail(to : "${equipe}",
-                subject: "Construction de utilitaire-nam instable : ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                subject: "Construction de utilitaire-nam et etiquetage instable : ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: "${env.BUILD_URL}")
         }
     }

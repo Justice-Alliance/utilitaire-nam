@@ -15,7 +15,7 @@ pipeline {
     	NOTIFICATION_TEAM = "${env.NOTIFICATION_SX5_TEAM}"
     	projectPom = readMavenPom file: 'dev/utilitaire-nam/pom.xml'
     	svcPom = readMavenPom file: 'dev/utilitaire-nam/utilitaire-NAM-Service/pom.xml'
-	    SVC_ARTIFACT_ID = svcPom.getArtifactId()
+        SVC_ARTIFACT_ID = svcPom.getArtifactId()
     	POMVERSION = projectPom.getVersion()
     	DOCKER_REPOSITORY = projectPom.getProperties().getProperty('docker.repository')
     	DOCKER_REPOSITORY_PREFIX = projectPom.getProperties().getProperty('docker.repository.prefix')
@@ -37,6 +37,7 @@ pipeline {
                 }
             }
         }
+        
         stage ('Faire le checkout de la branche utilitaire nam a étiqueter et mettre à jour la version') {
             steps {
                 script{
@@ -54,7 +55,16 @@ pipeline {
                 }
 				
             }
-        } 
+        }
+        stage ('Mise à jour des dépendances Maven ') {
+            steps {
+                    	sh 'mvn versions:display-dependency-updates -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
+				        sh 'mvn versions:display-plugin-updates -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
+				        sh 'mvn versions:update-parent -DprocessAllModules=true -f  dev/utilitaire-nam/pom.xml'
+				        sh 'mvn -N versions:update-child-modules -DprocessAllModules=true -f  dev/utilitaire-nam/pom.xml'
+				        sh 'mvn versions:use-latest-versions -Dexcludes=com.vaadin:* -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
+			    }
+			}
         stage ('Construire et publier la version étiquetée de Utilitaire-NAM') {
             steps {
                 script{
@@ -82,7 +92,6 @@ pipeline {
                         }
                     }
                         
-            
                 }
             }
         
@@ -104,7 +113,23 @@ pipeline {
 	            reportName: 'Documentation et résultats des tests BDD'
 	          	]        	    
         	}
-        } 
+        }
+        stage ('Valider (commit) le fichier pom avec les mises à jour des dépendances Maven') {
+            steps {
+                script {
+                    try {
+	    			    sh 'git add -- **/pom.xml'
+		    	    	sh 'git commit -m "Mise à jour dépendances maven" && git push || echo "Aucune dependances mise a jour"'
+		    	    } catch(error) {
+		        	    unstable("[ERROR]: ${STAGE_NAME} failed! Échec de validation des MàJ de dépendances Maven")
+			            stageResult."${STAGE_NAME}" = "UNSTABLE"
+			            emailext body: "${JOB_NAME} ${BUILD_NUMBER} a échoué! Vous devez faire quelque chose à ce sujet.https://jenkins.dev.inspq.qc.ca/job/utilitaire-nam/job/utilitaire-nam-etiquetage/${BUILD_NUMBER}/console", 
+                            subject: 'FAILURE', 
+                            to: "${NOTIFICATION_TEAM}"
+			        }
+                }
+            }
+        }  
 		stage ("Tests de securité") {
             steps {
                 script{
@@ -118,7 +143,6 @@ pipeline {
                         }
                     }
                 }
-                
             }
         }
         stage ("Publier le résultats des tests de l'anaylse statique et des librairies") {
@@ -148,7 +172,6 @@ pipeline {
                                 }
                             }    
                         }
-                	
                 	}
                 }
             }
@@ -173,7 +196,9 @@ pipeline {
 	                    done
 	                    '''      
         			    sh "cd ops && wget -qO clairctl https://github.com/jgsqware/clairctl/releases/download/v1.2.8/clairctl-linux-amd64 && chmod u+x clairctl"
-        			    sh "cd ops && ./clairctl analyze ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${VERSION} --filters High,Critical,Defcon1"     		    
+        			    sh "cd ops && ./clairctl analyze ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${VERSION} --filters High,Critical,Defcon1"
+        			    sh "cd ops && mkdir -p reports && ./clairctl report ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${VERSION} && mv reports/html/analysis-${DOCKER_REPOSITORY}-${DOCKER_REPOSITORY_PREFIX}-${SVC_ARTIFACT_ID}-${VERSION}.html reports/html/analyse-image.html"
+	        	        sh "docker stop utilitairenamclair utilitairenamclairdb && rm ops/clairctl"
         			}catch (err) {
                         timeout(time:120, unit:'SECONDS'){
                             retry(1){
@@ -191,23 +216,26 @@ pipeline {
 	    	    		        docker inspect utilitairenamclair 2>/dev/null >/dev/null && echo utilitairenamclair est demarre || docker run -p 16060:6060 --link utilitairenamclairdb:postgres -d --rm --name utilitairenamclair arminc/clair-local-scan
 	    	    		        sleep 5
 	                            done
-	                            '''      
-        			            sh "cd ops && wget -qO clairctl https://github.com/jgsqware/clairctl/releases/download/v1.2.8/clairctl-linux-amd64 && chmod u+x clairctl"
-        			            sh "cd ops && ./clairctl analyze ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${VERSION} --filters High,Critical,Defcon1"     		    
-                            }
-                        }
-
-                            if (currentBuild.result() == "FAILURE"){
-                                unstable("Vulnérabilités identifées dans l'image")
-        			        //currentBuild.result = 'FAILURE'
-                            }           
-                    }
-                }    
-	        	sh "cd ops && mkdir -p reports && ./clairctl report ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${VERSION} && mv reports/html/analysis-${DOCKER_REPOSITORY}-${DOCKER_REPOSITORY_PREFIX}-${SVC_ARTIFACT_ID}-${VERSION}.html reports/html/analyse-image.html"
-	        	sh "docker stop utilitairenamclair utilitairenamclairdb && rm ops/clairctl"		    
-        		
-       		}
-      	}
+	                            '''    
+	                            sh "cd ops && wget -qO clairctl https://github.com/jgsqware/clairctl/releases/download/v1.2.8/clairctl-linux-amd64 && chmod u+x clairctl"
+	                            try{
+	                            sh "cd ops && ./clairctl analyze ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${VERSION} --filters High,Critical,Defcon1"
+	                            } catch(error){
+	                                unstable("[ERROR]: ${STAGE_NAME} failed! Vulnérabilité dans l'image")
+			                        stageResult."${STAGE_NAME}" = "UNSTABLE"
+			                        emailext body: "${JOB_NAME} ${BUILD_NUMBER} a échoué! Vous devez faire quelque chose à ce sujet.https://jenkins.dev.inspq.qc.ca/job/utilitaire-nam/job/utilitaire-nam-etiquetage/${BUILD_NUMBER}/console", 
+                                        subject: 'FAILURE', 
+                                        to: "${NOTIFICATION_TEAM}"
+			                    }
+	                            sh "cd ops && mkdir -p reports && ./clairctl report ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${VERSION} && mv reports/html/analysis-${DOCKER_REPOSITORY}-${DOCKER_REPOSITORY_PREFIX}-${SVC_ARTIFACT_ID}-${VERSION}.html reports/html/analyse-image.html"
+	        	                sh "docker stop utilitairenamclair utilitairenamclairdb && rm ops/clairctl"
+	                        }
+	                    }
+	                }    
+			        
+	            }
+	        }
+	    }
         stage ("Publier le résultats des tests de balayage de l'image") {
         	steps {
 	            publishHTML target: [

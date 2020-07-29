@@ -114,3 +114,6 @@ buildNumber.properties
 roles/
 nosetests*.xml
 *.pyc
+
+ops/reports/
+reports/

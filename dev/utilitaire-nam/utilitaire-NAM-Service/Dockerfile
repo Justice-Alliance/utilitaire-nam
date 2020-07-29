@@ -1,4 +1,4 @@
-FROM nexus3.inspq.qc.ca:5000/inspq/openjdk-11:latest
+FROM nexus3.inspq.qc.ca:5000/inspq/openjdk-11:latest-ubi8
 
 ENV TZ=America/Toronto
 

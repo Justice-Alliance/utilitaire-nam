@@ -1,8 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-        name: unam-deployment
-        namespace: utilitaire-nam
+  name: unam-deployment
+  namespace: utilitaire-nam
 spec:
         replicas: 3
         selector:
@@ -17,5 +17,5 @@ spec:
                                 - name: uname-service
                                   image: nexus3.inspq.qc.ca:5000/inspq/utilitaire-nam-service:latest
                                   ports:
-                                          - containerPort: 80
+                                          - containerPort: "{{ unamservice_external_port }}"
                                           

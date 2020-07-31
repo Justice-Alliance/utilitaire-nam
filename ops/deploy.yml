@@ -36,9 +36,11 @@
   tasks:
   - name: Déployer deployment sur kubernetes
     k8s:
-      src: unam/manifest/unam_deployment.yml
+      state: present
+      definition: "{{ lookup('template', 'unam/manifest/unam_deployment.yml') }}"
     when: unam_container_type == "kubernetes"
   - name: Déployer service sur kubernetes
     k8s:
-      src: unam/manifest/unam_service.yml
+      state: present
+      definition: "{{ lookup('template', 'unam/manifest/unam_service.yml') }}"
     when: unam_container_type == "kubernetes"    

@@ -17,6 +17,7 @@
       "LOG4J2_GRAYLOG_PORT_GELF_UDP": "{{ unam_graylog_port_gelf_udp | default() | string }}"
       "GRAYLOG_HOST_BASE": "{{ unamservice_container_name }}"
       "DEBUG_PORT": "{{ unamservice_debug_port | default('0') }}"
+    unam_container_type: "{{ unamservice_container_type | default('docker')"
           
   roles:
   - name: application_web_docker
@@ -31,3 +32,13 @@
     application_protocol: "{{ unamservice_protocol | default() }}"
     application_virtualhost_protocol: "{{ unamservice_virtualhost_protocol | default() }}"
     application_base_url: "{{ unamservice_base_url | default() }}"
+    when: unam_container_type == "docker"
+  tasks:
+  - name: Déployer deployment sur kubernetes
+    k8s:
+      src: unam/manifest/unam_deployment.yml
+    when: unam_container_type == "kubernetes"
+  - name: Déployer service sur kubernetes
+    k8s:
+      src: unam/manifest/unam_service.yml
+    when: unam_container_type == "kubernetes"    

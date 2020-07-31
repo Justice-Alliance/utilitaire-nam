@@ -1,0 +1,24 @@
+---
+# defaults file for Utilitaire NAM
+# Configuration Graylog
+#unam_graylog_host: "{{ ansible_fqdn }}"
+#unam_graylog_port_gelf_udp: 12231
+unamservice_container_type: kubernetes
+# Version de l'image du conteneur a installer
+unamservice_image_version: latest
+# Port TCP sur lequel publier l'application
+unamservice_external_port: 14101
+unamservice_kubsvc_port: 80
+
+# URL de base pour publier le service
+#unamservice_base_url: "{{ ansible_fqdn }}"
+# Protocol (http ou https) des services web
+unamservice_protocol: http
+#unamservice_protocol: https
+#unamservice_cert_file: unamservice.dev3.inspq.qc.ca.cert
+#unamservice_cert_key: unamservice.dev3.inspq.qc.ca.key
+unamservice_url: "{{ unamservice_protocol }}://unam.mon.local"
+  
+unamservice_external_actuator_port: 27082
+
+unamservice_debug_port: "*:8001"

@@ -10,7 +10,7 @@ import { ValiderNamPageComponent } from './components/pages/valider-nam-page/val
 import { TopMenuComponent } from './lib/top-menu/top-menu.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-import { NgbDatepicker, NgbDatepickerI18n, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbDatepickerI18n, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { CustomDatepickerI18n, I18n } from './lib/date-picker/datepicker-i18n';
 import { NgxMaskModule } from 'ngx-mask'
 import { DateFormatPipe } from './lib/data-format-pipe';
@@ -32,7 +32,7 @@ registerLocaleData(localeFr, 'fr');
     AppRoutingModule,
     FormsModule,
     HttpClientModule,
-    NgbDatepicker,
+    NgbModule,
     NgxMaskModule.forRoot(),
     ReactiveFormsModule
    ],

@@ -1,0 +1,18 @@
+<div class="menu-top-zone">
+    <ul class="menu-items-top">
+      <li *ngFor="let item of topMenuItems; let i = index" title="{{item.title}}" class="menu-items-top">
+        <ng-template [ngIf]="item.link && item.visible">
+          <a routerLink="{{item.link}}" [class.active]="isMenuItemActif(item.link)" [class.readonly]="item.disabled"  title="{{item.title}}">
+            <i class="{{item.icon}}" style="height:13px; position: relative; font-weight: 400;"></i>
+            {{item.title}}
+          </a>
+        </ng-template>
+  
+        <!--ng-template [ngIf]="item.isAction && item.visible">
+          <a href="javascript:void(0)" (click)="item.action()" [class.active]="item.isActive" [class.readonly]="item.disabled" [class.colorO]="item.isColorHighlited === true" [class.colorB]="item.isColorHighlited === false" title="{{item.title | translate}}">
+            <i class="{{item.icon}} fa-lg" style="height:13px; position: relative; font-weight: 400;"></i>
+          </a>
+        </ng-template-->
+      </li>
+    </ul>
+  </div>

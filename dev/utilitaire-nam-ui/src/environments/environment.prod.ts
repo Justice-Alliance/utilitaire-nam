@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  urlUtilitaireNamApi: "nam/api/"
+  urlUtilitaireNAM: 'UTILITAIRE_NAM_URL'
 };

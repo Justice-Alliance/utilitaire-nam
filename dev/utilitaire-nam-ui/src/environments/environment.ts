@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  urlUtilitaireNAM: "http://localhost:8080"
+  urlUtilitaireNAM: "https://unam-dev.santepublique.rtss.qc.ca/"
 };
 
 /*

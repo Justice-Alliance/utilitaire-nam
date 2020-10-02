@@ -21,7 +21,7 @@ describe('TopMenuComponent', () => {
     fixture.detectChanges();
   });
 
-  it('devrait être créé', () => {
+  it('should create', () => {
     expect(component).toBeTruthy();
   });
 });

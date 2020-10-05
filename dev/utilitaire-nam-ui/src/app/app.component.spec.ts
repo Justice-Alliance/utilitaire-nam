@@ -53,8 +53,8 @@ describe('AppComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('devrait avoir un titre \'utilitaire-nam-ui\'', () => {
-    expect(component.title).toEqual('utilitaire-nam-ui');
+  it('devrait avoir un titre Utilitaire NAM Application', () => {
+    expect(component.NomApplication).toEqual('Utilitaire NAM Application');
   });
 
   it('devrait rediriger vers /valider quand on navigue vers ""', fakeAsync(() => {

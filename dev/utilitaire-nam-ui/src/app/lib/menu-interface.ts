@@ -6,9 +6,10 @@ export enum target {
 }
 
 export interface MenuItem {
-   title?: string; // Texte affiché à côté de l'icône
+   id?:string;
+   title?: string; 
    link?: string;
    icon?: string;
-   visible?: boolean;  // Si à True, l'item est visible.
+   visible?: boolean;  
    [key: string]: any;
 }

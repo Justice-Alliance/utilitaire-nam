@@ -14,9 +14,9 @@
             </div>
             <div class="col-sm-10 col-form-width">
                 <select id="listeTypeProvince" [(ngModel)]="codeProvinceSelect" class="form-control form-control-sm" name="listeTypeProvince">
-                     <!--option par défaut -->
+                     <!-- option par défaut -->
                      <option value="" selected="true"></option>
-                     <!-- liste dynamique-->
+                     <!-- liste dynamique -->
                     <option *ngFor="let province of inputOptionsProvince.options" [value]="province.value">
                         {{province.label}}
                     </option>
@@ -24,7 +24,7 @@
             </div>
         </div>
         <div class="form-group row">
-            <button type="button" class="btn btn-primary" [disabled]="(!nam || nam.trim().length === 0)" (click)="actionValider()">Valider</button>
+            <button type="button" name="validerNamBtn" class="btn btn-primary" [disabled]="(!nam || nam.trim().length === 0)" (click)="actionValider()">Valider</button>
         </div>
     </form>
     <div id="alerteErreur" *ngIf="resultatValider === false && action === 'valider'" class="alert alert-danger container-fluid">

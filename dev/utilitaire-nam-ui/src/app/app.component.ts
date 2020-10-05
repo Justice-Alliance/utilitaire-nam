@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { topMenu } from './components/topMenu';
@@ -15,24 +16,19 @@ export interface DateFormat {
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit, OnDestroy {
+export class AppComponent implements OnInit {
 
-  title = 'utilitaire-nam-ui';
+  NomApplication = 'Utilitaire NAM Application';
   topMenuItems = topMenu.topMenuItems;
-  private urlUtilitaireNamApi: string = environment.urlUtilitaireNAM;
-  
-  private souscriptions = new Subscription();
 
-  constructor() { }
-
+  constructor(private titleService:Title) {}
 
   ngOnInit(): void {
-    console.log("init called !");
+    console.log(this.NomApplication.concat(' démarrée !'));
+    this.setNomApplication(this.NomApplication)
   }
 
-  ngOnDestroy(): void {
-    if (this.souscriptions) {
-      this.souscriptions.unsubscribe();
-    }
-  }
+  private setNomApplication(titre:string) {
+    this.titleService.setTitle(titre);
+  }  
 }

@@ -1,19 +1,19 @@
-import { LOCALE_ID, NgModule } from '@angular/core';
-import  localeFr  from '@angular/common/locales/fr';
 import { registerLocaleData } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
+import localeFr from '@angular/common/locales/fr';
+import { LOCALE_ID, NgModule } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
+import { NgbDatepickerI18n, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgxMaskModule } from 'ngx-mask';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { GenererNamPageComponent } from './components/pages/generer-nam-page/generer-nam-page.component';
 import { InformationNamPageComponent } from './components/pages/information-nam-page/information-nam-page.component';
 import { ValiderNamPageComponent } from './components/pages/valider-nam-page/valider-nam-page.component';
-import { TopMenuComponent } from './lib/top-menu/top-menu.component';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
-import { NgbDatepickerI18n, NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { CustomDatepickerI18n, I18n } from './lib/date-picker/datepicker-i18n';
-import { NgxMaskModule } from 'ngx-mask'
 import { DateFormatPipe } from './lib/data-format-pipe';
+import { CustomDatepickerI18n, I18n } from './lib/date-picker/datepicker-i18n';
+import { TopMenuComponent } from './lib/top-menu/top-menu.component';
 
 
 registerLocaleData(localeFr, 'fr');

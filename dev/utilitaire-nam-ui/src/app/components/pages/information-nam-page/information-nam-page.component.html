@@ -10,7 +10,7 @@
         </div>
     </form>
     <div class="form-group row">
-        <button type="button" class="btn btn-primary" [disabled]="(!nam || nam.trim().length === 0)" (click)="actionObtenirInformation()">Obtenir l'information</button>
+        <button type="button" name="infoNamBtn" class="btn btn-primary" [disabled]="(!nam || nam.trim().length === 0)" (click)="actionObtenirInformation()">Obtenir l'information</button>
     </div>
 
     <div id="alerteErreur" *ngIf="erreurTraitement && action === 'information'" class="alert alert-danger container-fluid">

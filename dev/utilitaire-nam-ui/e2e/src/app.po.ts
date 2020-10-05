@@ -1,11 +1,24 @@
 import { browser, by, element } from 'protractor';
 
 export class AppPage {
-  navigateTo(): Promise<unknown> {
-    return browser.get(browser.baseUrl) as Promise<unknown>;
+  aller() {
+    return browser.get('/');
   }
 
-  getTitleText(): Promise<string> {
-    return element(by.css('app-root .content span')).getText() as Promise<string>;
+  getNomApplication() {
+    return browser.getTitle();
   }
+
+  getMenuValider() {
+    return element(by.id('menu-valider')).getText();
+  }
+
+  getMenuGenerer() {
+    return element(by.id('menu-generer')).getText();
+  }
+
+  getMenuInfo() {
+    return element(by.id('menu-information')).getText();
+  }
+ 
 }

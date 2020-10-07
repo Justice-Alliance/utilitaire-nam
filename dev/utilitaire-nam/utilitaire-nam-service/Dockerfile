@@ -1,4 +1,6 @@
 FROM nexus3.inspq.qc.ca:5000/inspq/openjdk-11:latest-ubi8
+ARG BASE_IMAGE=nexus3.inspq.qc.ca:5000/inspq/openjdk-11:latest-ubi8
+ENV BASE_IMAGE=${BASE_IMAGE}
 
 ENV TZ=America/Toronto
 

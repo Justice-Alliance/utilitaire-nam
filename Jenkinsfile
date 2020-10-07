@@ -120,7 +120,7 @@ pipeline {
 	            reportName: 'Documentation et résultats des tests BDD'
 	          	]        	    
         	}
-        }        
+        }
         stage ("Lancer les tests ui") {
 	        environment {
 		    	projectPom = readMavenPom file: 'dev/utilitaire-nam/pom.xml'

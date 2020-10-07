@@ -23,3 +23,4 @@ unamservice_debug_port: "*:8001"
 
 unamui_deploy: True
 unamui_external_port: 15010
+appui_push_env_image_to_repository: False

@@ -10,3 +10,4 @@ unamservice_protocol: https
 unamservice_virtualhost_protocol: http
 unamservice_url: "{{ unamservice_protocol }}://{{ unamservice_base_url }}"
   
+unamui_deploy: False

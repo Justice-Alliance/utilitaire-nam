@@ -21,9 +21,6 @@
 		<java.version>11</java.version>
 		<javax.ws.rs.version>2.1.1</javax.ws.rs.version>
 		<maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
-		<vaadin.version>8.8.0</vaadin.version>
-		<vaadin-spring-boot-starter.version>3.2.1</vaadin-spring-boot-starter.version>
-		<vaadin.plugin.version>8.8.0</vaadin.plugin.version>
 		<private-repository>https://nexus3.inspq.qc.ca:8443</private-repository>
 		<dockerfile.skip>true</dockerfile.skip>
 		<docker.repository>nexus3.inspq.qc.ca:5000</docker.repository>
@@ -70,10 +67,6 @@
 		<pluginRepository>
 			<id>spring-releases</id>
 			<url>https://repo.spring.io/libs-release</url>
-		</pluginRepository>
-		<pluginRepository>
-			<id>vaadin-addons</id>
-			<url>http://maven.vaadin.com/vaadin-addons</url>
 		</pluginRepository>
 	</pluginRepositories>
 

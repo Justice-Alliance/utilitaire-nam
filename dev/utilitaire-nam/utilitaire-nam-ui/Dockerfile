@@ -1,6 +1,11 @@
 FROM nexus3.inspq.qc.ca:5000/inspq/buildandtestnodejs-13:latest
 RUN mkdir -p /usr/src/app /dist
 
+ARG APP_VERSION=0.0.0
+ENV APP_VERSION=${APP_VERSION}
+ARG APP_NAME=utilitaire-nam-ui
+ENV APP_NAME=${APP_NAME}
+
 # Definir les variables d'environnement
 ENV UTILITAIRE_NAM_URL "http://localhost:8080"
 # Create app directory
@@ -19,6 +24,9 @@ RUN npm install --no-optional
 
 #Run a security audit
 RUN npm audit fix
+
+# Écrire le numéro de version de FA-IW dans le package.json
+RUN npm version ${APP_VERSION} --allow-same-version
 
 # Bundle app source
 

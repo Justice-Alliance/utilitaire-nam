@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.vaadin.spring.annotation.SpringComponent;
-
 import ca.qc.inspq.nam.api.domaine.ServiceUtilitairesNAM;
 import ca.qc.inspq.nam.api.domaine.modele.NAMInfo;
 import ca.qc.inspq.nam.api.domaine.modele.Personne;
@@ -23,7 +21,6 @@ import ca.qc.inspq.nam.api.service.ServiceNAM;
 
 @RequestMapping("/nam")
 @RestController
-@SpringComponent
 @CrossOrigin
 public class ServiceNAMSpring implements ServiceNAM {
 	

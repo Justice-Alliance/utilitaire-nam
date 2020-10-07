@@ -74,9 +74,10 @@
 				<configuration>
 					<repository>${docker.repository}/${docker.repository.prefix}/${project.artifactId}</repository>
 					<tag>${project.version}</tag>
-					<!--buildArgs>
-						<JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
-					</buildArgs-->
+					<buildArgs>
+						<APP_VERSION>${project.version}</APP_VERSION>
+						<APP_NAME>${project.artifactId}</APP_NAME>
+					</buildArgs>
 				</configuration>
 			</plugin>
 		</plugins>

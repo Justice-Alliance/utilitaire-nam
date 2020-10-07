@@ -8,3 +8,9 @@ unamservice_base_url: "unam-dev3.santepublique.rtss.qc.ca"
 unamservice_protocol: https
 unamservice_virtualhost_protocol: http
 unamservice_url: "{{ unamservice_protocol }}://{{ unamservice_base_url }}"
+
+unamui_deploy: true
+unamui_protocol: https
+unamui_vhost_protocol: http
+unamui_base_url: "unamui-dev3.santepublique.rtss.qc.ca"
+unamui_external_port: 15010

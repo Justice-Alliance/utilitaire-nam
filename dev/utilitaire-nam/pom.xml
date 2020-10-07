@@ -28,7 +28,7 @@
 		<dockerfile.skip>true</dockerfile.skip>
 		<docker.repository>nexus3.inspq.qc.ca:5000</docker.repository>
 		<docker.repository.prefix>inspq</docker.repository.prefix>
-		<dockerfile-maven-version>1.4.10</dockerfile-maven-version>	
+		<dockerfile-maven-version>1.4.13</dockerfile-maven-version>	
 		<micrometer.version>1.5.1</micrometer.version>	
 	</properties>
 

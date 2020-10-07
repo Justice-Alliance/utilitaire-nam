@@ -1,5 +1,5 @@
 export enum ActionsEnum {
     GEN = "generer",
-    VALID= "valider" ,
+    VALID = "valider" ,
     INFO = "information"
 }

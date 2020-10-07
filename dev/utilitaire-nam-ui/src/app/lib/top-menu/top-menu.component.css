@@ -1,15 +1,13 @@
 ul.menu-items-top {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    background-color: #095797;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #095797;
 }
-
 li.menu-items-top {
-    display: inline-block;
-  }
-
+  display: inline-block;
+}
 ul.menu-items-top>li>a {
   display: block;
   padding: 14px 16px;
@@ -17,16 +15,14 @@ ul.menu-items-top>li>a {
   color: white;
 }
 ul.menu-items-top>li>a:hover {
-    background-color: #007bff;
-    color: #fff;
-  }
-
-ul.menu-items-top>li>a>i {
-	font-style: normal;
-	font-weight: 900;
+  background-color: #007bff;
+  color: #fff;
 }
-
+ul.menu-items-top>li>a>i {
+  font-style: normal;
+  font-weight: 900;
+}
 ul.menu-items-top>li>a.active {
-    background-color: #007bff;
-    color: #fff;
+  background-color: #007bff;
+  color: #fff;
 }

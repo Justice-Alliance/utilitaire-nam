@@ -54,7 +54,7 @@ describe('ValiderNamPageComponent', () => {
   it('devrait activer le bouton valider si le NAM est non null', () => {
     component.nam = 'abcDEFGH1234';
     fixture.detectChanges();
-    expect(validerEl.nativeElement.disabled).toBeFalse();
+    expect(validerEl.nativeElement.disabled).toBeFalsy();
   });
 
   it('devrait desactiver le bouton valider si le NAM est null ou vide', () => {

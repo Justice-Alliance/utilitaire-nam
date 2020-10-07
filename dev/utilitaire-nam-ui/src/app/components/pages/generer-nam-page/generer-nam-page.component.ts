@@ -17,9 +17,9 @@ import { DateFormatPipe } from 'src/app/lib/data-format-pipe';
 })
 export class GenererNamPageComponent implements OnInit, OnDestroy {
 
-  public nom: string;
-  public prenom: string;
-  public ddn: string;
+  //public nom: string;
+ // public prenom: string;
+  //public ddn: string;
   public codeSexeSelect: string;
   public erreurTraitement: string;
   // liste de provinces 
@@ -42,6 +42,8 @@ export class GenererNamPageComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.groupeDeControle = new FormGroup({
       dateDeNaissance: new FormControl('', []),
+      prenom: new FormControl('', []),
+      nom: new FormControl('', []),
     });
     this.creerListeSexes();
     this.peuplerListeDeroulante();
@@ -63,12 +65,26 @@ export class GenererNamPageComponent implements OnInit, OnDestroy {
     return '';
   }
 
+  getPrenom(): string {
+    if (this.groupeDeControle.controls.prenom.value) {
+      return this.groupeDeControle.controls.prenom.value;
+    }
+    return '';
+  }
+
+  getNom(): string {
+    if (this.groupeDeControle.controls.nom.value) {
+      return this.groupeDeControle.controls.nom.value;
+    }
+    return '';
+  }
+
   actionGenerer(): void {
     this.listeNAMResultat = [];
     this.action = ActionsEnum.GEN;
 
-    this.abonnement = this.apiNamService.genererNAMGET(this.nom,
-      this.prenom,
+    this.abonnement = this.apiNamService.genererNAMGET(this.getNom(),
+      this.getPrenom(),
       this.getDateNaissance(),
       this.codeSexeSelect).subscribe(
         data => {
@@ -93,11 +109,27 @@ export class GenererNamPageComponent implements OnInit, OnDestroy {
     this.dateFormatPipe.formaterDateFormControl(e, controle);
   }
 
+  public formaterPrenom():void {
+    this.groupeDeControle.controls.prenom.setValue(this.groupeDeControle.controls.prenom.value.trim());    
+  }
+
+  public formaterNom():void {
+    this.groupeDeControle.controls.nom.setValue(this.groupeDeControle.controls.nom.value.trim());
+  }
+
   public selectionnerDateDuJour(event: any) {
     this.groupeDeControle.controls.dateDeNaissance.setValue(this.dateFormatPipe.dateToObject(DateFormatPipe.obtenirDateDuJour()));
   }
 
   isDateDebutApplicationInvalide() {
     return this.dateFormatPipe.isDateInvalide(this.groupeDeControle.controls.dateDeNaissance);
+  }
+
+  isFormulaireValide(): Boolean {
+    if (this.getNom() && this.getPrenom() && this.getDateNaissance() && this.codeSexeSelect){
+      return true;
+    } else {
+      return false;
+    }    
   }
 }

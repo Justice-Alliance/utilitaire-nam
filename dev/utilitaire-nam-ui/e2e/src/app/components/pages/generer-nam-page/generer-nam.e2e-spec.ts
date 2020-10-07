@@ -20,7 +20,7 @@ describe('Page Gén. du NAM', () => {
     expect(pageGenererNAM.getAlerteValidationSuccess().isDisplayed()).toBeTruthy();
   });
 
-  it('devrait afficher une alerte erreur si on ne saisi pas la date de naissance', () => {
+  it('devrait désactiver le bouton "générer" si on ne saisi pas la date de naissance', () => {
     pageGenererNAM.aller();
     pageGenererNAM.getNomForm().sendKeys('Alain');
     pageGenererNAM.getPrenomForm().sendKeys('Dupont');
@@ -28,17 +28,48 @@ describe('Page Gén. du NAM', () => {
     pageGenererNAM.getSexeTypeFormListe().then((options)=>{
       options[1].click();
     });
-    pageGenererNAM.getBoutonGenererNAM().click();
-
-    expect(pageGenererNAM.getAlerteValidationErreur().isDisplayed()).toBeTruthy();
+    expect(pageGenererNAM.getBoutonGenererNAM().isEnabled()).toBeFalsy();
   });
 
-  it('devrait afficher une alerte erreur si on ne saisi pas le sexe', () => {
+  it('devrait désactiver le bouton "générer" si on ne saisi pas le sexe', () => {
     pageGenererNAM.aller();
     pageGenererNAM.getNomForm().sendKeys('Alain');
     pageGenererNAM.getPrenomForm().sendKeys('Dupont');
     pageGenererNAM.getDateNaissanceFormCalendrier().sendKeys('2020-10-10');
     pageGenererNAM.getBoutonGenererNAM().click();
-    expect(pageGenererNAM.getAlerteValidationErreur().isDisplayed()).toBeTruthy();
+    expect(pageGenererNAM.getBoutonGenererNAM().isEnabled()).toBeFalsy();
+  });
+
+  it('devrait désactiver le bouton "générer" si on ne saisi pas le nom', () => {
+    pageGenererNAM.aller();
+    pageGenererNAM.getNomForm().sendKeys('Alain');
+    pageGenererNAM.getPrenomForm().sendKeys('');
+    pageGenererNAM.getDateNaissanceFormCalendrier().sendKeys('2020-10-10');
+    pageGenererNAM.getSexeTypeFormListe().then((options)=>{
+      options[1].click();
+    });
+    expect(pageGenererNAM.getBoutonGenererNAM().isEnabled()).toBeFalsy();
+  });
+
+  it('devrait désactiver le bouton "générer" si on ne saisi pas le prénom', () => {
+    pageGenererNAM.aller();
+    pageGenererNAM.getNomForm().sendKeys('');
+    pageGenererNAM.getPrenomForm().sendKeys('Dupont');
+    pageGenererNAM.getDateNaissanceFormCalendrier().sendKeys('2020-10-10');
+    pageGenererNAM.getSexeTypeFormListe().then((options)=>{
+      options[1].click();
+    });
+    expect(pageGenererNAM.getBoutonGenererNAM().isEnabled()).toBeFalsy();
+  });
+
+  it('devrait activer le bouton "générer" si toutes les informations sont saisies (nom/prénom/sexe/datenaissance) ', () => {
+    pageGenererNAM.aller();
+    pageGenererNAM.getNomForm().sendKeys('Alain');
+    pageGenererNAM.getPrenomForm().sendKeys('Dupont');
+    pageGenererNAM.getDateNaissanceFormCalendrier().sendKeys('2020-10-10');
+    pageGenererNAM.getSexeTypeFormListe().then((options)=>{
+      options[1].click();
+    });
+    expect(pageGenererNAM.getBoutonGenererNAM().isEnabled()).toBeTruthy();
   });
 });

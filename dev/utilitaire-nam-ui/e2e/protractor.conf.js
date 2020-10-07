@@ -13,8 +13,9 @@ exports.config = {
     './src/**/*.e2e-spec.ts'
   ],
   capabilities: {
-    browserName: 'chrome'
+    browserName: 'chrome',
   },
+  useAllAngular2AppRoots: true,
   directConnect: true,
   baseUrl: 'http://localhost:4200/',
   framework: 'jasmine',

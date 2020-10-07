@@ -5,7 +5,7 @@
                 <label for="fieldPrenom">Prénom</label>
             </div>
             <div class="col-sm-10 col-form-width">
-                <input name="fieldPrenom" type="text" id="fieldPrenom" [(ngModel)]="prenom" class="form-control form-control-sm">
+                <input name="fieldPrenom" type="text" id="fieldPrenom" class="form-control form-control-sm" (change)="formaterPrenom()" [formControl]="this.groupeDeControle.controls.prenom">
             </div>
         </div>
         <div class="form-group row">
@@ -13,7 +13,7 @@
                 <label for="fieldNom">Nom</label>
             </div>
             <div class="col-sm-10 col-form-width">
-                <input name="fieldNom" type="text" id="fieldNom" [(ngModel)]="nom" class="form-control form-control-sm">
+                <input name="fieldNom" type="text" id="fieldNom" class="form-control form-control-sm" (change)="formaterNom()" [formControl]="this.groupeDeControle.controls.nom">
             </div>
         </div>
         <div class="form-group row">
@@ -24,8 +24,8 @@
                 <div class="input-group">
                 <input class="form-control form-control-sm ddnInputBox" placeholder="AAAA-MM-JJ"
                     id="dateDeNaissance"
-                    (keyup)="formaterDate($event, this.groupeDeControle.controls.dateDebutApplication)" 
-                    (input)="formaterDate($event, this.groupeDeControle.controls.dateDebutApplication)"
+                    (keyup)="formaterDate($event, this.groupeDeControle.controls.dateDeNaissance)" 
+                    (input)="formaterDate($event, this.groupeDeControle.controls.dateDeNaissance)"
                     (dblclick)="selectionnerDateDuJour($event)"
                     [formControl]="this.groupeDeControle.controls.dateDeNaissance"                   
                     name="dateDeNaissance" ngbDatepicker #d="ngbDatepicker" [minDate]="minDate" [ngClass]="{ 'is-invalid': isDateDebutApplicationInvalide()}">
@@ -53,7 +53,7 @@
             </div>
         </div>
         <div class="form-group row">
-            <button type="button" name="genererNamBtn" class="btn btn-primary" (click)="actionGenerer()">Générer</button>
+            <button type="button" name="genererNamBtn" class="btn btn-primary" (click)="actionGenerer()" [disabled]="isFormulaireValide() === false">Générer</button>
         </div>
     </form>
     <div id="alerteErreur" *ngIf="listeNAMResultat.length === 0 && action === 'generer'" class="alert alert-danger container-fluid">

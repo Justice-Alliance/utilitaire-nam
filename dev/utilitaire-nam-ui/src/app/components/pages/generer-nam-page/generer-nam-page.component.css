@@ -1,17 +1,14 @@
-.form-control {
-	max-width: 300px;
-}
-
 .btn.btn-primary {
 	margin-top: 20px;
 	margin-left: 15px;
 }
-
-.btn.btn-primary {
-	margin-top: 20px;
-	margin-left: 15px;
-}
-
 .ddnInputBox {
 	border: 1px solid #ced4da;
+}
+::ng-deep ngb-datepicker .bg-primary{
+	color: #337ab7;
+}
+::ng-deep .ngb-dp-day, ::ng-deep .ngb-dp-week-number, ::ng-deep .ngb-dp-weekday {
+	width: 3rem !important;
+	height: 3rem !important;
 }

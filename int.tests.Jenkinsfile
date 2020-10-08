@@ -69,7 +69,7 @@ pipeline {
                 sh "docker pull ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${ARTIFACT_ID}:${VERSION}"
                 sh "docker run -d --rm -p 14101:8080 -p 27082:28081 --name utilitairenamtestsintegration ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${ARTIFACT_ID}:${VERSION}"
 				sh '''
-                until $(curl --output /dev/null --silent --head --fail http://localhost:/actuator/health | grep '{"status":"UP"}')
+                until $(curl --output /dev/null --silent --head --fail http://localhost:27082/actuator/health)
                 do 
                 	printf '.'
                 	sleep 5
@@ -107,7 +107,7 @@ pipeline {
                 environment name: 'ENV', value: 'LOCAL'
             }
             steps {
-                sh "docker stop untilitairenamtestsintegration"
+                sh "docker stop utilitairenamtestsintegration"
             }
         }
     }

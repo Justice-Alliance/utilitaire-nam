@@ -15,7 +15,7 @@ unamservice_protocol: http
 #unamservice_protocol: https
 #unamservice_cert_file: unamservice.dev3.inspq.qc.ca.cert
 #unamservice_cert_key: unamservice.dev3.inspq.qc.ca.key
-unamservice_url: "{{ unamservice_protocol }}://{{ ansible_fqdn }}:{{ unamservice_external_port }}"
+unamservice_url: "{{ unamservice_protocol }}://{{ ansible_fqdn | default('localhost') }}:{{ unamservice_external_port }}"
   
 unamservice_external_actuator_port: 27082
 

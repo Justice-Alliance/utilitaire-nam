@@ -11,7 +11,7 @@ pipeline {
         maven 'maven-3.6.1'
     }
     environment {
-        unServicePom = readMavenPom file: 'dev/utilitaire-nam/utilitaire-NAM-Service/pom.xml'
+        unServicePom = readMavenPom file: 'dev/utilitaire-nam/utilitaire-nam-service/pom.xml'
         UN_SERVICE_IMAGE = unServicePom.getArtifactId()
     	NOTIFICATION_TEAM = "${env.NOTIFICATION_SX5_TEAM}"
 	}
@@ -54,7 +54,7 @@ pipeline {
 	            sh "cd ops && ansible-galaxy install -f -r requirements.yml"        	    
             }
         }
-        stage ('Déployer Utilitaire-NAM-Service') {
+        stage ('Déployer Utilitaire-NAM') {
             steps {
                 script {
 	                VERSION = sh(

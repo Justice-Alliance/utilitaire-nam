@@ -115,7 +115,7 @@ pipeline {
 	            	allowMissing: false,
 	            	alwaysLinkToLastBuild: false,
 	            	keepAll: true,
-	            	reportDir: 'dev/utilitaire-nam/utilitaire-NAM-API/target/cukedoctor',
+	            	reportDir: 'dev/utilitaire-nam/utilitaire-nam-api/target/cukedoctor',
 	            reportFiles: 'documentation.html',
 	            reportName: 'Documentation et résultats des tests BDD'
 	          	]        	    

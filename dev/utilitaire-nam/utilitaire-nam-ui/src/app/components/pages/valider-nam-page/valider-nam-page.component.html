@@ -1,0 +1,38 @@
+<div class="main-page">
+    <form>
+        <div class="form-group row">
+            <div class="col-sm-2 col-form-label">
+                <label for="fieldNam">NAM</label>
+            </div>
+            <div class="col-sm-10 col-form-width">
+                <input name="fieldNam" mask="AAAAAAAAAAAA" style="text-transform: uppercase;" type="text" id="fieldNam" [(ngModel)]="nam" class="form-control form-control-sm">
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-sm-2 col-form-label">
+                <label for="ListeTypeProvince">Province</label>
+            </div>
+            <div class="col-sm-10 col-form-width">
+                <select id="listeTypeProvince" [(ngModel)]="codeProvinceSelect" class="form-control form-control-sm" name="listeTypeProvince">
+                     <!-- option par défaut -->
+                     <option value="" selected="true"></option>
+                     <!-- liste dynamique -->
+                    <option *ngFor="let province of inputOptionsProvince.options" [value]="province.value">
+                        {{province.label}}
+                    </option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group row">
+            <button type="button" name="validerNamBtn" class="btn btn-primary" [disabled]="(!nam || nam.trim().length === 0)" (click)="actionValider()">Valider</button>
+        </div>
+    </form>
+    <div id="alerteErreur" *ngIf="resultatValider === false && action === 'valider'" class="alert alert-danger container-fluid">
+        <div *ngIf="!erreurMessage">{{ TEXTE_ERREUR_NAM }}</div>
+        <div *ngIf="erreurMessage">{{ erreurMessage }}</div>
+    </div>
+    <div id="alerteSuccess" *ngIf="resultatValider === true && action === 'valider'" class="alert alert-info container-fluid">
+        <div>{{ TEXTE_VALIDE_NAM}}</div>
+    </div>
+ 
+</div>

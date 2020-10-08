@@ -1,0 +1,12 @@
+<div class="menu-top-zone">
+    <ul class="menu-items-top">
+      <li *ngFor="let item of topMenuItems; let i = index" title="{{item.title}}" class="menu-items-top" id="{{item.id}}">
+        <ng-template [ngIf]="item.link && item.visible">
+          <a routerLink="{{item.link}}" [class.active]="isMenuItemActif(item.link)" [class.readonly]="item.disabled"  title="{{item.title}}">
+            <i class="{{item.icon}}" style="height:13px; position: relative; font-weight: 400;"></i>
+            {{item.title}}
+          </a>
+        </ng-template>
+      </li>
+    </ul>
+  </div>

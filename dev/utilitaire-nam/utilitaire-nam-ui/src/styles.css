@@ -1,0 +1,127 @@
+/* You can add global styles to this file, and also import other style files */
+
+
+/* Anciennement global.components.css */
+
+.main-page {
+	padding: 25px 15px 15px 15px;
+	position: relative;
+	width: 100%;
+}
+
+.col-form-width {
+	max-width: 300px;
+}
+
+html,
+body {
+	height: 100%;
+}
+
+body {
+	margin: 0;
+	font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+label {
+	font-weight: 400;
+}
+
+.invalid-feedback {
+	display: none;
+	width: 100%;
+	margin-top: .25rem;
+	font-size: 80%;
+	color: #dc3545;
+}
+
+
+/*
+.ngb-dp-arrow-btn {
+    background-color: #f8f9fa !important;
+    color: #070707 !important;
+}
+  */
+
+.ngb-dp-weekday {
+	color: #808080 !important;
+}
+
+.calendar {
+	background-color: #ffffff !important;
+	border-color: #ced4da;
+	border-radius: 2px;
+}
+
+.calendar:hover {
+	background-color: #dadada !important;
+	border-color: #ced4da;
+	border-radius: 2px;
+}
+
+button.calendar,
+button.calendar:active {
+	width: 2.75rem;
+	background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACIAAAAcCAYAAAAEN20fAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAEUSURBVEiJ7ZQxToVAEIY/YCHGxN6XGOIpnpaEsBSeQC9ArZbm9TZ6ADyBNzAhQGGl8Riv4BLAWAgmkpBYkH1b8FWT2WK/zJ8ZJ4qiI6XUI3ANnGKWBnht2/ZBDRK3hgVGNsCd7/ui+JkEIrKtqurLpEWaphd933+IyI3LEIdpCYCiKD6HcuOa/nwOa0ScJEnk0BJg0UTUWJRl6RxCYEzEmomsIlPU3IPW+grIAbquy+q6fluy/28RIBeRMwDXdXMgXLj/B2uimRXpui4D9sBeRLKl+1N+L+t6RwbWrZliTTTr1oxYtzVWiTQAcRxvTX+eJMnlUDaO1vpZRO5NS0x48sIwfPc87xg4B04MCzQi8hIEwe4bl1DnFMCN2zsAAAAASUVORK5CYII=') !important;
+	background-repeat: no-repeat;
+	background-size: 18px;
+	background-position: center;
+}
+
+.input-group {
+	position: relative;
+	display: -ms-flexbox;
+	display: flex;
+	-ms-flex-wrap: wrap;
+	flex-wrap: wrap;
+	-ms-flex-align: stretch;
+	align-items: stretch;
+	width: 100%;
+}
+
+.input-group>.custom-file,
+.input-group>.custom-select,
+.input-group>.form-control,
+.input-group>.form-control-plaintext {
+	position: relative;
+	-ms-flex: 1 1 auto;
+	flex: 1 1 auto;
+	width: 1%;
+	margin-bottom: 0;
+}
+
+.input-group-append,
+.input-group-prepend {
+	display: -ms-flexbox;
+	display: flex;
+	margin-left: -1px;
+}
+
+
+/*
+  .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    display: none;
+    float: left;
+    min-width: 10rem;
+    padding: .5rem 0;
+    margin: .125rem 0 0;
+    font-size: 1rem;
+    color: #212529;
+    text-align: left;
+    list-style: none;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid rgba(0,0,0,.15);
+    border-radius: .25rem;
+}
+*/
+
+
+/*.dropdown-menu.show {
+    display: block;
+}
+  */

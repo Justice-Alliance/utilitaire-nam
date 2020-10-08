@@ -11,7 +11,7 @@ pipeline {
     }
     environment {
     	NOTIFICATION_TEAM = "${env.NOTIFICATION_SX5_TEAM}"
-        unServicePom = readMavenPom file: 'dev/utilitaire-nam/utilitaire-NAM-Service/pom.xml'
+        unServicePom = readMavenPom file: 'dev/utilitaire-nam/utilitaire-nam-service/pom.xml'
         UN_SERVICE_IMAGE = unServicePom.getArtifactId()
 	}
     stages {
@@ -53,7 +53,7 @@ pipeline {
             }
         	environment {
         		projectPom = readMavenPom file: 'dev/utilitaire-nam/pom.xml'
-    			svcPom = readMavenPom file: 'dev/utilitaire-nam/utilitaire-NAM-Service/pom.xml'
+    			svcPom = readMavenPom file: 'dev/utilitaire-nam/utilitaire-nam-service/pom.xml'
 		    	ARTIFACT_ID = svcPom.getArtifactId()
     			POMVERSION = projectPom.getVersion()
     			DOCKER_REPOSITORY = projectPom.getProperties().getProperty('docker.repository')

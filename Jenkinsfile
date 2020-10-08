@@ -13,6 +13,7 @@ pipeline {
         MVN_REPOSITORY = "${env.MVN_REPOSITORY_INSPQ}"
     	REPOSITORY = "${env.REPOSITORY_INSPQ}"
     	NOTIFICATION_TEAM = "${env.NOTIFICATION_SX5_TEAM}"
+    	DOCKER_REPOSITORY_PREFIX = 'inspq'
     }
     stages {
         stage ('Préparer les variables') {
@@ -60,14 +61,14 @@ pipeline {
 			       sh 'mvn versions:display-plugin-updates -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
 				   sh 'mvn versions:update-parent -DprocessAllModules=true -f  dev/utilitaire-nam/pom.xml'
 				   sh 'mvn -N versions:update-child-modules -DprocessAllModules=true -f  dev/utilitaire-nam/pom.xml '
-				   sh 'mvn versions:use-latest-versions -Dexcludes=com.vaadin:* -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
+				   sh 'mvn versions:use-latest-versions -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
             }
         }
         
         stage ('Construire utilitaire-nam') {
 			environment {
 		    	projectPom = readMavenPom file: 'dev/utilitaire-nam/pom.xml'
-		    	svcPom = readMavenPom file: 'dev/utilitaire-nam/utilitaire-NAM-Service/pom.xml'
+		    	svcPom = readMavenPom file: 'dev/utilitaire-nam/utilitaire-nam-service/pom.xml'
 			    SVC_ARTIFACT_ID = svcPom.getArtifactId()
 		    	POMVERSION = projectPom.getVersion()
 		    }        
@@ -81,8 +82,7 @@ pipeline {
                          
 	                    // Configurer le numéro de version pour utiliser le nom de la branche si on est pas sur master
                         sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${VERSION} -f dev/utilitaire-nam/pom.xml"
-                        sh "mvn clean install -Dprivate-repository=${MVN_REPOSITORY} -f dev/utilitaire-nam/pom.xml"
-                        sh "mvn deploy -Dmaven.install.skip=true -DskipTests -Dprivate-repository=${MVN_REPOSITORY} -Ddockerfile.skip=false -f dev/utilitaire-nam/pom.xml"
+                        sh "mvn clean deploy -Dprivate-repository=${MVN_REPOSITORY} -Ddockerfile.skip=false -f dev/utilitaire-nam/pom.xml"
                         // Annuler les modifications faites au fichier pom par la première étape
                         sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${POMVERSION} -f dev/utilitaire-nam/pom.xml"
                     
@@ -93,8 +93,7 @@ pipeline {
                                 sh "git checkout -- **/pom.xml" 
                                 // Configurer le numéro de version pour utiliser le nom de la branche si on est pas sur master
                                 sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${VERSION} -f dev/utilitaire-nam/pom.xml"
-                                sh "mvn clean install -Dprivate-repository=${MVN_REPOSITORY} -f dev/utilitaire-nam/pom.xml"
-                                sh "mvn deploy -Dmaven.install.skip=true -DskipTests -Dprivate-repository=${MVN_REPOSITORY} -Ddockerfile.skip=false -f dev/utilitaire-nam/pom.xml"
+		                        sh "mvn clean deploy -Dprivate-repository=${MVN_REPOSITORY} -Ddockerfile.skip=false -f dev/utilitaire-nam/pom.xml"
 		                        // Annuler les modifications faites au fichier pom par la première étape
 		                        sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${POMVERSION} -f dev/utilitaire-nam/pom.xml"
                             }
@@ -116,12 +115,36 @@ pipeline {
 	            	allowMissing: false,
 	            	alwaysLinkToLastBuild: false,
 	            	keepAll: true,
-	            	reportDir: 'dev/utilitaire-nam/utilitaire-NAM-API/target/cukedoctor',
+	            	reportDir: 'dev/utilitaire-nam/utilitaire-nam-api/target/cukedoctor',
 	            reportFiles: 'documentation.html',
 	            reportName: 'Documentation et résultats des tests BDD'
 	          	]        	    
         	}
-        }        
+        }
+        stage ("Lancer les tests ui") {
+	        environment {
+		    	projectPom = readMavenPom file: 'dev/utilitaire-nam/pom.xml'
+		    	uiPom = readMavenPom file: 'dev/utilitaire-nam/utilitaire-nam-ui/pom.xml'
+			    UI_ARTIFACT_ID = uiPom.getArtifactId()
+		    	POMVERSION = projectPom.getVersion()
+		    	uiPath = 'dev/utilitaire-nam/utilitaire-nam-ui'
+		    }                
+            steps {
+            	script{
+            	    try {
+		            	sh "mkdir -p ${uiPath}/target/reports/ && chmod 777 ${uiPath}/target/reports/"
+		                sh "docker run --rm --entrypoint /usr/bin/ng -w /usr/src/app/ -v ${WORKSPACE}/${uiPath}/target/reports:/usr/src/app/reports/karma:Z ${REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${UI_ARTIFACT_ID}:${VERSION} test --watch=false"            	        
+            	    } catch (err) {
+                    	unstable("Échec des tests du UI")
+					}
+            	}
+            }
+        }
+        stage ("Publier le résultat des tests pour le ui") {
+        	steps {
+	          	junit '**/report.xml'
+        	}
+        }
         stage ('Valider (commit) le fichier pom avec les mises à jour des dépendances Maven') {
             steps {
                 script {

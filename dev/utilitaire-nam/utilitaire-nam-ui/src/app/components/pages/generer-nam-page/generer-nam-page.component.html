@@ -1,0 +1,69 @@
+<div class="main-page">
+    <form>
+        <div class="form-group row">
+            <div class="col-sm-2 col-form-label">
+                <label for="fieldPrenom">Prénom</label>
+            </div>
+            <div class="col-sm-10 col-form-width">
+                <input name="fieldPrenom" type="text" id="fieldPrenom" class="form-control form-control-sm" (change)="formaterPrenom()" [formControl]="this.groupeDeControle.controls.prenom">
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-sm-2 col-form-label">
+                <label for="fieldNom">Nom</label>
+            </div>
+            <div class="col-sm-10 col-form-width">
+                <input name="fieldNom" type="text" id="fieldNom" class="form-control form-control-sm" (change)="formaterNom()" [formControl]="this.groupeDeControle.controls.nom">
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-sm-2 col-form-label">
+                <label for="dateDeNaissance">Date de naissance</label>
+            </div>
+            <div class="col-sm-10 col-form-width">
+                <div class="input-group">
+                <input class="form-control form-control-sm ddnInputBox" placeholder="AAAA-MM-JJ"
+                    id="dateDeNaissance"
+                    (keyup)="formaterDate($event, this.groupeDeControle.controls.dateDeNaissance)" 
+                    (input)="formaterDate($event, this.groupeDeControle.controls.dateDeNaissance)"
+                    (dblclick)="selectionnerDateDuJour($event)"
+                    [formControl]="this.groupeDeControle.controls.dateDeNaissance"                   
+                    name="dateDeNaissance" ngbDatepicker #d="ngbDatepicker" [minDate]="minDate" [ngClass]="{ 'is-invalid': isDateDebutApplicationInvalide()}">
+                  <div class="input-group-append">  
+                    <button class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button"></button>
+                  </div>
+                </div>  
+                <div class="invalid-feedback">La date saisie ne correspond pas au format AAAA-MM-JJ</div>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-sm-2 col-form-label">
+                <label for="ListeTypeSexe">Sexe</label>
+            </div>
+            <div class="col-sm-10 col-form-width">
+                <select id="ListeTypeSexe" [(ngModel)]="codeSexeSelect" class="form-control form-control-sm" name="ListeTypeSexe">
+                    <!--option par défaut -->
+                    <option value="" selected="true"></option>
+                    <!-- liste dynamique-->
+                    <option *ngFor="let sexe of inputOptionsSexe.options" [value]="sexe.value">
+                        {{sexe.label}}
+                    </option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group row">
+            <button type="button" name="genererNamBtn" class="btn btn-primary" (click)="actionGenerer()" [disabled]="isFormulaireValide() === false">Générer</button>
+        </div>
+    </form>
+    <div id="alerteErreur" *ngIf="listeNAMResultat.length === 0 && action === 'generer'" class="alert alert-danger container-fluid">
+        <div>{{ erreurTraitement }}</div>
+    </div>
+    <div id="alerteSuccess" *ngIf="listeNAMResultat.length !== 0 && action === 'generer'">
+        <ul class="list-group">
+            <li class="list-group-item list-group-item-info" *ngFor="let nam of listeNAMResultat">
+                {{ nam }}
+            </li>
+        </ul>
+    </div>
+</div>

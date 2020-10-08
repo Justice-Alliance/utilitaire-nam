@@ -14,7 +14,7 @@ pipeline {
     	REPOSITORY = "${env.REPOSITORY_INSPQ}"
     	NOTIFICATION_TEAM = "${env.NOTIFICATION_SX5_TEAM}"
     	projectPom = readMavenPom file: 'dev/utilitaire-nam/pom.xml'
-    	svcPom = readMavenPom file: 'dev/utilitaire-nam/utilitaire-NAM-Service/pom.xml'
+    	svcPom = readMavenPom file: 'dev/utilitaire-nam/utilitaire-nam-service/pom.xml'
         SVC_ARTIFACT_ID = svcPom.getArtifactId()
     	POMVERSION = projectPom.getVersion()
     	DOCKER_REPOSITORY = projectPom.getProperties().getProperty('docker.repository')
@@ -108,7 +108,7 @@ pipeline {
 	            	allowMissing: false,
 	            	alwaysLinkToLastBuild: false,
 	            	keepAll: true,
-	            	reportDir: 'dev/utilitaire-nam/utilitaire-NAM-API/target/cukedoctor',
+	            	reportDir: 'dev/utilitaire-nam/utilitaire-nam-api/target/cukedoctor',
 	            reportFiles: 'documentation.html',
 	            reportName: 'Documentation et résultats des tests BDD'
 	          	]        	    

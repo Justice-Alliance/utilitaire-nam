@@ -13,11 +13,7 @@ pipeline {
         MVN_REPOSITORY = "${env.MVN_REPOSITORY_INSPQ}"
     	REPOSITORY = "${env.REPOSITORY_INSPQ}"
     	NOTIFICATION_TEAM = "${env.NOTIFICATION_SX5_TEAM}"
-		projectPom = readMavenPom file: 'dev/utilitaire-nam/pom.xml'
-		svcPom = readMavenPom file: 'dev/utilitaire-nam/utilitaire-NAM-Service/pom.xml'
-		SVC_ARTIFACT_ID = svcPom.getArtifactId()
-		POMVERSION = projectPom.getVersion()
-    	REPOSITORY_PREFIX = "inspq"
+    	REPOSITORY_PREFIX = 'inspq'
     }
     stages {
         stage ('Préparer les variables') {
@@ -61,17 +57,18 @@ pipeline {
         } 
         stage ('Mise à jour des dépendances Maven ') {
             steps {
-                    	sh 'mvn versions:display-dependency-updates -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
-				        sh 'mvn versions:display-plugin-updates -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
-				        sh 'mvn versions:update-parent -DprocessAllModules=true -f  dev/utilitaire-nam/pom.xml'
-				        sh 'mvn -N versions:update-child-modules -DprocessAllModules=true -f  dev/utilitaire-nam/pom.xml'
-				        sh 'mvn versions:use-latest-versions -Dexcludes=com.vaadin:* -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
-			    }
-			}
+                   sh 'mvn versions:display-dependency-updates -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
+			       sh 'mvn versions:display-plugin-updates -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
+				   sh 'mvn versions:update-parent -DprocessAllModules=true -f  dev/utilitaire-nam/pom.xml'
+				   sh 'mvn -N versions:update-child-modules -DprocessAllModules=true -f  dev/utilitaire-nam/pom.xml '
+				   sh 'mvn versions:use-latest-versions -DprocessAllModules=true -f dev/utilitaire-nam/pom.xml'
+            }
+        }
+        
         stage ('Construire utilitaire-nam') {
 			environment {
 		    	projectPom = readMavenPom file: 'dev/utilitaire-nam/pom.xml'
-		    	svcPom = readMavenPom file: 'dev/utilitaire-nam/utilitaire-NAM-Service/pom.xml'
+		    	svcPom = readMavenPom file: 'dev/utilitaire-nam/utilitaire-nam-service/pom.xml'
 			    SVC_ARTIFACT_ID = svcPom.getArtifactId()
 		    	POMVERSION = projectPom.getVersion()
 		    }        
@@ -82,20 +79,21 @@ pipeline {
 	                    script: 'if [ "$(git describe --exact-match HEAD 2>>/dev/null || git rev-parse --abbrev-ref HEAD)" == "master" ]; then mvn -f dev/utilitaire-nam/pom.xml -q -Dexec.executable="echo" -Dexec.args=\'${project.version}\' --non-recursive exec:exec 2>/dev/null; else git describe --exact-match HEAD 2>>/dev/null || git rev-parse --abbrev-ref HEAD; fi',
 	                    returnStdout: true
 	                    ).trim()
+                         
 	                    // Configurer le numéro de version pour utiliser le nom de la branche si on est pas sur master
                         sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${VERSION} -f dev/utilitaire-nam/pom.xml"
-                        sh "mvn clean install -Dprivate-repository=${MVN_REPOSITORY} -f dev/utilitaire-nam/pom.xml"
-                        sh "mvn deploy -Dmaven.install.skip=true -DskipTests -Dprivate-repository=${MVN_REPOSITORY} -Ddockerfile.skip=false -f dev/utilitaire-nam/pom.xml"
+                        sh "mvn clean deploy -Dprivate-repository=${MVN_REPOSITORY} -Ddockerfile.skip=false -f dev/utilitaire-nam/pom.xml"
                         // Annuler les modifications faites au fichier pom par la première étape
                         sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${POMVERSION} -f dev/utilitaire-nam/pom.xml"
                     
                     }catch(error) {
                         timeout(time:120, unit:'SECONDS'){
                             retry(2) {
+                                // Annuler les modifications faites au fichier pom par la mise à jour des librairies
+                                sh "git checkout -- **/pom.xml" 
                                 // Configurer le numéro de version pour utiliser le nom de la branche si on est pas sur master
                                 sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${VERSION} -f dev/utilitaire-nam/pom.xml"
-                                sh "mvn clean install -Dprivate-repository=${MVN_REPOSITORY} -f dev/utilitaire-nam/pom.xml"
-                                sh "mvn deploy -Dmaven.install.skip=true -DskipTests -Dprivate-repository=${MVN_REPOSITORY} -Ddockerfile.skip=false -f dev/utilitaire-nam/pom.xml"
+		                        sh "mvn clean deploy -Dprivate-repository=${MVN_REPOSITORY} -Ddockerfile.skip=false -f dev/utilitaire-nam/pom.xml"
 		                        // Annuler les modifications faites au fichier pom par la première étape
 		                        sh "mvn versions:set -DprocessAllModules=true -DnewVersion=${POMVERSION} -f dev/utilitaire-nam/pom.xml"
                             }
@@ -117,10 +115,34 @@ pipeline {
 	            	allowMissing: false,
 	            	alwaysLinkToLastBuild: false,
 	            	keepAll: true,
-	            	reportDir: 'dev/utilitaire-nam/utilitaire-NAM-API/target/cukedoctor',
+	            	reportDir: 'dev/utilitaire-nam/utilitaire-nam-api/target/cukedoctor',
 	            reportFiles: 'documentation.html',
 	            reportName: 'Documentation et résultats des tests BDD'
 	          	]        	    
+        	}
+        }
+        stage ("Lancer les tests ui") {
+	        environment {
+		    	projectPom = readMavenPom file: 'dev/utilitaire-nam/pom.xml'
+		    	uiPom = readMavenPom file: 'dev/utilitaire-nam/utilitaire-nam-ui/pom.xml'
+			    UI_ARTIFACT_ID = uiPom.getArtifactId()
+		    	POMVERSION = projectPom.getVersion()
+		    	uiPath = 'dev/utilitaire-nam/utilitaire-nam-ui'
+		    }                
+            steps {
+            	script{
+            	    try {
+		            	sh "mkdir -p ${uiPath}/target/reports/ && chmod 777 ${uiPath}/target/reports/"
+		                sh "docker run --rm --entrypoint /usr/bin/ng -w /usr/src/app/ -v ${WORKSPACE}/${uiPath}/target/reports:/usr/src/app/reports/karma:Z ${REPOSITORY}/${REPOSITORY_PREFIX}/${UI_ARTIFACT_ID}:${VERSION} test --watch=false"            	        
+            	    } catch (err) {
+                    	unstable("Échec des tests du UI")
+					}
+            	}
+            }
+        }
+        stage ("Publier le résultat des tests pour le ui") {
+        	steps {
+	          	junit '**/report.xml'
         	}
         }
         stage ('Exécuter les tests de sécurité') {
@@ -152,7 +174,7 @@ pipeline {
        	stage("Balayage sécurité image"){
 		    environment {
 		    	projectPom = readMavenPom file: 'dev/utilitaire-nam/pom.xml'
-		    	svcPom = readMavenPom file: 'dev/utilitaire-nam/utilitaire-NAM-Service/pom.xml'
+		    	svcPom = readMavenPom file: 'dev/utilitaire-nam/utilitaire-nam-service/pom.xml'
 			    SVC_ARTIFACT_ID = svcPom.getArtifactId()
 		    	POMVERSION = projectPom.getVersion()
 		        SVC_IMAGE = "${REPOSITORY}/${REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${POMVERSION}"
@@ -204,7 +226,7 @@ pipeline {
 				    } catch (error) {
 			            unstable("[ERROR]: ${STAGE_NAME} failed!")
 			            stageResult."{STAGE_NAME}" = "UNSTABLE"
-			            emailext body: ' ${JOB_NAME} ${BUILD_NUMBER} a échoué! Vous devez faire quelque chose à ce sujet. https://jenkins.dev.inspq.qc.ca/job/utilitaire-nam/job/${BUILD_NUMBER}/console', subject: 'FAILURE', to: "${NOTIFICATION_TEAM}"
+			            emailext body: "${JOB_NAME} ${BUILD_NUMBER} a échoué! Vous devez faire quelque chose à ce sujet. ${JOB_URL}", subject: 'FAILURE', to: "${NOTIFICATION_TEAM}"
 		            }
 			    }
 			}

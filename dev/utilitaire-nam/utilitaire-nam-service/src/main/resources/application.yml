@@ -1,0 +1,39 @@
+server:
+  port: 8080
+  forward-headers-strategy: framework
+keycloak:
+  enabled: true
+  auth-server-url: https://gia-dev3.santepublique.rtss.qc.ca/auth   
+  bearer-only: true
+  realm: SPSantePublique
+  resource: Sx5duservicesdev3
+  use-resource-role-mappings: true
+  cors: true
+  security-constraints:
+   - auth-roles: verification-du-nam
+     security-collections:
+      - patterns: /*
+   - auth-roles: generation-du-nam
+     security-collections:
+      - patterns: /nam/generer   
+management:
+  server:
+    port: 28081
+    address: 0.0.0.0
+  endpoint:
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health, prometheus, metrics
+        
+opentracing:
+  jaeger:
+    enable-b3-propagation: true

@@ -5,29 +5,55 @@
     unamservice_internal_actuator_port: 28081
     cert_file_path: /etc/pki/tls/certs
     cert_key_path: /etc/pki/tls/private
-    docker_registry: nexus3.inspq.qc.ca:5000
     unamservice_container_name: "unamservice{{ env | lower }}"
     unamservice_artifact_id: utilitaire-nam-service
-    unamservice_docker_image: "{{ docker_registry }}/inspq/{{ unamservice_artifact_id }}"
+    unamservice_docker_image: "{{ docker_registry | default('nexus3.inspq.qc.ca:5000') }}/{{ docker_registry_org | default('inspq') }}/{{ unamservice_artifact_id }}"
     unamservice_port_mappers:
-      - "{{ unamservice_external_port }}:{{ unamservice_internal_port }}"
-      - "{{ unamservice_external_actuator_port }}:{{ unamservice_internal_actuator_port }}"
+      - "{{ unamservice_external_port | default(8080) }}:{{ unamservice_internal_port }}"
+      - "{{ unamservice_external_actuator_port | default(28081) }}:{{ unamservice_internal_actuator_port }}"
     unamservice_container_env:
       "LOG4J2_GRAYLOG_URL": "{{ unam_graylog_host | default() }}"
       "LOG4J2_GRAYLOG_PORT_GELF_UDP": "{{ unam_graylog_port_gelf_udp | default() | string }}"
       "GRAYLOG_HOST_BASE": "{{ unamservice_container_name }}"
       "DEBUG_PORT": "{{ unamservice_debug_port | default('0') }}"
-          
+      
+    unamui_container_name: "unamui{{ env | lower }}"
+    unamui_artifact_id: utilitaire-nam-ui
+    unamui_docker_image: "{{ docker_registry | default('nexus3.inspq.qc.ca:5000') }}/{{ docker_registry_org | default('inspq') }}/{{ unamui_artifact_id }}"
+    unamui_internal_port: 80
+    unamui_static_dir: /tmp/{{ unamui_container_name }}
+    unamui_internal_dist_dir: /dist
+    unamui_static_archive_file: utilitaire-nam-ui.tar.gz
+    unamui_env:
+      UTILITAIRE_NAM_URL: "{{ unamservice_url }}"
+      APP_FILE_NAME: "{{ unamui_static_archive_file }}"
   roles:
   - name: application_web_docker
     application_docker_image: "{{ unamservice_docker_image }}"
     application_container_name: "{{ unamservice_container_name }}"
     application_external_port: "{{ unamservice_external_port }}"
     application_port_mappers: "{{ unamservice_port_mappers }}"
-    application_image_version: "{{ unamservice_image_version }}"
+    application_image_version: "{{ unamservice_image_version | default('latest') }}"
     application_container_env: "{{ unamservice_container_env }}"
     application_graylog_host: "{{ unam_graylog_host | default() }}"
     application_graylog_port_gelf_udp: "{{ unam_graylog_port_gelf_udp | default() }}"
     application_protocol: "{{ unamservice_protocol | default() }}"
     application_virtualhost_protocol: "{{ unamservice_virtualhost_protocol | default() }}"
     application_base_url: "{{ unamservice_base_url | default() }}"
+    
+  - name: application_angular_docker
+    appui_docker_image: "{{ unamui_docker_image }}"
+    appui_container_name: "{{ unamui_container_name }}"
+    appui_external_port: "{{ unamui_external_port | default(44444) }}"
+    appui_docker_image_version: "{{ unamservice_image_version | default('latest') }}"
+    appui_env: "{{ unamui_env | default({}) }}"
+    appui_graylog_host: "{{ unamui_graylog_host | default() }}"
+    appui_graylog_port_gelf_udp: "{{ unamui_graylog_port_gelf_udp | default() }}"
+    appui_protocol: "{{ unamui_protocol | default() }}"
+    appui_virtualhost_protocol: "{{ unamui_vhost_protocol | default() }}"
+    appui_base_url: "{{ unamui_base_url | default() }}"
+    appui_static_dir: "{{ unamui_static_dir }}"
+    appui_internal_dist_dir: "{{ unamui_internal_dist_dir }}"
+    appui_static_archive_file: "{{ unamui_static_archive_file }}"
+    when: unamui_deploy is defined and unamui_deploy
+    

@@ -14,7 +14,7 @@ pipeline {
     	REPOSITORY = "${env.REPOSITORY_INSPQ}"
     	NOTIFICATION_TEAM = "${env.NOTIFICATION_SX5_TEAM}"
 		projectPom = readMavenPom file: 'dev/utilitaire-nam/pom.xml'
-		svcPom = readMavenPom file: 'dev/utilitaire-nam/utilitaire-NAM-Service/pom.xml'
+		svcPom = readMavenPom file: 'dev/utilitaire-nam/utilitaire-nam-service/pom.xml'
 		SVC_ARTIFACT_ID = svcPom.getArtifactId()
 		POMVERSION = projectPom.getVersion()
     	REPOSITORY_PREFIX = "inspq"
@@ -72,7 +72,7 @@ pipeline {
         stage ('Construire utilitaire-nam') {
 			environment {
 		    	projectPom = readMavenPom file: 'dev/utilitaire-nam/pom.xml'
-		    	svcPom = readMavenPom file: 'dev/utilitaire-nam/utilitaire-NAM-Service/pom.xml'
+		    	svcPom = readMavenPom file: 'dev/utilitaire-nam/utilitaire-nam-service/pom.xml'
 			    SVC_ARTIFACT_ID = svcPom.getArtifactId()
 		    	POMVERSION = projectPom.getVersion()
 		    }        
@@ -121,7 +121,7 @@ pipeline {
 	            	allowMissing: false,
 	            	alwaysLinkToLastBuild: false,
 	            	keepAll: true,
-	            	reportDir: 'dev/utilitaire-nam/utilitaire-NAM-API/target/cukedoctor',
+	            	reportDir: 'dev/utilitaire-nam/utilitaire-nam-api/target/cukedoctor',
 	            reportFiles: 'documentation.html',
 	            reportName: 'Documentation et résultats des tests BDD'
 	          	]        	    
@@ -156,7 +156,7 @@ pipeline {
        	stage("Balayage sécurité image"){
 		    environment {
 		    	projectPom = readMavenPom file: 'dev/utilitaire-nam/pom.xml'
-		    	svcPom = readMavenPom file: 'dev/utilitaire-nam/utilitaire-NAM-Service/pom.xml'
+		    	svcPom = readMavenPom file: 'dev/utilitaire-nam/utilitaire-nam-service/pom.xml'
 			    SVC_ARTIFACT_ID = svcPom.getArtifactId()
 		    	POMVERSION = projectPom.getVersion()
 		        SVC_IMAGE = "${REPOSITORY}/${REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${POMVERSION}"

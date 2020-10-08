@@ -13,7 +13,7 @@ pipeline {
         MVN_REPOSITORY = "${env.MVN_REPOSITORY_INSPQ}"
     	REPOSITORY = "${env.REPOSITORY_INSPQ}"
     	NOTIFICATION_TEAM = "${env.NOTIFICATION_SX5_TEAM}"
-    	DOCKER_REPOSITORY_PREFIX = 'inspq'
+    	REPOSITORY_PREFIX = 'inspq'
     }
     stages {
         stage ('Préparer les variables') {
@@ -133,7 +133,7 @@ pipeline {
             	script{
             	    try {
 		            	sh "mkdir -p ${uiPath}/target/reports/ && chmod 777 ${uiPath}/target/reports/"
-		                sh "docker run --rm --entrypoint /usr/bin/ng -w /usr/src/app/ -v ${WORKSPACE}/${uiPath}/target/reports:/usr/src/app/reports/karma:Z ${REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${UI_ARTIFACT_ID}:${VERSION} test --watch=false"            	        
+		                sh "docker run --rm --entrypoint /usr/bin/ng -w /usr/src/app/ -v ${WORKSPACE}/${uiPath}/target/reports:/usr/src/app/reports/karma:Z ${REPOSITORY}/${REPOSITORY_PREFIX}/${UI_ARTIFACT_ID}:${VERSION} test --watch=false"            	        
             	    } catch (err) {
                     	unstable("Échec des tests du UI")
 					}

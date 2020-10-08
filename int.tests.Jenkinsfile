@@ -67,9 +67,9 @@ pipeline {
 	                	).trim()
                 }            
                 sh "docker pull ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${ARTIFACT_ID}:${VERSION}"
-                sh "docker run -d --rm -p 14101:8080 --name untilitairenamtestsintegration ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${ARTIFACT_ID}:${VERSION}"
+                sh "docker run -d --rm -p 14101:8080 -p 27082:28081 --name utilitairenamtestsintegration ${DOCKER_REPOSITORY}/${DOCKER_REPOSITORY_PREFIX}/${ARTIFACT_ID}:${VERSION}"
 				sh '''
-                until $(curl --output /dev/null --silent --head --fail http://localhost:14101/ui)
+                until $(curl --output /dev/null --silent --head --fail http://localhost:/actuator/health | grep '{"status":"UP"}')
                 do 
                 	printf '.'
                 	sleep 5

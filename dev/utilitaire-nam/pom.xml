@@ -116,6 +116,8 @@
 							<failBuildOnCVSS>8</failBuildOnCVSS>
 							<!-- <format>XML</format> -->
 							<suppressionFile>dependency-check-suppressions.xml</suppressionFile>
+							<nodeAuditAnalyzerEnabled>false</nodeAuditAnalyzerEnabled>
+							<nodePackageAnalyzerEnabled>false</nodePackageAnalyzerEnabled>
 						</configuration>
 						<executions>
 							<execution>

@@ -10,3 +10,7 @@
   src: https://gitlab.forge.gouv.qc.ca/ansible-inspq/roles/deploy_vm_linux.git
   version: v1.0.0
   scm: git
+- name: keycloak_client
+  src: 'https://gitlab.forge.gouv.qc.ca/ansible-inspq/roles/keycloak_client.git'
+  scm: git
+  version: v1.2.2

@@ -16,6 +16,7 @@ export class ValiderNamPageComponent implements OnInit, OnDestroy {
   readonly TEXTE_VALIDE_NAM: string = 'Le Numéro d\'assurance maladie est valide';
   // resultat de la validation du NAM 
   public resultatValider: boolean;
+  public erreurMessage:string;
   // action a setter lors de la validation 
   public action: string = null;
   private abonnement: Subscription;
@@ -47,10 +48,12 @@ export class ValiderNamPageComponent implements OnInit, OnDestroy {
       this.abonnement.unsubscribe();
     }
     this.action = null;
+    this.erreurMessage = null;
   }
 
   actionValider(): void {
     this.action = ActionsEnum.VALID;
+    this.erreurMessage = null;
     if (this.codeProvinceSelect === '' || this.codeProvinceSelect === undefined) {
       this.codeProvinceSelect = "QC";
     }
@@ -60,11 +63,11 @@ export class ValiderNamPageComponent implements OnInit, OnDestroy {
       },
       err => {
         this.resultatValider = false;
+        this.erreurMessage = err;
         console.error(err);
       }
     )
   }
-
 
   creerListeDesProviences(): void {
     this.listeProvinces = Object.keys(ProvincesEnum).filter(k => typeof ProvincesEnum[k] === 'string')

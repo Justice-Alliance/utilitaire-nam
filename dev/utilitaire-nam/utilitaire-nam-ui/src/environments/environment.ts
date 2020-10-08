@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  urlUtilitaireNAM: "https://unam-dev.santepublique.rtss.qc.ca/"
+  urlUtilitaireNAM: "https://unam-dev.santepublique.rtss.qc.ca/",
+  angularProjectUrl: 'http://localhost:4200'
 };
 
 /*

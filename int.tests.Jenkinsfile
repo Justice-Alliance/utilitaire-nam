@@ -107,7 +107,7 @@ pipeline {
                 environment name: 'ENV', value: 'LOCAL'
             }
             steps {
-                sh "docker stop untilitairenamtestsintegration"
+                sh "docker stop utilitairenamtestsintegration"
             }
         }
     }

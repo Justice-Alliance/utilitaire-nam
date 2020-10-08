@@ -10,9 +10,6 @@ keycloak:
   use-resource-role-mappings: true
   cors: true
   security-constraints:
-   - auth-roles: verification-du-nam
-     security-collections:
-      - patterns: /*
    - auth-roles: generation-du-nam
      security-collections:
       - patterns: /nam/generer   

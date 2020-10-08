@@ -174,7 +174,7 @@ pipeline {
        	stage("Balayage sécurité image"){
 		    environment {
 		    	projectPom = readMavenPom file: 'dev/utilitaire-nam/pom.xml'
-		    	svcPom = readMavenPom file: 'dev/utilitaire-nam/utilitaire-NAM-Service/pom.xml'
+		    	svcPom = readMavenPom file: 'dev/utilitaire-nam/utilitaire-nam-service/pom.xml'
 			    SVC_ARTIFACT_ID = svcPom.getArtifactId()
 		    	POMVERSION = projectPom.getVersion()
 		        SVC_IMAGE = "${REPOSITORY}/${REPOSITORY_PREFIX}/${SVC_ARTIFACT_ID}:${POMVERSION}"

@@ -1,4 +1,9 @@
 ---
+unam_oidc_server_url: https://gia-labo.sx5.rtss.qc.ca
+unam_oidc_auth_admin_username: admin
+unam_oidc_auth_admin_password: admin
+unam_oidc_auth_realm: master
+
 # Port TCP sur lequel publier l'application
 unamservice_external_port: 15001
 unamservice_external_actuator_port: 27083

@@ -93,13 +93,13 @@ pipeline {
 				milestone(ordinal: 6)
 			}
         }
-        stage ("Lancer les tests d'intégrations en DEV3") {
-            steps {
-				milestone(ordinal: 7)
-	        	build job: "utilitaire-nam-tests-integration", parameters:[string(name: 'ENV', value: 'DEV3'), string(name: 'TAG', value: "${env.BRANCH_OR_TAG}")]
-				milestone(ordinal: 8)
-			}
-        }
+//        stage ("Lancer les tests d'intégrations en DEV3") {
+//            steps {
+//				milestone(ordinal: 7)
+//	        	build job: "utilitaire-nam-tests-integration", parameters:[string(name: 'ENV', value: 'DEV3'), string(name: 'TAG', value: "${env.BRANCH_OR_TAG}")]
+//				milestone(ordinal: 8)
+//			}
+//        }
         stage ('Lancer le balayage de sécurité applicative en DEV3') {
 //        	// Ne déployer que si la branche courante est origin/master
 //            when {

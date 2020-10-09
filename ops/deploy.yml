@@ -22,7 +22,7 @@
       LOG4J2_GRAYLOG_PORT_GELF_UDP: "{{ unam_graylog_port_gelf_udp | default() | string }}"
       GRAYLOG_HOST_BASE: "{{ unamservice_container_name }}"
       DEBUG_PORT: "{{ unamservice_debug_port | default('0') }}"
-      KEYCLOAK_ENABLED: "true"
+      KEYCLOAK_ENABLED: "{{ unam_oidc_keycloak_enabled | default('true') | string }}"
       KEYCLOAK_AUT-SERVER-URL: "{{ unam_oidc_server_url | default(unam_oidc_default_server_url) }}"
       KEYCLOAK_REALM: "{{ unam_oidc_realm | default(unam_oidc_default_realm) }}"
       KEYCLOAK_RESOURCE: "{{ unamservice_oidc_client_id | default(unamservice_container_name) }}"
@@ -77,7 +77,7 @@
       keycloak_user: "{{ unam_oidc_auth_admin_username | default(unam_oidc_default_auth_admin_username) }}"
       keycloak_password: "{{ unam_oidc_auth_admin_password | default(unam_oidc_default_auth_admin_password) }}"
       keycloak_auth_realm: "{{ unam_oidc_auth_realm | default(unam_oidc_default_auth_realm) }}"
-    when: unamui_deploy is defined and unamui_deploy
+    when: unamui_deploy is defined and unamui_deploy and (unam_oidc_keycloak_enabled is not defined or unam_oidc_keycloak_enabled)
 
   - name: Définir la variables d'environnement pour le client secret du UI
     set_fact:
@@ -123,7 +123,8 @@
       keycloak_user: "{{ unam_oidc_auth_admin_username | default(unam_oidc_default_auth_admin_username) }}"
       keycloak_password: "{{ unam_oidc_auth_admin_password | default(unam_oidc_default_auth_admin_password) }}"
       keycloak_auth_realm: "{{ unam_oidc_auth_realm | default(unam_oidc_default_auth_realm) }}"
-
+    when: unam_oidc_keycloak_enabled is not defined or unam_oidc_keycloak_enabled
+    
   - name: Déployer le conteneur pour les services Utilitaire NAM
     include_role:
       name: application_web_docker

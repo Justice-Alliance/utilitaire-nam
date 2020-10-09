@@ -31,3 +31,5 @@ unamui_protocol: https
 unamui_vhost_protocol: http
 unamui_base_url: "unamui-dev.santepublique.rtss.qc.ca"
 unamui_external_port: 15010
+
+unam_oidc_keycloak_enabled: False

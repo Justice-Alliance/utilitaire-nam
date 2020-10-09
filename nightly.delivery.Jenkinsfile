@@ -100,17 +100,17 @@ pipeline {
 //				milestone(ordinal: 8)
 //			}
 //        }
-        stage ('Lancer le balayage de sécurité applicative en DEV3') {
+//        stage ('Lancer le balayage de sécurité applicative en DEV3') {
 //        	// Ne déployer que si la branche courante est origin/master
 //            when {
 //                environment name: 'BRANCH_OR_TAG', value: 'origin/master'
 //            }
-            steps {
-				milestone(ordinal: 9)
-	        	build job: "utilitaire-nam-scan-securite-app", parameters:[string(name: 'ENV', value: 'DEV3'), string(name: 'TAG', value: "${env.BRANCH_OR_TAG}")]
-				milestone(ordinal: 10)
-			}
-        }
+//            steps {
+//				milestone(ordinal: 9)
+//	        	build job: "utilitaire-nam-scan-securite-app", parameters:[string(name: 'ENV', value: 'DEV3'), string(name: 'TAG', value: "${env.BRANCH_OR_TAG}")]
+//				milestone(ordinal: 10)
+//			}
+//        }
         stage ('Déploiement de la branche en DEV2') {
 //        	// Ne déployer que si la branche courante n'est pas origin/master
 //            when {
@@ -125,13 +125,13 @@ pipeline {
 				milestone(ordinal: 12)
 			}
         }
-        stage ("Lancer les tests d'intégrations en DEV2") {
-            steps {
-				milestone(ordinal: 13)
-	        	build job: "utilitaire-nam-tests-integration", parameters:[string(name: 'ENV', value: 'DEV3'), string(name: 'TAG', value: "${env.BRANCH_OR_TAG}")]
-				milestone(ordinal: 14)
-			}
-        }
+//        stage ("Lancer les tests d'intégrations en DEV2") {
+//            steps {
+//				milestone(ordinal: 13)
+//	        	build job: "utilitaire-nam-tests-integration", parameters:[string(name: 'ENV', value: 'DEV3'), string(name: 'TAG', value: "${env.BRANCH_OR_TAG}")]
+//				milestone(ordinal: 14)
+//			}
+//        }
         stage ('Étiqueter utilitaire-nam') {
        		environment {
 			    projetPom = readMavenPom file: "dev/utilitaire-nam/pom.xml"
@@ -234,17 +234,17 @@ pipeline {
 				milestone(ordinal: 18)
 			}
         }
-        stage ("Lancer les tests d'intégrations en DEV") {
-            when {
-	        	expression {
-	        		return DEPLOY_DEV == "oui"
-	        	}
-            }
-            steps {
-				milestone(ordinal: 19)
-	        	build job: "utilitaire-nam-tests-integration", parameters:[string(name: 'ENV', value: 'DEV'), string(name: 'TAG', value: "${VERSION_TAG}")]
-				milestone(ordinal: 20)
-			}
-        }
+//        stage ("Lancer les tests d'intégrations en DEV") {
+//            when {
+//	        	expression {
+//	        		return DEPLOY_DEV == "oui"
+//	        	}
+//            }
+//            steps {
+//				milestone(ordinal: 19)
+//	        	build job: "utilitaire-nam-tests-integration", parameters:[string(name: 'ENV', value: 'DEV'), string(name: 'TAG', value: "${VERSION_TAG}")]
+//				milestone(ordinal: 20)
+//			}
+//        }
     }
 }

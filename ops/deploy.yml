@@ -83,7 +83,7 @@
     set_fact:
       unamui_oidc_client_secret_env:
         KEYCLOAK_CLIENT_SECRET: "{{ oidc_client_secret }}"
-    when: unamui_deploy is defined and unamui_deploy
+    when: unamui_deploy is defined and unamui_deploy and (unam_oidc_keycloak_enabled is not defined or unam_oidc_keycloak_enabled)
 
   - name: Construire et déployer l'interface web de l'utilitaire NAM si nécessaire
     include_role:
@@ -93,7 +93,7 @@
       appui_container_name: "{{ unamui_container_name }}"
       appui_external_port: "{{ unamui_external_port | default(unamui_default_external_port) }}"
       appui_docker_image_version: "{{ unamservice_image_version | default('latest') }}"
-      appui_env: "{{ unamui_env | combine(unamui_oidc_client_secret_env) }}"
+      appui_env: "{{ unamui_env | combine(unamui_oidc_client_secret_env | default({})) }}"
       appui_graylog_host: "{{ unamui_graylog_host | default() }}"
       appui_graylog_port_gelf_udp: "{{ unamui_graylog_port_gelf_udp | default() }}"
       appui_protocol: "{{ unamui_protocol | default() }}"

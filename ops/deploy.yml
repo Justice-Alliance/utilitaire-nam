@@ -6,6 +6,7 @@
     unam_oidc_default_auth_admin_password: admin
     unam_oidc_default_auth_realm: master
     unam_oidc_default_realm: msss
+    unam_default_namespace: unam
     
     unamservice_internal_port: 8080
     unamservice_internal_actuator_port: 28081
@@ -102,7 +103,7 @@
       appui_static_dir: "{{ unamui_static_dir }}"
       appui_internal_dist_dir: "{{ unamui_internal_dist_dir }}"
       appui_static_archive_file: "{{ unamui_static_archive_file }}"
-    when: unamui_deploy is defined and unamui_deploy    
+    when: unamui_deploy is defined and unamui_deploy and (unam_container_type is not defined or unam_container_type == 'docker')  
 
   - name: Creer le client Keycloak pour les services
     include_role:
@@ -125,7 +126,7 @@
       keycloak_auth_realm: "{{ unam_oidc_auth_realm | default(unam_oidc_default_auth_realm) }}"
     when: unam_oidc_keycloak_enabled is not defined or unam_oidc_keycloak_enabled
     
-  - name: Déployer le conteneur pour les services Utilitaire NAM
+  - name: Déployer le conteneur pour les services Utilitaire NAM sur Docker si nécessaire
     include_role:
       name: application_web_docker
     vars:
@@ -140,6 +141,30 @@
       application_protocol: "{{ unamservice_protocol | default() }}"
       application_virtualhost_protocol: "{{ unamservice_virtualhost_protocol | default() }}"
       application_base_url: "{{ unamservice_base_url | default() }}"
+    when: unam_container_type is not defined or unam_container_type == 'docker'
     
+  - name: Déployer le conteneur pour les services Utilitaire NAM sur Kubernetes si nécessaire
+    include_role:
+      name: application_web_kubernetes
+    vars:
+      application_docker_image: "{{ unamservice_docker_image }}"
+      application_container_name: "{{ unamservice_container_name }}"
+      application_namespace: "{{ unam_namespace | default(unam_default_namespace)}}"
+      application_name: "{{ unamservice_artifact_id }}"
+      application_service_name: "{{ unamservice_artifact_id }}"
+      application_ingress_name: "{{ unamservice_artifact_id }}"
+      application_external_port: "{{ unamservice_external_port | default(8080) }}"
+      application_external_monitor_port: "{{ unamservice_external_actuator_port | default(28081) }}"
+      application_internal_port: "{{ unamservice_internal_port }}"
+      application_internal_monitor_port: "{{ unamservice_internal_actuator_port }}"
+      application_image_version: "{{ unamservice_image_version | default('latest') }}"
+      application_replicas: "{{ unamservice_replicas | default(1) }}"
+      application_container_env: "{{ unamservice_container_env }}"
+      application_graylog_host: "{{ unam_graylog_host | default() }}"
+      application_graylog_port_gelf_udp: "{{ unam_graylog_port_gelf_udp | default() }}"
+      application_protocol: "{{ unamservice_protocol | default() }}"
+      application_virtualhost_protocol: "{{ unamservice_virtualhost_protocol | default() }}"
+      application_base_url: "{{ unamservice_base_url | default() }}"
+    when: unam_container_type is defined and unam_container_type == 'kubernetes'
 
     

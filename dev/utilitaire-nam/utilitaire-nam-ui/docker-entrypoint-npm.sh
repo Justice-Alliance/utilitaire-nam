@@ -1,6 +1,7 @@
 #!/bin/bash
 
 sed -i -e 's#UTILITAIRE_NAM_URL#'"$UTILITAIRE_NAM_URL"'#g' /usr/src/app/src/environments/environment.prod.ts
+sed -i -e 's#UTILITAIRE_UI_URL#'"$UTILITAIRE_UI_URL"'#g' /usr/src/app/src/environments/environment.prod.ts
 
 cp /usr/src/app/src/environments/environment.prod.ts /usr/src/app/src/environments/environment.ts
 

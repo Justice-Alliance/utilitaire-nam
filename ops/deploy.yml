@@ -105,6 +105,30 @@
       appui_static_archive_file: "{{ unamui_static_archive_file }}"
     when: unamui_deploy is defined and unamui_deploy and (unam_container_type is not defined or unam_container_type == 'docker')  
 
+  - name: Déployer le conteneur pour le UI Utilitaire NAM sur Kubernetes si nécessaire
+    include_role:
+      name: application_angular_kubernetes
+    vars:
+      application_build_image: "{{ unamui_docker_image }}"
+      application_container_name: "{{ unamui_container_name }}"
+      application_namespace: "{{ unam_namespace | default(unam_default_namespace)}}"
+      application_name: "{{ unamui_artifact_id }}"
+      application_service_name: "{{ unamui_artifact_id }}"
+      application_ingress_name: "{{ unamui_artifact_id }}"
+      application_external_port: "{{ unamui_external_port | default(unamui_default_external_port) }}"
+      application_internal_port: "{{ unamui_internal_port }}"
+      application_image_version: "{{ unamservice_image_version | default('latest') }}"
+      application_replicas: "{{ unamui_replicas | default(1) }}"
+      application_container_env: "{{ unamui_env | combine(unamui_oidc_client_secret_env | default({})) }}"
+      application_graylog_host: "{{ unam_graylog_host | default() }}"
+      application_graylog_port_gelf_udp: "{{ unam_graylog_port_gelf_udp | default() }}"
+      application_protocol: "{{ unamui_protocol | default() }}"
+      application_base_url: "{{ unamui_base_url | default() }}"
+      application_static_dir: "{{ unamui_static_dir }}"
+      application_internal_dist_dir: "{{ unamui_internal_dist_dir }}"
+      application_static_archive_file: "{{ unamui_static_archive_file }}"
+    when: unamui_deploy is defined and unamui_deploy and unam_container_type is defined and unam_container_type == 'kubernetes'
+
   - name: Creer le client Keycloak pour les services
     include_role:
       name: keycloak_client

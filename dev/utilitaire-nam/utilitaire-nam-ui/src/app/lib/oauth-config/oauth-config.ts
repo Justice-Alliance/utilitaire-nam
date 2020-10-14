@@ -1,15 +1,15 @@
-import { AuthConfig } from 'angular-oauth2-oidc';
+//import { AuthConfig } from 'angular-oauth2-oidc';
 import { environment } from 'src/environments/environment';
 
-export const authConfig: AuthConfig = {
-    issuer: environment.keycloakrooturlwithrealm,
-    redirectUri: environment.keycloakredirecturi,
+export const authConfig: any = {
+    issuer: environment.keycloakrooturl + environment.keycloakrealm.replace('{REALM}', environment.keycloakrealm),
+    redirectUri: environment.angularProjectUrl + "generer",
     clientId: environment.keycloakclientid,
-    scope: 'openid profile email offline_access api',
+    scope: 'openid profile email',
     responseType: 'code',
-    tokenEndpoint: environment.keycloaktokenurl,
-    loginUrl: environment.keycloakauthurl,
-    disablePKCE:true,
+    tokenEndpoint: environment.keycloakrooturl + environment.keycloaktokenurl.replace('{REALM}', environment.keycloakrealm),
+    loginUrl: environment.keycloakrooturl + environment.keycloakauthurl.replace('{REALM}', environment.keycloakrealm),
+    disablePKCE: true,
     // at_hash is not present in JWT token
     disableAtHashCheck: true,
     showDebugInformation: true

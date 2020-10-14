@@ -24,6 +24,8 @@
     "@angular/router": "~10.1.1",
     "@ng-bootstrap/ng-bootstrap": "^7.0.0",
     "bootstrap": "^3.4.1",
+    "keycloak-angular": "^7.2.0",
+    "keycloak-js": "^7.0.1",
     "ngx-mask": "^8.1.7",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",

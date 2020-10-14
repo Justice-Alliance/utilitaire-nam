@@ -15,11 +15,13 @@ export class AppAuthGuard extends KeycloakAuthGuard {
         console.log('is not authentificated');
         const kcIdpHint = route.queryParamMap.get('kc_idp_hint');
         if (kcIdpHint !== undefined && kcIdpHint !== null) {
+            console.log('kcidphint login');
           this.keycloakAngular.login({idpHint: kcIdpHint});
         } else {
+            console.log('login');
           this.keycloakAngular.login();
         }
-        resolve(false);
+        //resolve(false);
         return;
       }
       console.log('is authentificated');

@@ -7,7 +7,7 @@ import { UtilitaireNamApiService } from 'src/app/services/utilitaire-nam-api.ser
 import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
 import { ActionsEnum } from 'src/app/enums/actions-enum';
 import { DateFormatPipe } from 'src/app/lib/data-format-pipe';
-import { OAuthService } from 'angular-oauth2-oidc';
+//import { OAuthService } from 'angular-oauth2-oidc';
 //import { authConfig } from 'src/app/lib/oauth-config/oauth-config';
 //import { JwksValidationHandler } from 'angular-oauth2-oidc-jwks';
 
@@ -40,7 +40,7 @@ export class GenererNamPageComponent implements OnInit, OnDestroy {
   public listeNAMResultat: string[] = [];
   public groupeDeControle: FormGroup;
 
-  constructor(public datePipe: DatePipe, private apiNamService: UtilitaireNamApiService, public dateFormatPipe: DateFormatPipe, private oauthService :OAuthService) {
+  constructor(public datePipe: DatePipe, private apiNamService: UtilitaireNamApiService, public dateFormatPipe: DateFormatPipe) {
    // this.configurerSSO();
    }
 

@@ -1,5 +1,8 @@
 ---
-# defaults file for Utilitaire NAM
+unam_oidc_server_url: https://login.kube.lacave.info
+unam_oidc_auth_admin_username: unam-admin
+unam_oidc_auth_admin_password: 'Utilia1reN@M'
+unam_oidc_auth_realm: kubernetes
 # Configuration Graylog
 #unam_graylog_host: "{{ ansible_fqdn }}"
 #unam_graylog_port_gelf_udp: 12231

@@ -50,11 +50,12 @@
       KEYCLOAK_URL: "{{ unam_oidc_server_url | default(unam_oidc_default_server_url) }}"
       KEYCLOAK_REALM: "{{ unam_oidc_realm | default(unam_oidc_default_realm) }}"
       KEYCLOAK_CLIENT_ID: "{{ unamui_oidc_client_id | default(unamui_container_name) }}"
+      KEYCLOAK_REDIRECT_URI: "{{ unamui_url | default (unamui_default_url) }}/generer"
      
     unamui_oidc_client_name: "utilitaire-nam-ui-{{ env | lower}}"
     unamui_oidc_client_description: "Interface web de l'utilitaire NAM pour {{ env | upper}}"
     unamui_oidc_client_redirectUris:
-    - "{{ unamui_url | default (unamui_default_url) }}"
+    - "{{ unamui_url | default (unamui_default_url) }}/*"
     unamui_oidc_client_weborigins:
     - "{{ unamui_url | default (unamui_default_url) }}"
     

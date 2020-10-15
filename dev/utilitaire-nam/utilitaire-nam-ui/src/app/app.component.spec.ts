@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { NgbDatepicker, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { routes } from './app-routing.module';
+import { AppAuthGuard } from './app.authguard';
 import { AppComponent } from './app.component';
 import { GenererNamPageComponent, InformationNamPageComponent, ValiderNamPageComponent } from './components/pages';
 import { DateFormatPipe } from './lib/data-format-pipe';
@@ -33,7 +34,8 @@ describe('AppComponent', () => {
         InformationNamPageComponent
       ],
       providers: [
-        DateFormatPipe
+        DateFormatPipe,
+        AppAuthGuard
       ],
     }).compileComponents();
 

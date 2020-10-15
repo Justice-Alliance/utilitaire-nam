@@ -5,6 +5,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { of } from 'rxjs';
 import { AppRoutingModule } from 'src/app/app-routing.module';
+import { AppAuthGuard } from 'src/app/app.authguard';
 import { UtilitaireNamApiService } from 'src/app/services/utilitaire-nam-api.service';
 import { ValiderNamPageComponent } from './valider-nam-page.component';
 
@@ -30,7 +31,8 @@ describe('ValiderNamPageComponent', () => {
         {
           provide: UtilitaireNamApiService,
           useValue: jasmine.createSpyObj('UtilitaireNamApiService', ['validerNAMGET'])
-        }
+        },
+        AppAuthGuard
       ],
     })
       .compileComponents();

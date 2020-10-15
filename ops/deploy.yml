@@ -24,7 +24,7 @@
       GRAYLOG_HOST_BASE: "{{ unamservice_container_name }}"
       DEBUG_PORT: "{{ unamservice_debug_port | default('0') }}"
       KEYCLOAK_ENABLED: "{{ unam_oidc_keycloak_enabled | default('true') | string }}"
-      KEYCLOAK_AUT-SERVER-URL: "{{ unam_oidc_server_url | default(unam_oidc_default_server_url) }}"
+      KEYCLOAK_AUTH-SERVER-URL: "{{ unam_oidc_server_url | default(unam_oidc_default_server_url) }}/auth"
       KEYCLOAK_REALM: "{{ unam_oidc_realm | default(unam_oidc_default_realm) }}"
       KEYCLOAK_RESOURCE: "{{ unamservice_oidc_client_id | default(unamservice_container_name) }}"
 

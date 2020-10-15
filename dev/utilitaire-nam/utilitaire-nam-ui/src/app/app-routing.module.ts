@@ -11,7 +11,9 @@ export const routes: Routes = [{
 },
 {
   path: 'valider',
-  component: ValiderNamPageComponent
+  component: ValiderNamPageComponent,
+  canActivate: [AppAuthGuard], // le composant est sécurisé par keycloak
+  data: { roles: [environment.keycloakrole] }
 },
 {
   path: 'generer',
@@ -21,7 +23,9 @@ export const routes: Routes = [{
 },
 {
   path: 'information',
-  component: InformationNamPageComponent
+  component: InformationNamPageComponent,
+  canActivate: [AppAuthGuard], // le composant est sécurisé par keycloak
+  data: { roles: [environment.keycloakrole] }
 }, 
 {
   path: '**',

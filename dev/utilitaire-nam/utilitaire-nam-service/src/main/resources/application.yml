@@ -13,6 +13,11 @@ keycloak:
    - auth-roles: generation-du-nam
      security-collections:
       - patterns: /nam/generer   
+   - auth-roles: "*"
+     security-collections:
+      - patterns: 
+        - /nam/info
+        - /nam/valider
 management:
   server:
     port: 28081

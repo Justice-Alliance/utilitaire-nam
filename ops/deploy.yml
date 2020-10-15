@@ -44,9 +44,9 @@
     unamui_internal_dist_dir: /dist
     unamui_static_archive_file: utilitaire-nam-ui.tar.gz
     unamui_env:
-      UTILITAIRE_NAM_URL: "{{ unamservice_url }}"
+      UTILITAIRE_NAM_URL: "{{ unamservice_url }}/"
       APP_FILE_NAME: "{{ unamui_static_archive_file }}"
-      UTILITAIRE_UI_URL: "{{ unamui_url | default (unamui_default_url) }}"
+      UTILITAIRE_UI_URL: "{{ unamui_url | default (unamui_default_url) }}/"
       KEYCLOAK_URL: "{{ unam_oidc_server_url | default(unam_oidc_default_server_url) }}"
       KEYCLOAK_REALM: "{{ unam_oidc_realm | default(unam_oidc_default_realm) }}"
       KEYCLOAK_CLIENT_ID: "{{ unamui_oidc_client_id | default(unamui_container_name) }}"

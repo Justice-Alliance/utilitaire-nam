@@ -30,4 +30,5 @@ unamui_deploy: true
 unamui_protocol: https
 unamui_vhost_protocol: http
 unamui_base_url: "unamui-dev2.santepublique.rtss.qc.ca"
+unamui_url: "{{ unamui_protocol }}://{{ unamui_base_url }}"
 unamui_external_port: 15010

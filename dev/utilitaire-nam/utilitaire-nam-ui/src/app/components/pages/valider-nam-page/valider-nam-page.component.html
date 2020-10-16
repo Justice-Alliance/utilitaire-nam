@@ -28,8 +28,7 @@
         </div>
     </form>
     <div id="alerteErreur" *ngIf="resultatValider === false && action === 'valider'" class="alert alert-danger container-fluid">
-        <div *ngIf="!erreurMessage">{{ TEXTE_ERREUR_NAM }}</div>
-        <div *ngIf="erreurMessage">{{ erreurMessage }}</div>
+        <div>{{ TEXTE_ERREUR_NAM }}</div>
     </div>
     <div id="alerteSuccess" *ngIf="resultatValider === true && action === 'valider'" class="alert alert-info container-fluid">
         <div>{{ TEXTE_VALIDE_NAM}}</div>

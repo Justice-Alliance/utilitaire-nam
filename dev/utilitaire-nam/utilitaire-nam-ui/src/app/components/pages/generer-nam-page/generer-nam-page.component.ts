@@ -90,7 +90,7 @@ export class GenererNamPageComponent implements OnInit, OnDestroy {
   actionGenerer(): void {
     this.listeNAMResultat = [];
     this.action = ActionsEnum.GEN;
-    this.erreurTraitement = null;
+
     this.abonnement = this.apiNamService.genererNAMGET(this.getNom(),
       this.getPrenom(),
       this.getDateNaissance(),

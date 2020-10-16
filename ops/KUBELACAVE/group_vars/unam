@@ -1,21 +1,27 @@
 ---
-# defaults file for Utilitaire NAM
+unam_oidc_server_url: https://login.kube.lacave.info
+unam_oidc_auth_admin_username: unam-admin
+unam_oidc_auth_admin_password: 'Utilia1reN@M'
+unam_oidc_auth_realm: kubernetes
+unam_oidc_realm: kubernetes
 # Configuration Graylog
 #unam_graylog_host: "{{ ansible_fqdn }}"
 #unam_graylog_port_gelf_udp: 12231
 
+# Type de conteneur: docker ou kubernetes
+unam_container_type: kubernetes
 # Version de l'image du conteneur a installer
 unamservice_image_version: latest
 # Port TCP sur lequel publier l'application
 unamservice_external_port: 14101
 # URL de base pour publier le service
-#unamservice_base_url: "{{ ansible_fqdn }}"
+unamservice_base_url: unam.lacave.info
 # Protocol (http ou https) des services web
 unamservice_protocol: http
 #unamservice_protocol: https
 #unamservice_cert_file: unamservice.dev3.inspq.qc.ca.cert
 #unamservice_cert_key: unamservice.dev3.inspq.qc.ca.key
-unamservice_url: "{{ unamservice_protocol }}://{{ ansible_fqdn | default('localhost') }}:{{ unamservice_external_port }}"
+unamservice_url: "{{ unamservice_protocol }}://{{ unamservice_base_url }}"
   
 unamservice_external_actuator_port: 27082
 
@@ -23,6 +29,9 @@ unamservice_debug_port: "*:8001"
 
 unamui_deploy: True
 unamui_external_port: 15010
-appui_push_env_image_to_repository: False
+unamui_protocol: http
+unamui_base_url: "unamui.lacave.info"
+unamui_external_port: 15010
+unamui_url: "{{ unamui_protocol }}://{{ unamui_base_url }}"
 
-#unam_oidc_keycloak_enabled: True
+unam_oidc_keycloak_enabled: True

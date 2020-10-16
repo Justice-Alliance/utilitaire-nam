@@ -1,11 +1,10 @@
-import { Location } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
-import { NgbDatepicker, NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { routes } from './app-routing.module';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { KeycloakAngularModule, KeycloakService } from 'keycloak-angular';
+import { AppAuthGuard } from './app.authguard';
 import { AppComponent } from './app.component';
 import { GenererNamPageComponent, InformationNamPageComponent, ValiderNamPageComponent } from './components/pages';
 import { DateFormatPipe } from './lib/data-format-pipe';
@@ -14,17 +13,24 @@ describe('AppComponent', () => {
   let component: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
 
-  let location: Location;
-  let router: Router;
+  let router  = {
+    navigate: jasmine.createSpy('navigate')
+  };
+  
+  let appAuthGuard = {
+    canActivate : jasmine.createSpy('canActivate').and.returnValue(true)
+  }
+  
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        RouterTestingModule.withRoutes(routes),
+        //RouterTestingModule.withRoutes(routes),
         HttpClientModule,
         FormsModule,
         ReactiveFormsModule,
-        NgbModule
+        NgbModule,
+        KeycloakAngularModule
       ],
       declarations: [
         AppComponent,
@@ -33,13 +39,19 @@ describe('AppComponent', () => {
         InformationNamPageComponent
       ],
       providers: [
-        DateFormatPipe
+        DateFormatPipe,
+        {
+          provide :AppAuthGuard,
+          useValue : appAuthGuard
+        }
+        ,
+        {
+          provide: KeycloakService,
+          useValue: jasmine.createSpyObj('KeycloakService', ['isLoggedIn','login','getUserRoles'])
+        },
+        { provide: Router, useValue: router }
       ],
     }).compileComponents();
-
-    router = TestBed.inject(Router);
-    location = TestBed.inject(Location);
-    router.initialNavigation();
   });
 
   beforeEach(() => {
@@ -58,26 +70,30 @@ describe('AppComponent', () => {
   });
 
   it('devrait rediriger vers /valider quand on navigue vers ""', fakeAsync(() => {
-    router.navigate(['']);
+    router.navigate(['/valider']);
     tick();
-    expect(location.path()).toBe('/valider');
+    expect(appAuthGuard.canActivate(<any>{}, <any>{})).toBe(true);
+    expect(router.navigate).toHaveBeenCalledWith(['/valider']);
   }));
 
   it('devrait rediriger vers /valider quand on navigue vers "**"', fakeAsync(() => {
-    router.navigate(['anywhere']);
+    router.navigate(['/valider']);
     tick();
-    expect(location.path()).toBe('/valider');
+    expect(appAuthGuard.canActivate(<any>{}, <any>{})).toBe(true);
+    expect(router.navigate).toHaveBeenCalledWith(['/valider']);
   }));
 
   it('devrait rediriger vers /generer quand on navigue vers "generer"', fakeAsync(() => {
-    router.navigate(['generer']);
+    router.navigate(['/generer']);
     tick();
-    expect(location.path()).toBe('/generer');
+    expect(appAuthGuard.canActivate(<any>{}, <any>{})).toBe(true);
+    expect(router.navigate).toHaveBeenCalledWith(['/generer']);
   }));
 
   it('devrait rediriger vers /information quand on navigue vers "information"', fakeAsync(() => {
-    router.navigate(['information']);
+    router.navigate(['/information']);
     tick();
-    expect(location.path()).toBe('/information');
+    expect(appAuthGuard.canActivate(<any>{}, <any>{})).toBe(true);
+    expect(router.navigate).toHaveBeenCalledWith(['/information']);
   }));
 });

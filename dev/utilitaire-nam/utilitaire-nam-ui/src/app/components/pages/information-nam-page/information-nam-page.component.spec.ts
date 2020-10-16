@@ -6,6 +6,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { of } from 'rxjs';
+import { AppAuthGuard } from 'src/app/app.authguard';
 import { DateFormatPipe } from 'src/app/lib/data-format-pipe';
 import { InformationDTO } from 'src/app/model/information-dto';
 import { UtilitaireNamApiService } from 'src/app/services/utilitaire-nam-api.service';
@@ -35,7 +36,8 @@ describe('InformationNamPageComponent', () => {
         {
           provide: UtilitaireNamApiService,
           useValue: jasmine.createSpyObj('UtilitaireNamApiService', ['obtenirInformationNAMGET'])
-        }
+        },
+        AppAuthGuard
       ]
     })
     .compileComponents();

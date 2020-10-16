@@ -1,6 +1,13 @@
 ---
 - hosts: unam
   vars:
+    unam_oidc_default_server_url: "http://{{ ansible_fqdn | default('localhost') }}:18081"
+    unam_oidc_default_auth_admin_username: admin
+    unam_oidc_default_auth_admin_password: admin
+    unam_oidc_default_auth_realm: master
+    unam_oidc_default_realm: msss
+    unam_default_namespace: unam
+    
     unamservice_internal_port: 8080
     unamservice_internal_actuator_port: 28081
     cert_file_path: /etc/pki/tls/certs
@@ -12,11 +19,23 @@
       - "{{ unamservice_external_port | default(8080) }}:{{ unamservice_internal_port }}"
       - "{{ unamservice_external_actuator_port | default(28081) }}:{{ unamservice_internal_actuator_port }}"
     unamservice_container_env:
-      "LOG4J2_GRAYLOG_URL": "{{ unam_graylog_host | default() }}"
-      "LOG4J2_GRAYLOG_PORT_GELF_UDP": "{{ unam_graylog_port_gelf_udp | default() | string }}"
-      "GRAYLOG_HOST_BASE": "{{ unamservice_container_name }}"
-      "DEBUG_PORT": "{{ unamservice_debug_port | default('0') }}"
-      
+      LOG4J2_GRAYLOG_URL: "{{ unam_graylog_host | default() }}"
+      LOG4J2_GRAYLOG_PORT_GELF_UDP: "{{ unam_graylog_port_gelf_udp | default() | string }}"
+      GRAYLOG_HOST_BASE: "{{ unamservice_container_name }}"
+      DEBUG_PORT: "{{ unamservice_debug_port | default('0') }}"
+      KEYCLOAK_ENABLED: "{{ unam_oidc_keycloak_enabled | default('true') | string }}"
+      KEYCLOAK_AUTH-SERVER-URL: "{{ unam_oidc_server_url | default(unam_oidc_default_server_url) }}/auth"
+      KEYCLOAK_REALM: "{{ unam_oidc_realm | default(unam_oidc_default_realm) }}"
+      KEYCLOAK_RESOURCE: "{{ unamservice_oidc_client_id | default(unamservice_container_name) }}"
+
+    unamservice_oidc_client_name: "utilitaire-nam-services-{{ env | lower}}"
+    unamservice_oidc_client_description: "Services web de l'utilitaire NAM pour {{ env | upper}}"
+    unamservice_oidc_client_roles:
+    - name: generation-du-nam
+      description: Ceux qui peuvent générer des NAM
+       
+    unamui_default_external_port: 4200
+    unamui_default_url: "http://{{ ansible_fqdn | default('localhost') }}:{{ unamui_external_port | default(unamui_default_external_port) }}"
     unamui_container_name: "unamui{{ env | lower }}"
     unamui_artifact_id: utilitaire-nam-ui
     unamui_docker_image: "{{ docker_registry | default('nexus3.inspq.qc.ca:5000') }}/{{ docker_registry_org | default('inspq') }}/{{ unamui_artifact_id }}"
@@ -25,35 +44,152 @@
     unamui_internal_dist_dir: /dist
     unamui_static_archive_file: utilitaire-nam-ui.tar.gz
     unamui_env:
-      UTILITAIRE_NAM_URL: "{{ unamservice_url }}"
+      UTILITAIRE_NAM_URL: "{{ unamservice_url }}/"
       APP_FILE_NAME: "{{ unamui_static_archive_file }}"
-  roles:
-  - name: application_web_docker
-    application_docker_image: "{{ unamservice_docker_image }}"
-    application_container_name: "{{ unamservice_container_name }}"
-    application_external_port: "{{ unamservice_external_port }}"
-    application_port_mappers: "{{ unamservice_port_mappers }}"
-    application_image_version: "{{ unamservice_image_version | default('latest') }}"
-    application_container_env: "{{ unamservice_container_env }}"
-    application_graylog_host: "{{ unam_graylog_host | default() }}"
-    application_graylog_port_gelf_udp: "{{ unam_graylog_port_gelf_udp | default() }}"
-    application_protocol: "{{ unamservice_protocol | default() }}"
-    application_virtualhost_protocol: "{{ unamservice_virtualhost_protocol | default() }}"
-    application_base_url: "{{ unamservice_base_url | default() }}"
+      UTILITAIRE_UI_URL: "{{ unamui_url | default (unamui_default_url) }}/"
+      KEYCLOAK_URL: "{{ unam_oidc_server_url | default(unam_oidc_default_server_url) }}"
+      KEYCLOAK_REALM: "{{ unam_oidc_realm | default(unam_oidc_default_realm) }}"
+      KEYCLOAK_CLIENT_ID: "{{ unamui_oidc_client_id | default(unamui_container_name) }}"
+      KEYCLOAK_REDIRECT_URI: "{{ unamui_url | default (unamui_default_url) }}/generer"
+     
+    unamui_oidc_client_name: "utilitaire-nam-ui-{{ env | lower}}"
+    unamui_oidc_client_description: "Interface web de l'utilitaire NAM pour {{ env | upper}}"
+    unamui_oidc_client_redirectUris:
+    - "{{ unamui_url | default (unamui_default_url) }}/*"
+    unamui_oidc_client_weborigins:
+    - "{{ unamui_url | default (unamui_default_url) }}"
     
-  - name: application_angular_docker
-    appui_docker_image: "{{ unamui_docker_image }}"
-    appui_container_name: "{{ unamui_container_name }}"
-    appui_external_port: "{{ unamui_external_port | default(44444) }}"
-    appui_docker_image_version: "{{ unamservice_image_version | default('latest') }}"
-    appui_env: "{{ unamui_env | default({}) }}"
-    appui_graylog_host: "{{ unamui_graylog_host | default() }}"
-    appui_graylog_port_gelf_udp: "{{ unamui_graylog_port_gelf_udp | default() }}"
-    appui_protocol: "{{ unamui_protocol | default() }}"
-    appui_virtualhost_protocol: "{{ unamui_vhost_protocol | default() }}"
-    appui_base_url: "{{ unamui_base_url | default() }}"
-    appui_static_dir: "{{ unamui_static_dir }}"
-    appui_internal_dist_dir: "{{ unamui_internal_dist_dir }}"
-    appui_static_archive_file: "{{ unamui_static_archive_file }}"
-    when: unamui_deploy is defined and unamui_deploy
+  tasks:
+  - name: Creer le client Keycloak pour le UI si nécessaire
+    include_role:
+      name: keycloak_client
+    vars:
+      oidc_realm: "{{ unam_oidc_realm | default(unam_oidc_default_realm) }}"
+      oidc_client_id: "{{ unamui_oidc_client_id | default(unamui_container_name) }}"
+      oidc_client_name: "{{ unamui_oidc_client_name }}"
+      oidc_client_description: "{{ unamui_oidc_client_description }}"
+      oidc_client_redirectUris: "{{ unamui_oidc_client_redirectUris }}"
+      oidc_client_weborigins: "{{ unamui_oidc_client_weborigins }}"
+      oidc_client_bearerOnly: false
+      oidc_client_protocolMappers: "{{ unamui_oidc_client_protocolMappers | default(omit) }}"
+      oidc_client_roles: "{{ unamservice_oidc_client_roles | default(omit) }}"
+      oidc_client_authorizationServicesEnabled: true
+      oidc_client_serviceAccountsEnabled: true
+      keycloak_url: "{{ unam_oidc_server_url | default(unam_oidc_default_server_url) }}"
+      keycloak_user: "{{ unam_oidc_auth_admin_username | default(unam_oidc_default_auth_admin_username) }}"
+      keycloak_password: "{{ unam_oidc_auth_admin_password | default(unam_oidc_default_auth_admin_password) }}"
+      keycloak_auth_realm: "{{ unam_oidc_auth_realm | default(unam_oidc_default_auth_realm) }}"
+    when: unamui_deploy is defined and unamui_deploy and (unam_oidc_keycloak_enabled is not defined or unam_oidc_keycloak_enabled)
+
+  - name: Définir la variables d'environnement pour le client secret du UI
+    set_fact:
+      unamui_oidc_client_secret_env:
+        KEYCLOAK_CLIENT_SECRET: "{{ oidc_client_secret }}"
+    when: unamui_deploy is defined and unamui_deploy and (unam_oidc_keycloak_enabled is not defined or unam_oidc_keycloak_enabled)
+
+  - name: Construire et déployer l'interface web de l'utilitaire NAM si nécessaire
+    include_role:
+      name: application_angular_docker
+    vars:
+      appui_docker_image: "{{ unamui_docker_image }}"
+      appui_container_name: "{{ unamui_container_name }}"
+      appui_external_port: "{{ unamui_external_port | default(unamui_default_external_port) }}"
+      appui_docker_image_version: "{{ unamservice_image_version | default('latest') }}"
+      appui_env: "{{ unamui_env | combine(unamui_oidc_client_secret_env | default({})) }}"
+      appui_graylog_host: "{{ unamui_graylog_host | default() }}"
+      appui_graylog_port_gelf_udp: "{{ unamui_graylog_port_gelf_udp | default() }}"
+      appui_protocol: "{{ unamui_protocol | default() }}"
+      appui_virtualhost_protocol: "{{ unamui_vhost_protocol | default() }}"
+      appui_base_url: "{{ unamui_base_url | default() }}"
+      appui_static_dir: "{{ unamui_static_dir }}"
+      appui_internal_dist_dir: "{{ unamui_internal_dist_dir }}"
+      appui_static_archive_file: "{{ unamui_static_archive_file }}"
+    when: unamui_deploy is defined and unamui_deploy and (unam_container_type is not defined or unam_container_type == 'docker')  
+
+  - name: Déployer le conteneur pour le UI Utilitaire NAM sur Kubernetes si nécessaire
+    include_role:
+      name: application_angular_kubernetes
+    vars:
+      application_build_image: "{{ unamui_docker_image }}"
+      application_container_name: "{{ unamui_container_name }}"
+      application_namespace: "{{ unam_namespace | default(unam_default_namespace)}}"
+      application_name: "{{ unamui_artifact_id }}"
+      application_service_name: "{{ unamui_artifact_id }}"
+      application_ingress_name: "{{ unamui_artifact_id }}"
+      application_external_port: "{{ unamui_external_port | default(unamui_default_external_port) }}"
+      application_internal_port: "{{ unamui_internal_port }}"
+      application_image_version: "{{ unamservice_image_version | default('latest') }}"
+      application_replicas: "{{ unamui_replicas | default(1) }}"
+      application_container_env: "{{ unamui_env | combine(unamui_oidc_client_secret_env | default({})) }}"
+      application_graylog_host: "{{ unam_graylog_host | default() }}"
+      application_graylog_port_gelf_udp: "{{ unam_graylog_port_gelf_udp | default() }}"
+      application_protocol: "{{ unamui_protocol | default() }}"
+      application_base_url: "{{ unamui_base_url | default() }}"
+      application_static_dir: "{{ unamui_static_dir }}"
+      application_internal_dist_dir: "{{ unamui_internal_dist_dir }}"
+      application_static_archive_file: "{{ unamui_static_archive_file }}"
+    when: unamui_deploy is defined and unamui_deploy and unam_container_type is defined and unam_container_type == 'kubernetes'
+
+  - name: Creer le client Keycloak pour les services
+    include_role:
+      name: keycloak_client
+    vars:
+      oidc_realm: "{{ unam_oidc_realm | default(unam_oidc_default_realm) }}"
+      oidc_client_id: "{{ unamservice_oidc_client_id | default(unamservice_container_name) }}"
+      oidc_client_name: "{{ unamservice_oidc_client_name }}"
+      oidc_client_description: "{{ unamservice_oidc_client_description }}"
+      oidc_client_redirectUris: []
+      oidc_client_weborigins: []
+      oidc_client_bearerOnly: true
+      oidc_client_protocolMappers: "{{ unamservice_oidc_client_protocolMappers | default(omit) }}"
+      oidc_client_roles: "{{ unamservice_oidc_client_roles | default(omit) }}"
+      oidc_client_authorizationServicesEnabled: False
+      oidc_client_serviceAccountsEnabled: False
+      keycloak_url: "{{ unam_oidc_server_url | default(unam_oidc_default_server_url) }}"
+      keycloak_user: "{{ unam_oidc_auth_admin_username | default(unam_oidc_default_auth_admin_username) }}"
+      keycloak_password: "{{ unam_oidc_auth_admin_password | default(unam_oidc_default_auth_admin_password) }}"
+      keycloak_auth_realm: "{{ unam_oidc_auth_realm | default(unam_oidc_default_auth_realm) }}"
+    when: unam_oidc_keycloak_enabled is not defined or unam_oidc_keycloak_enabled
+    
+  - name: Déployer le conteneur pour les services Utilitaire NAM sur Docker si nécessaire
+    include_role:
+      name: application_web_docker
+    vars:
+      application_docker_image: "{{ unamservice_docker_image }}"
+      application_container_name: "{{ unamservice_container_name }}"
+      application_external_port: "{{ unamservice_external_port }}"
+      application_port_mappers: "{{ unamservice_port_mappers }}"
+      application_image_version: "{{ unamservice_image_version | default('latest') }}"
+      application_container_env: "{{ unamservice_container_env }}"
+      application_graylog_host: "{{ unam_graylog_host | default() }}"
+      application_graylog_port_gelf_udp: "{{ unam_graylog_port_gelf_udp | default() }}"
+      application_protocol: "{{ unamservice_protocol | default() }}"
+      application_virtualhost_protocol: "{{ unamservice_virtualhost_protocol | default() }}"
+      application_base_url: "{{ unamservice_base_url | default() }}"
+    when: unam_container_type is not defined or unam_container_type == 'docker'
+    
+  - name: Déployer le conteneur pour les services Utilitaire NAM sur Kubernetes si nécessaire
+    include_role:
+      name: application_web_kubernetes
+    vars:
+      application_docker_image: "{{ unamservice_docker_image }}"
+      application_container_name: "{{ unamservice_container_name }}"
+      application_namespace: "{{ unam_namespace | default(unam_default_namespace)}}"
+      application_name: "{{ unamservice_artifact_id }}"
+      application_service_name: "{{ unamservice_artifact_id }}"
+      application_ingress_name: "{{ unamservice_artifact_id }}"
+      application_external_port: "{{ unamservice_external_port | default(8080) }}"
+      application_external_monitor_port: "{{ unamservice_external_actuator_port | default(28081) }}"
+      application_internal_port: "{{ unamservice_internal_port }}"
+      application_internal_monitor_port: "{{ unamservice_internal_actuator_port }}"
+      application_image_version: "{{ unamservice_image_version | default('latest') }}"
+      application_replicas: "{{ unamservice_replicas | default(1) }}"
+      application_container_env: "{{ unamservice_container_env }}"
+      application_graylog_host: "{{ unam_graylog_host | default() }}"
+      application_graylog_port_gelf_udp: "{{ unam_graylog_port_gelf_udp | default() }}"
+      application_protocol: "{{ unamservice_protocol | default() }}"
+      application_virtualhost_protocol: "{{ unamservice_virtualhost_protocol | default() }}"
+      application_base_url: "{{ unamservice_base_url | default() }}"
+    when: unam_container_type is defined and unam_container_type == 'kubernetes'
+
     

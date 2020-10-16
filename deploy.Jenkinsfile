@@ -14,6 +14,8 @@ pipeline {
         unServicePom = readMavenPom file: 'dev/utilitaire-nam/utilitaire-nam-service/pom.xml'
         UN_SERVICE_IMAGE = unServicePom.getArtifactId()
     	NOTIFICATION_TEAM = "${env.NOTIFICATION_SX5_TEAM}"
+	   	ANSIBLE_VAULT_ID = '/etc/ansible/passfile'
+	   	SX5_ANSIBLE_TAG = "v2.9.13-keycloak-sx5-1"
 	}
     stages {
     	stage ('Checkout') {
@@ -50,6 +52,7 @@ pipeline {
         } 
         stage ('Configurer Ansible') {
             steps {
+                sh "if [ ! -d ansible ]; then git clone https://github.com/Inspq/ansible.git && cd ansible; else cd ansible && git fetch --all; fi; git checkout ${SX5_ANSIBLE_TAG}; git pull origin ${SX5_ANSIBLE_TAG}"
 	            sh "rm -rf ops/roles"
 	            sh "cd ops && ansible-galaxy install -f -r requirements.yml"        	    
             }
@@ -62,8 +65,8 @@ pipeline {
 	                	returnStdout: true
 	                	).trim()
                 }            
-                sh "cd ops && ansible-playbook -i ${env.ENV}/${env.ENV}.hosts deploy-vm.yml"
-                sh "cd ops && ansible-playbook -i ${env.ENV}/${env.ENV}.hosts -e unamservice_artifact_id=${UN_SERVICE_IMAGE} -e unamservice_image_version=${VERSION} deploy.yml"
+                sh "source ansible/hacking/env-setup && cd ops && ansible-playbook -i ${env.ENV}/${env.ENV}.hosts --vault-id ${ANSIBLE_VAULT_ID} deploy-vm.yml"
+                sh "source ansible/hacking/env-setup && cd ops && ansible-playbook -i ${env.ENV}/${env.ENV}.hosts --vault-id ${ANSIBLE_VAULT_ID} -e unamservice_artifact_id=${UN_SERVICE_IMAGE} -e unamservice_image_version=${VERSION} deploy.yml"
             }
         }
     }

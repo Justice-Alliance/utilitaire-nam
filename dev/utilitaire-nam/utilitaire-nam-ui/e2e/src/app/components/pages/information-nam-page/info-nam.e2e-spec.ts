@@ -19,19 +19,11 @@ describe('Page Obtenir Information du NAM', () => {
     expect(pageInformationNAM.getBoutonObtenirInfoNAM().isEnabled()).toBeFalsy();
   });
 
-  it('devrait afficher une alerte de type succés avec les informations sur le NAm si on a sasie un bon NAM', () => {
+  /*it('devrait séléctionner le bouton Obtenir info puis afficher une alerte si on click dessus ', () => {
     pageInformationNAM.aller();
     pageInformationNAM.getZoneTexteNAM().sendKeys('GAUA97612726');
     pageInformationNAM.getBoutonObtenirInfoNAM().click();
-
-    expect(pageInformationNAM.getAlerteValidationSuccess().isDisplayed()).toBeTruthy();
-  });
-
-  it('devrait afficher une alerte de type erreur si on a sasie un mauvais NAM', () => {
-    pageInformationNAM.aller();
-    pageInformationNAM.getZoneTexteNAM().sendKeys('AAAAAaAa');
-    pageInformationNAM.getBoutonObtenirInfoNAM().click();
-
-    expect(pageInformationNAM.getAlerteValidationErreur().isDisplayed()).toBeTruthy();
-  });
+    expect(pageInformationNAM.getBoutonObtenirInfoNAM().isSelected).toBeTruthy();
+    expect(pageInformationNAM.getAlerteValidationSuccess().isDisplayed() || pageInformationNAM.getAlerteValidationErreur().isDisplayed()).toBeTruthy();
+  });*/
 });

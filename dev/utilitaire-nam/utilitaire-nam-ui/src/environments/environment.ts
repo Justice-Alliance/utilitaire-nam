@@ -4,8 +4,17 @@
 
 export const environment = {
   production: false,
-  urlUtilitaireNAM: "https://unam-dev.santepublique.rtss.qc.ca/"
+  urlUtilitaireNAM: 'http://localhost:8080/', //"https://unam-dev.santepublique.rtss.qc.ca/",
+  angularProjectUrl: 'http://localhost:4200/',
+  keycloakrooturl :'https://gia-dev.santepublique.rtss.qc.ca',
+  keycloaktokenurl: '/auth/realms/{REALM}/protocol/openid-connect/token',
+  keycloakauthurl:'/auth/realms/{REALM}/protocol/openid-connect/auth',
+  keycloakrealm: 'SPSantePublique', 
+  keycloakclientid: 'sx5duuidev',
+  keycloakclientsecret: '62d7c7b3-c4be-4ad1-8e7a-d2dde0f03558', 
+  keycloakrole:''
 };
+
 
 /*
  * For easier debugging in development mode, you can import the following file

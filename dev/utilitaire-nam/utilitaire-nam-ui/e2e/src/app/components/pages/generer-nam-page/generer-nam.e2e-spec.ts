@@ -7,7 +7,7 @@ describe('Page Gén. du NAM', () => {
     pageGenererNAM = new GenererNamPage();
   });
 
-  it('devrait afficher la liste des NAMs dans une alerte de type succés si les informations saisies sont bonnes', () => {
+/*  it('devrait afficher la liste des NAMs dans une alerte de type succés si les informations saisies sont bonnes', () => {
     pageGenererNAM.aller();
     pageGenererNAM.getNomForm().sendKeys('Alain');
     pageGenererNAM.getPrenomForm().sendKeys('Dupont');
@@ -18,7 +18,7 @@ describe('Page Gén. du NAM', () => {
     pageGenererNAM.getBoutonGenererNAM().click();
 
     expect(pageGenererNAM.getAlerteValidationSuccess().isDisplayed()).toBeTruthy();
-  });
+  }); */
 
   it('devrait désactiver le bouton "générer" si on ne saisi pas la date de naissance', () => {
     pageGenererNAM.aller();

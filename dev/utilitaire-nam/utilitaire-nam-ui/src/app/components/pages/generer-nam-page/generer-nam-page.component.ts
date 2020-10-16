@@ -7,6 +7,9 @@ import { UtilitaireNamApiService } from 'src/app/services/utilitaire-nam-api.ser
 import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
 import { ActionsEnum } from 'src/app/enums/actions-enum';
 import { DateFormatPipe } from 'src/app/lib/data-format-pipe';
+//import { OAuthService } from 'angular-oauth2-oidc';
+//import { authConfig } from 'src/app/lib/oauth-config/oauth-config';
+//import { JwksValidationHandler } from 'angular-oauth2-oidc-jwks';
 
 
 @Component({
@@ -37,7 +40,9 @@ export class GenererNamPageComponent implements OnInit, OnDestroy {
   public listeNAMResultat: string[] = [];
   public groupeDeControle: FormGroup;
 
-  constructor(public datePipe: DatePipe, private apiNamService: UtilitaireNamApiService, public dateFormatPipe: DateFormatPipe) { }
+  constructor(public datePipe: DatePipe, private apiNamService: UtilitaireNamApiService, public dateFormatPipe: DateFormatPipe) {
+   // this.configurerSSO();
+   }
 
   ngOnInit(): void {
     this.groupeDeControle = new FormGroup({
@@ -47,10 +52,13 @@ export class GenererNamPageComponent implements OnInit, OnDestroy {
     });
     this.creerListeSexes();
     this.peuplerListeDeroulante();
+
+    //this.authentificationSSO();
+    //this.configurerSSO();
   }
 
   ngOnDestroy(): void {
-    this.action = null;
+    this.action = null; 
     this.listeNAMResultat = [];
     this.erreurTraitement = null;
     if (this.abonnement) {
@@ -132,4 +140,19 @@ export class GenererNamPageComponent implements OnInit, OnDestroy {
       return false;
     }    
   }
+
+  /*configurerSSO(){
+      this.oauthService.configure(authConfig);
+      this.oauthService.tokenValidationHandler = new JwksValidationHandler();
+      this.oauthService.loadDiscoveryDocumentAndLogin();
+  }*/
+
+  /*authentificationSSO() {
+    this.oauthService.initLoginFlow();
+  }*/
+
+  /*get token():any {
+    let claims:any = this.oauthService.getIdentityClaims();
+    return claims ? claims : null;
+  }*/
 }

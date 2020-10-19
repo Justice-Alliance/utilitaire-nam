@@ -79,13 +79,13 @@
       keycloak_user: "{{ unam_oidc_auth_admin_username | default(unam_oidc_default_auth_admin_username) }}"
       keycloak_password: "{{ unam_oidc_auth_admin_password | default(unam_oidc_default_auth_admin_password) }}"
       keycloak_auth_realm: "{{ unam_oidc_auth_realm | default(unam_oidc_default_auth_realm) }}"
-    when: unamui_deploy is defined and unamui_deploy and (unam_oidc_keycloak_enabled is not defined or unam_oidc_keycloak_enabled)
+    when: unamui_deploy is defined and unamui_deploy
 
   - name: Définir la variables d'environnement pour le client secret du UI
     set_fact:
       unamui_oidc_client_secret_env:
         KEYCLOAK_CLIENT_SECRET: "{{ oidc_client_secret }}"
-    when: unamui_deploy is defined and unamui_deploy and (unam_oidc_keycloak_enabled is not defined or unam_oidc_keycloak_enabled)
+    when: unamui_deploy is defined and unamui_deploy
 
   - name: Construire et déployer l'interface web de l'utilitaire NAM si nécessaire
     include_role:

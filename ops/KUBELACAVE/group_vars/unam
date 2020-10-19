@@ -31,7 +31,6 @@ unamui_deploy: True
 unamui_external_port: 15010
 unamui_protocol: http
 unamui_base_url: "unamui.lacave.info"
-unamui_external_port: 15010
 unamui_url: "{{ unamui_protocol }}://{{ unamui_base_url }}"
 
 unam_oidc_keycloak_enabled: True

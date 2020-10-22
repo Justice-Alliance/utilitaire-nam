@@ -4,15 +4,15 @@
   scm: git
 - name: application_web_kubernetes
   src: https://gitlab.forge.gouv.qc.ca/ansible-inspq/roles/application_web_kubernetes.git
-  version: master
+  version: v0.0.1
   scm: git
 - name: application_angular_docker
   src: https://gitlab.forge.gouv.qc.ca/ansible-inspq/roles/application_angular_docker.git
-  version: master
+  version: v1.1.4
   scm: git
 - name: application_angular_kubernetes
   src: https://gitlab.forge.gouv.qc.ca/ansible-inspq/roles/application_angular_kubernetes.git
-  version: master
+  version: v0.0.1
   scm: git
 - name: deploy_vm_linux
   src: https://gitlab.forge.gouv.qc.ca/ansible-inspq/roles/deploy_vm_linux.git

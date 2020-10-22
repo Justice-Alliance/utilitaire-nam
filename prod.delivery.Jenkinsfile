@@ -59,18 +59,18 @@ pipeline {
 				milestone(ordinal: 2)
 			}
         }
-        stage ("Lancer les tests d'intégrations en PP") {
-            when {
-	        	expression {
-	        		return DEPLOY_PP == "oui"
-	        	}
-            }
-            steps {
-				milestone(ordinal: 3)
-	        	build job: "utilitaire-nam-tests-integration", parameters:[string(name: 'ENV', value: 'PP'), string(name: 'TAG', value: "${TAG}")]
-				milestone(ordinal: 4)
-			}
-        }
+        //stage ("Lancer les tests d'intégrations en PP") {
+        //    when {
+	    //    	expression {
+	    //    		return DEPLOY_PP == "oui"
+	    //    	}
+        //    }
+        //    steps {
+		//		milestone(ordinal: 3)
+	    //    	build job: "utilitaire-nam-tests-integration", parameters:[string(name: 'ENV', value: 'PP'), string(name: 'TAG', value: "${TAG}")]
+		//		milestone(ordinal: 4)
+		//	}
+        //}
         stage ('Déploiement en PROD') {
             steps {
 				milestone(ordinal: 5)
@@ -106,17 +106,17 @@ pipeline {
 				milestone(ordinal: 6)
 			}
         }
-        stage ("Lancer les tests d'intégrations en PROD") {
-            when {
-	        	expression {
-	        		return DEPLOY_PROD == "oui"
-	        	}
-            }
-            steps {
-				milestone(ordinal: 7)
-	        	build job: "utilitaire-nam-tests-integration", parameters:[string(name: 'ENV', value: 'PROD'), string(name: 'TAG', value: "${TAG}")]
-				milestone(ordinal: 8)
-			}
-        }
+        //stage ("Lancer les tests d'intégrations en PROD") {
+        //    when {
+	    //    	expression {
+	    //    		return DEPLOY_PROD == "oui"
+	    //    	}
+        //    }
+        //    steps {
+		//		milestone(ordinal: 7)
+	    //    	build job: "utilitaire-nam-tests-integration", parameters:[string(name: 'ENV', value: 'PROD'), string(name: 'TAG', value: "${TAG}")]
+		//		milestone(ordinal: 8)
+		//	}
+        //}
 	}
 }

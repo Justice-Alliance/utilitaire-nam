@@ -33,7 +33,7 @@ pipeline {
 		            	timeout (time: 24, unit: "HOURS" ){
 							DEPLOY_PP = input(
 		                		id: 'tag_choice',
-		                		message: 'Voulez-vous déployer la version ${TAG} de utilitaire NAM en PP ?',
+		                		message: "Voulez-vous déployer la version ${TAG} de utilitaire NAM en PP?",
 		                		parameters: [ 
 		                			[$class: 'ChoiceParameterDefinition', 
 		                			choices: [ 'oui','non','annuler' ].join('\n'), 
@@ -80,7 +80,7 @@ pipeline {
 		            	timeout (time: 24, unit: "HOURS" ){
 							DEPLOY_PROD = input(
 		                		id: 'tag_choice',
-		                		message: 'Voulez-vous déployer la version ${TAG} de utilitaire NAM en PROD ?',
+		                		message: "Voulez-vous déployer la version ${TAG} de utilitaire NAM en PROD?",
 		                		parameters: [ 
 		                			[$class: 'ChoiceParameterDefinition', 
 		                			choices: [ 'oui','non','annuler' ].join('\n'), 

@@ -5,8 +5,8 @@ unam_oidc_auth_admin_password: 'Utilia1reN@M'
 unam_oidc_auth_realm: kubernetes
 unam_oidc_realm: kubernetes
 # Configuration Graylog
-#unam_graylog_host: "{{ ansible_fqdn }}"
-#unam_graylog_port_gelf_udp: 12231
+unam_graylog_host: "lacave-graylog-udp.graylog-system"
+unam_graylog_port_gelf_udp: 12231
 
 # Type de conteneur: docker ou kubernetes
 unam_container_type: kubernetes

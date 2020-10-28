@@ -1,0 +1,30 @@
+<configuration>
+  	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    	<encoder>
+      		<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+    	</encoder>
+  	</appender>
+  
+  	<if condition='isDefined("LOG4J2_GRAYLOG_URL")'>
+  		<then>
+		  	<appender name="GELF" class="de.siegmar.logbackgelf.GelfUdpAppender">
+		        <graylogHost>${LOG4J2_GRAYLOG_URL}</graylogHost>
+		        <graylogPort>${LOG4J2_GRAYLOG_PORT_GELF_UDP}</graylogPort>
+		        <encoder class="de.siegmar.logbackgelf.GelfEncoder">
+		        	<originHost>${GRAYLOG_HOST_BASE}</originHost>
+		        </encoder>
+		    </appender>
+    	</then>
+    </if>
+
+  	<root level="info">
+    	<if condition='isDefined("LOG4J2_GRAYLOG_URL")'>
+    		<then>
+    			<appender-ref ref="GELF" />	
+    		</then>
+    		<else>
+    			<appender-ref ref="STDOUT" />
+    		</else>
+    	</if>
+  	</root>
+</configuration>

@@ -7,6 +7,10 @@ unam_oidc_realm: kubernetes
 # Configuration Graylog
 unam_graylog_host: "lacave-graylog-udp.graylog-system"
 unam_graylog_port_gelf_udp: 12231
+unam_prometheus_label:
+  name: release
+  value: lacave-prom
+unam_oidc_keycloak_enabled: True
 
 # Type de conteneur: docker ou kubernetes
 unam_container_type: kubernetes
@@ -26,6 +30,13 @@ unamservice_url: "{{ unamservice_protocol }}://{{ unamservice_base_url }}"
 unamservice_external_actuator_port: 27082
 
 unamservice_debug_port: "*:8001"
+unamservice_monitoring_enabled: True
+unamservice_service_monitor_name: actuator
+unamservice_service_match_label:
+  name: 
+  value:
+unamservice_jaeger_enabled: True
+unamservice_jaeger_instance_name: lacave-jaeger
 
 unamui_deploy: True
 unamui_external_port: 15010
@@ -33,4 +44,4 @@ unamui_protocol: http
 unamui_base_url: "unamui.lacave.info"
 unamui_url: "{{ unamui_protocol }}://{{ unamui_base_url }}"
 
-unam_oidc_keycloak_enabled: True
+

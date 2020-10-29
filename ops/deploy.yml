@@ -10,6 +10,7 @@
     
     unamservice_internal_port: 8080
     unamservice_internal_actuator_port: 28081
+    unamservice_service_monitor_path: /actuator/prometheus
     cert_file_path: /etc/pki/tls/certs
     cert_key_path: /etc/pki/tls/private
     unamservice_container_name: "unamservice{{ env | lower }}"
@@ -190,6 +191,12 @@
       application_protocol: "{{ unamservice_protocol | default() }}"
       application_virtualhost_protocol: "{{ unamservice_virtualhost_protocol | default() }}"
       application_base_url: "{{ unamservice_base_url | default() }}"
+      application_monitoring_enabled: "{{ unamservice_monitoring_enabled | default(False) }}"
+      application_service_monitor_name: "{{ unamservice_service_monitor_name | default() }}"
+      application_prometheus_label: "{{ unam_prometheus_label | default({}) }}"
+      application_service_monitor_path: "{{ unamservice_service_monitor_path | default() }}" 
+      application_jaeger_enabled: "{{ unamservice_jaeger_enabled | default(False) }}"
+      application_jaeger_instance_name: "{{ unamservice_jaeger_instance_name | default('true') }}"
     when: unam_container_type is defined and unam_container_type == 'kubernetes'
 
     
